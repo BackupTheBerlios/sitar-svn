@@ -22,8 +22,13 @@
 #               Janto Trappe
 #               Waldemar Brodkorb
 #		Bernhard Thoni
+#		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.13  2002/03/18 16:15:59  mge
+#  added Pascal Fuckerieder to contributors
+#  release is 0.7.0 now:-)
+#
 #  Revision 1.12  2002/01/14 15:39:49  mge
 #  added Bernhard Thoni to contributors
 #
@@ -59,7 +64,7 @@
 PREFIX=usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.6.9
+RELEASE=0.7.0
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
