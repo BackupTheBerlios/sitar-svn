@@ -27,7 +27,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.pre1
+Version:	0.9.pre2
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -91,6 +91,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.36  2005/01/19 01:49:56  mge
+#  xml: well-formed and valid (as tested so far:-)
+#
 #  Revision 1.35  2005/01/18 17:33:53  mge
 #  xml: better articleinfo
 #
