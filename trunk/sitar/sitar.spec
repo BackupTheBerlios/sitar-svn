@@ -23,6 +23,11 @@
 #               Waldemar Brodkorb
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.6  2001/08/20 22:26:34  mge
+#  make "support_all.pl" and "sitar.pl" work slightly different:
+#  "sitar.pl" will do everything, as the old "sitar.pl" did, "support_all.pl"
+#  uses the command line parameters.
+#
 #  Revision 1.5  2001/08/20 04:16:39  mge
 #  - manpage cleanups
 #  - changed release num to 0.6.6
@@ -40,7 +45,7 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.6.6
+Version:	0.6.7
 Release:	1
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
@@ -71,9 +76,11 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 %{?suse_check}
 
 %files
-%attr(744, root, root) /usr/sbin/sitar.pl
-%attr(744, root, root) /usr/sbin/sitar
+%attr(700, root, root) /usr/sbin/sitar.pl
+%attr(700, root, root) /usr/sbin/sitar
+%attr(700, root, root) /usr/sbin/support_all.pl
 /usr/share/man/man1/sitar.1.gz
+/usr/share/man/man1/support_all.1.gz
 /usr/share/doc/packages/sitar/sitar.html
 /usr/share/doc/packages/sitar/sitar.ps
 /usr/share/doc/packages/sitar/LICENSE

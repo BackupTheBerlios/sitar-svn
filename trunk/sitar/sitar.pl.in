@@ -24,6 +24,11 @@
 #		Waldemar Brodkorb
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.14  2001/08/20 22:26:34  mge
+#  make "support_all.pl" and "sitar.pl" work slightly different:
+#  "sitar.pl" will do everything, as the old "sitar.pl" did, "support_all.pl"
+#  uses the command line parameters.
+#
 #  Revision 1.13  2001/08/20 04:16:39  mge
 #  - manpage cleanups
 #  - changed release num to 0.6.6
@@ -46,9 +51,13 @@ SITAR - System InformaTion At Runtime
 
 =head1 SYNOPSIS
 
-sitar B<--format>=I<format> B<--outfile>=I<file> B<--help>
+sitar.pl       B<--help>
 
-Available I<format>s: html, latex, yast1
+sitar          B<--help>
+
+support_all.pl B<--format>=I<format> B<--outfile>=I<file> B<--help>
+
+Available I<format>s: html, tex, yast1
 
 =head1 DESCRIPTION
 
@@ -96,11 +105,11 @@ While running, stdout is redirected to the designated C<outfile> file. So one wi
 
 For generating a HTML documentation type as user C<root>:
 	
-C<sitar.pl --format=html --outfile=/tmp/$HOSTNAME.html>
+C<support_all.pl --format=html --outfile=/tmp/$HOSTNAME.html>
 
 For PDF type as user C<root>:
 
-C<sitar.pl --format=tex --outfile=/tmp/$HOSTNAME.tex>
+C<support_all.pl --format=tex --outfile=/tmp/$HOSTNAME.tex>
 
 and twice (as an ordinary user): 
 
@@ -356,7 +365,7 @@ sub siprint($$$) {
 		}
 		if ( $m eq "body" )   { print $OutputBuffer; }
 		if ( $m eq "footer" ) { print $html_footer; }
-	} elsif ( $siprt_mode eq "tex" || $siprt_mode eq "latex" ) {
+	} elsif ( $siprt_mode eq "tex" || $siprt_mode eq "tex" ) {
 
 		if ( $IsVerbatim == 0 ) {
 			$value =~ s/\_/\\_/g;
@@ -535,7 +544,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.13 2001/08/20 04:16:39 mge Exp $
+	#       $Id: sitar.pl.in,v 1.14 2001/08/20 22:26:34 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -1734,10 +1743,11 @@ sub si_selection_rpm() {
 
 sub si_getopts($) {
 }
-{
+
+sub si_run_sitar() {
 	if ( $printhelp || $siprt_mode eq "" ) {
-		print "Options available:\n\t--format=<format>\tFormats: html, latex, yast1, (planned: plain, xml, alice)\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
-	} elsif ( $siprt_mode eq "html" || $siprt_mode eq "latex" ) {
+		print "Options available:\n\t--format=<format>\tFormats: html, tex, yast1, (planned: plain, xml, alice)\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
+	} elsif ( $siprt_mode eq "html" || $siprt_mode eq "tex" ) {
 		# @siprt_modes= ("html", "tex" );
 		# @siprt_modes= ("html" );
 		# for $mm (@siprt_modes) {
@@ -1819,3 +1829,25 @@ sub si_getopts($) {
 		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
 	}
 }
+
+{
+	my @myname = split /\//, $0;
+	if ( 	( ( $myname[-1] eq "sitar.pl" ) || ( $myname[-1] eq "sitar.pl" ) ) 
+		&& ( ! $printhelp ) ) {
+		@siprt_modes= ("html", "tex", "yast1" );
+		for $mm (@siprt_modes) {
+			$siprt_mode = $mm;
+			if ( $siprt_mode eq "yast1") {
+				$outfile    = "/tmp/sitar-$HOSTNAME.sel";
+			} else {
+				$outfile    = "/tmp/sitar-$HOSTNAME.$mm";
+			}
+			si_run_sitar();
+		}
+	} else {
+		si_run_sitar();
+	}
+	
+
+}
+
