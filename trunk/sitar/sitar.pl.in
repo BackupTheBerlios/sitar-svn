@@ -26,8 +26,12 @@
 #		Bernhard Thoni
 #		Pascal Fuckerieder
 #		Andreas Rother
+#		Uwe Hering
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.38  2003/03/24 09:55:03  mge
+#  Additions for SLOX, thanks to Uwe Hering (SuSE)
+#
 #  Revision 1.37  2003/01/17 08:39:24  mge
 #  enhanced package list (sort by packager && || distribution)
 #
@@ -284,6 +288,7 @@ GetOptions(
 $ENV{ PATH } = "";
 my $UNITED       = "/etc/UnitedLinux-release";
 my $SUSE         = "/etc/SuSE-release";
+my $SLOX         = "/etc/SLOX-release";
 my $DEBIAN       = "/etc/debian_version";
 my $REDHAT       = "/etc/redhat-release";
 my $release      = "";
@@ -304,6 +309,10 @@ if ( -e $DEBIAN ) {
 } elsif ( -e $UNITED ) {
 	$release      = `/usr/bin/head -1 /etc/UnitedLinux-release`;
 	$distribution = "unitedlinux";
+	$RPM          = "/bin/rpm";
+} elsif ( -e $SLOX ) {
+	$release      = `/usr/bin/head -1 /etc/SLOX-release`;
+	$distribution = "sles";
 	$RPM          = "/bin/rpm";
 } elsif ( -e $SUSE ) {
 	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
@@ -2399,7 +2408,7 @@ sub si_getopts($) {
 }
 
 sub si_print_version () {
-	print "SITAR - System InformaTion At Runtime - Release ", $RELEASE, "\nCopyright (C) 1999-2002 SuSE Linux AG\n";
+	print "SITAR - System InformaTion At Runtime - Release ", $RELEASE, "\nCopyright (C) 1999-2003 SuSE Linux AG\n";
 }
 
 sub si_print_help () {
@@ -2484,7 +2493,9 @@ sub si_run_sitar() {
 # MAIN
 {
 	my @myname = split /\//, $0;
-	if ( $ENV{ USER } ne "root" ) {
+	# if ( `/usr/bin/id -u`  != 0 ) {
+	if ( ( $ENV{ USER } && $ENV{ USER } ne "root" ) 
+		|| ( `/usr/bin/id -u ` != 0) ){
 		print( "Please run sitar as user root.\n" );
 		exit;
 	}

@@ -26,6 +26,9 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.25  2003/03/24 09:55:03  mge
+#  Additions for SLOX, thanks to Uwe Hering (SuSE)
+#
 #  Revision 1.24  2003/01/10 16:26:18  mge
 #  - (United Linux / SuSE Linux only): split packages by Packager
 #  - minor TeX improvements
@@ -116,7 +119,7 @@ Vendor:		SuSE Linux AG, Germany
 Distribution:	United Linux / SuSE Linux
 Name:		sitar
 Packager:	Matthias G. Eckermann <mge@suse.de>
-Version:	0.8.6
+Version:	0.8.7
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -136,7 +139,7 @@ Authors:
 --------
 	Matthias Eckermann <mge@suse.de>,
 	Stephan Mueller, Janto Trappe, Waldemar Brodkorb, Bjoern Jacke,
-	Bernhard Thoni, Pascal Fuckerieder
+	Bernhard Thoni, Pascal Fuckerieder, Andreas Rother, Uwe Hering
 
 %prep
 %setup

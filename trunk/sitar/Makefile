@@ -25,6 +25,9 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.25  2003/03/24 09:55:03  mge
+#  Additions for SLOX, thanks to Uwe Hering (SuSE)
+#
 #  Revision 1.24  2003/01/10 16:26:18  mge
 #  - (United Linux / SuSE Linux only): split packages by Packager
 #  - minor TeX improvements
@@ -121,7 +124,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.6
+RELEASE=0.8.7
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
