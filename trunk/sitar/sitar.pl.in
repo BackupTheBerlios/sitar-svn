@@ -25,8 +25,15 @@
 #		Björn Jacke
 #		Bernhard Thoni
 #		Pascal Fuckerieder 
+#		Andreas Rother
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.29  2002/11/28 01:35:16  mge
+#  - Added UnitedLinux finally
+#  - Fixed TeX output
+#  - Make --outfile --format run (did not work properly)
+#  Release 0.7.5
+#
 #  Revision 1.28  2002/11/27 14:20:12  mge
 #  fixed TeX output and other issues.
 #  TeX output needs more work (sideways!)
@@ -121,7 +128,7 @@ sitar          B<--help>
 
 support_all.pl B<--format>=I<format> B<--outfile>=I<file> B<--help>
 
-Available I<format>s: html, tex, yast1
+Available I<format>s: html, tex, yast1, yast2
 
 =head1 DESCRIPTION
 
@@ -137,15 +144,17 @@ Prints a short summary of options.
 
 =item B<--format>=I<format>
 
-Tell SITAR, which output format to use. At the moment three formats are supported:
+Tell SITAR, which output format to use. At the moment four formats are supported:
 
 =over
 
-=item LaTeX
+=item tex 
 
-=item HTML
+=item html
 
-=item YaST1-sel
+=item yast1
+
+=item yast2
 
 =back
 
@@ -153,7 +162,7 @@ Tell SITAR, which output format to use. At the moment three formats are supporte
 
 All formatted output will be stored in the file given here.
 Please don't forget to give the right extension here:
-C<.html> for HTML, C<.tex> for LaTeX, C<.sel> for YaST1-sel-files.
+C<.html> for HTML, C<.tex> for LaTeX, C<.sel> for YaST-Selection-files.
 
 =back
 
@@ -183,7 +192,11 @@ C<pdflatex /tmp/$HOSTNAME.tex>
 
 The SITAR project was created by Matthias G. Eckermann <mge@suse.de>; Stephan
 Müller helped with Firewalling and Security issues; Janto Trappe and Waldemar
-Brodkorb created the Debian port.
+Brodkorb created the Debian port; Björn Jacke helped on several issues;
+Bernhard Thoni introduced the software raid support; Pascal Fuckerieder wrote
+the IPTables/Netfilter code and Andreas Rother submitted a patch for running
+sitar on RH Linux.  So finally these Linux Systems are supported: SuSE Linux,
+United Linux, Debian, RedHat.
 
 For more information on SITAR, see: http://sitar.berlios.de/
 
@@ -236,6 +249,7 @@ GetOptions(
 # distribution test
 #
 $ENV{PATH} = "";
+my $UNITED       = "/etc/UnitedLinux-release";
 my $SUSE         = "/etc/SuSE-release";
 my $DEBIAN       = "/etc/debian_version";
 my $REDHAT       = "/etc/redhat-release";
@@ -252,6 +266,10 @@ if ( -e $DEBIAN ) {
 	$RPM          = "/bin/rpm";
 } elsif ( -e $SUSE ) {
 	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
+	$distribution = "suse";
+	$RPM          = "/bin/rpm";
+} elsif ( -e $UNITED ) {
+	$release      = `/usr/bin/head -1 /etc/UnitedLinux-release`;
 	$distribution = "suse";
 	$RPM          = "/bin/rpm";
 } else {
@@ -324,13 +342,13 @@ my $html_footer = "<hr>
 #
 $UNAME =~ s/\_/\\_/g;
 $UNAME =~ s/\#/\\\#/g;
-my $tex_header = "\\documentclass[headinclude,a4paper]\{scrartcl\} 
+my $tex_header = "\\documentclass[headinclude,a4paper,DIV20]\{scrartcl\} 
 \\usepackage[latin1]\{inputenc\} 
 \\usepackage\{hyperref\} 
-% \\usepackage[headinclude,a4paper]\{typearea\} 
-\\areaset\{40em\}\{50\\baselineskip\} 
-\\usepackage\{epsfig,longtable,verbatim,rotating,multicol\} 
+\\usepackage\{longtable,verbatim,multicol\} 
 \\pagestyle\{plain\} 
+% \\usepackage[headinclude,a4paper]\{typearea\} 
+% \\areaset\{40em\}\{50\\baselineskip\} 
 % \\usepackage\{german\} 
 % \\selectlanguage\{english\} 
 % 
@@ -684,6 +702,32 @@ sub si_pnp() {
 	}
 }
 
+sub si_proc_modules () {
+	if ( -r "/proc/modules" ) {
+		siprtt( "h2",        "Currently loaded modules" );
+		siprtt( "tabborder", "llll" );
+		siprt( "tabrow" );
+		siprtt( "tabhead", "Module" );
+		siprtt( "tabhead", "Size" );
+		siprtt( "tabhead", "Depend." );
+		siprtt( "tabhead", "Needs/Uses" );
+		siprt( "endrow" );
+		my @attr;
+		open( IN, "/proc/modules" );
+		while ( <IN> ) {
+			@attr = split /\s+/, $_, 4;
+			siprt( "tabrow" );
+			siprtt( "cell", $attr[0] );
+			siprtt( "cell", $attr[1] );
+			siprtt( "cell", $attr[2] );
+			siprtt( "cell", $attr[3] );
+			siprt( "endrow" );
+		}
+		close( IN );
+		siprt( "endtab" );
+	}
+}
+
 sub si_pci() {
 	open( IN, "/proc/pci" );
 	siprtt( "h2",        "PCI-Devices" );
@@ -762,7 +806,7 @@ sub si_lsdev() {
 		@line = split ( ' : ' );
 		if ( $distribution eq "redhat" ) {
 			$name = $line[1];
-		} else { 
+		} else {
 			@tmp = split ( /[ \(]/, $line[1] );
 			$name = $tmp[0];
 		}
@@ -1383,74 +1427,74 @@ sub si_route() {
 			siprtt( "cell", $dest );
 			siprtt( "cell", $gate );
 			siprtt( "cell", $genmask );
-sub si_usercrontab() {
-	# Crontab
-	siprtt("h1","Crontab");
-	if ( -r "/etc/crontab" ) {
-		open( CRONTAB, "/etc/crontab" );
-		siprtt( "h2",        "/etc/crontab" );
-		siprtt( "tabborder", "llllllll" );
-		siprt( "tabrow" );
-		siprtt( "tabhead", "Minute" );
-		siprtt( "tabhead", "Hour" );
-		siprtt( "tabhead", "Day of month" );
-		siprtt( "tabhead", "Month" );
-		siprtt( "tabhead", "Day of week" );
-		siprtt( "tabhead", "User" );
-		siprtt( "tabhead", "Command" );
-		siprt( "endrow" );
-		while ( <CRONTAB> ) {
-			if ( m/^\d/ ) {
-				my ( $minute, $hour, $dayofmonth, $month, $dayofweek, $user, @command ) = split /\s+/;
-				siprt( "tabrow" );
-				siprtt( "cell", $minute );
-				siprtt( "cell", $hour );
-				siprtt( "cell", $dayofmonth );
-				siprtt( "cell", $month );
-				siprtt( "cell", $dayofweek );
-				siprtt( "cell", $user );
-				siprtt( "cell", "@command" );
-				siprt( "endrow" );
-			}
-		}
-		siprt( "endtab" );
-		close( CRONTAB );
-	}			
-	if ( -r "/var/spool/cron" ) {
-		for $NN ( `/usr/bin/find /var/spool/cron -type f` ) {
-			chomp $NN;
-			my %rule    = ();
-			my $isbegin = 1;
-			open( CRONTAB, $NN );
-			siprtt( "h2",        "$NN" );
-			siprtt( "tabborder", "llllllll" );
-			siprt( "tabrow" );
-			siprtt( "tabhead", "Minute" );
-			siprtt( "tabhead", "Hour" );
-			siprtt( "tabhead", "Day of month" );
-			siprtt( "tabhead", "Month" );
-			siprtt( "tabhead", "Day of week" );
-			siprtt( "tabhead", "Command" );
-			siprt( "endrow" );
-			while ( <CRONTAB> ) {
-				if ( m/^\d/ ) {
-					my ( $minute, $hour, $dayofmonth, $month, $dayofweek, @command ) = split /\s+/;
+
+			sub si_usercrontab() {
+				# Crontab
+				siprtt( "h1", "Crontab" );
+				if ( -r "/etc/crontab" ) {
+					open( CRONTAB, "/etc/crontab" );
+					siprtt( "h2",        "/etc/crontab" );
+					siprtt( "tabborder", "llllllll" );
 					siprt( "tabrow" );
-					siprtt( "cell", $minute );
-					siprtt( "cell", $hour );
-					siprtt( "cell", $dayofmonth );
-					siprtt( "cell", $month );
-					siprtt( "cell", $dayofweek );
-					siprtt( "cell", "@command" );
+					siprtt( "tabhead", "Minute" );
+					siprtt( "tabhead", "Hour" );
+					siprtt( "tabhead", "Day of month" );
+					siprtt( "tabhead", "Month" );
+					siprtt( "tabhead", "Day of week" );
+					siprtt( "tabhead", "User" );
+					siprtt( "tabhead", "Command" );
 					siprt( "endrow" );
+					while ( <CRONTAB> ) {
+						if ( m/^\d/ ) {
+							my ( $minute, $hour, $dayofmonth, $month, $dayofweek, $user, @command ) = split /\s+/;
+							siprt( "tabrow" );
+							siprtt( "cell", $minute );
+							siprtt( "cell", $hour );
+							siprtt( "cell", $dayofmonth );
+							siprtt( "cell", $month );
+							siprtt( "cell", $dayofweek );
+							siprtt( "cell", $user );
+							siprtt( "cell", "@command" );
+							siprt( "endrow" );
+						}
+					}
+					siprt( "endtab" );
+					close( CRONTAB );
+				}
+				if ( -r "/var/spool/cron" ) {
+					for $NN ( `/usr/bin/find /var/spool/cron -type f` ) {
+						chomp $NN;
+						my %rule    = ();
+						my $isbegin = 1;
+						open( CRONTAB, $NN );
+						siprtt( "h2",        "$NN" );
+						siprtt( "tabborder", "llllllll" );
+						siprt( "tabrow" );
+						siprtt( "tabhead", "Minute" );
+						siprtt( "tabhead", "Hour" );
+						siprtt( "tabhead", "Day of month" );
+						siprtt( "tabhead", "Month" );
+						siprtt( "tabhead", "Day of week" );
+						siprtt( "tabhead", "Command" );
+						siprt( "endrow" );
+						while ( <CRONTAB> ) {
+							if ( m/^\d/ ) {
+								my ( $minute, $hour, $dayofmonth, $month, $dayofweek, @command ) = split /\s+/;
+								siprt( "tabrow" );
+								siprtt( "cell", $minute );
+								siprtt( "cell", $hour );
+								siprtt( "cell", $dayofmonth );
+								siprtt( "cell", $month );
+								siprtt( "cell", $dayofweek );
+								siprtt( "cell", "@command" );
+								siprt( "endrow" );
+							}
+						}
+						siprt( "endtab" );
+						close( CRONTAB );
+					}
 				}
 			}
-			siprt( "endtab" );
-			close( CRONTAB );
-		}
-	}
-}
-
 			siprtt( "cell", $flags );
 			siprtt( "cell", $metric );
 			siprtt( "cell", $ref );
@@ -1688,24 +1732,7 @@ sub si_build_proc_description() {
 sub si_proc_sys_net () {
 	my $value;
 	siprtt( "h2", "/proc/sys/net" );
-	my @nettypes = qw(
-	  802
-	  appletalk
-	  ax25
-	  rose
-	  x25
-	  bridge
-	  core
-	  decnet
-	  ethernet
-	  ipv4
-	  ipv6
-	  irda
-	  ipx
-	  net-rom
-	  token-ring
-	  unix
-	);
+	my @nettypes = qw(802 appletalk ax25 rose x25 bridge core decnet ethernet ipv4 ipv6 irda ipx net-rom token-ring unix);
 	for $NET ( $nettypes ) {
 		if ( ( -d "/proc/sys/net/$NET" ) ) {
 			opendir( DIR, "/proc/sys/net/$NET" );
@@ -1757,36 +1784,36 @@ sub si_etc_redhat() {
 	} elsif ( "/etc/sshd_config" ) {
 		si_conf( "sshd_config", "/etc/sshd_config", "\#" );
 	}
-	
 	my %myfiles  = ();
 	my @allfiles = qw (
-	 /etc/squid.conf
-	 /etc/syslog.conf
-	 /etc/dhcpd.conf
-	 /etc/httpd/httpd.conf
-	 /etc/openldap/slapd.conf
-	 /etc/openldap/ldap.conf
-	 /etc/inetd.conf
-	 /etc/xinetd.conf
-	 /etc/printcap
-	 /etc/hosts
-	 /etc/hosts.allow
-	 /etc/hosts.deny
-	 /etc/ppp/options
-	 /etc/ppp/pppoe-server-options
-	 /etc/lilo.conf
-	 /etc/grub.conf
-	 /etc/fstab
-	 /etc/inittab
-	 /etc/passwd
-	 /etc/group
-	 /etc/raidtab
-	 /etc/raid0.conf
-	 /etc/raid1.conf
-	 /etc/raid5.conf
-	 /etc/resolv.conf
-	 /etc/rinetd.conf
-	 /etc/snmp/snmpd.conf
+	  /etc/grub.conf
+	  /etc/squid.conf
+	  /etc/syslog.conf
+	  /etc/dhcpd.conf
+	  /etc/httpd/httpd.conf
+	  /etc/openldap/slapd.conf
+	  /etc/openldap/ldap.conf
+	  /etc/inetd.conf
+	  /etc/xinetd.conf
+	  /etc/printcap
+	  /etc/hosts
+	  /etc/hosts.allow
+	  /etc/hosts.deny
+	  /etc/ppp/options
+	  /etc/ppp/pppoe-server-options
+	  /etc/lilo.conf
+	  /etc/grub.conf
+	  /etc/fstab
+	  /etc/inittab
+	  /etc/passwd
+	  /etc/group
+	  /etc/raidtab
+	  /etc/raid0.conf
+	  /etc/raid1.conf
+	  /etc/raid5.conf
+	  /etc/resolv.conf
+	  /etc/rinetd.conf
+	  /etc/snmp/snmpd.conf
 	);
 	foreach ( @allfiles ) {
 		$myfiles{$_} = 0;
@@ -1796,16 +1823,17 @@ sub si_etc_redhat() {
 			if ( ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
-				if ( -r $mm ) { si_conf( $mm, $mm, "\#"); }
+				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
 			}
 		}
 	}
 }
 
-sub si_proc_sys () {
+sub si_proc () {
 	si_build_proc_description ();
-	siprtt( "h1", "/proc/sys" );
+	siprtt( "h1", "/proc" );
 	si_proc_sys_net ();
+	si_proc_modules ();
 }
 
 sub si_etc() {
@@ -1844,6 +1872,7 @@ sub si_etc() {
 	# some more services/programs
 	my %myfiles  = ();
 	my @allfiles = qw (
+	  /etc/grub.conf
 	  /etc/squid.conf
 	  /etc/syslog.conf
 	  /etc/dhcpd.conf
@@ -1898,6 +1927,108 @@ sub si_etc() {
 sub si_etc_debian() {
 	# special function for debian specific configuration
 	#siprtt( "h1", "Configuration" );
+}
+
+sub si_etc_united() {
+	siprtt( "h1", "Configuration" );
+	if ( -r "/etc/sysconfig" ) {
+		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
+			chomp $NN;
+			si_conf( $NN, $NN, "\#" );
+		}
+	}
+	my %myfiles  = ();
+	my @allfiles = qw (
+	  /etc/grub.conf
+	  /etc/squid.conf
+	  /etc/syslog.conf
+	  /etc/dhcpd.conf
+	  /etc/httpd/httpd.conf
+	  /etc/openldap/slapd.conf
+	  /etc/inetd.conf
+	  /etc/xinetd.conf
+	  /etc/printcap
+	  /etc/crontab
+	  /etc/hosts
+	  /etc/hosts.allow
+	  /etc/hosts.deny
+	  /etc/pppoed.conf
+	  /etc/lilo.conf
+	  /etc/fstab
+	  /etc/inittab
+	  /etc/passwd
+	  /etc/group
+	  /etc/raidtab
+	  /etc/raid0.conf
+	  /etc/raid1.conf
+	  /etc/raid5.conf
+	  /etc/route.conf
+	  /etc/resolv.conf
+	  /etc/rc.firewall
+	  /etc/rinetd.conf
+	  /etc/snort/snort.conf
+	  /var/spool/fax/etc/config
+	  /var/spool/fax/etc/config.modem
+	);
+	if ( -d $config_dir ) {
+		foreach ( `$LS -1 $config_dir/*.include` ) {
+			chomp( $_ );
+			do "$_";
+			push @allfiles, @files;
+		}
+	}
+	foreach ( @allfiles ) {
+		$myfiles{$_} = 0;
+	}
+	foreach $mm ( sort keys %myfiles ) {
+		if ( $mm !~ /proc/ ) {
+			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/lilo.conf" ) ) {
+				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
+			} else {
+				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
+			}
+		}
+	}
+	# Samba
+	if ( -r "/etc/smb.conf" ) { si_conf( "/etc/smb.conf", "/etc/smb.conf", ";" ); }
+	# named
+	if ( -r "/etc/named.conf" ) {
+		si_conf( "/etc/named.conf", "/etc/named.conf", "/**/" );
+		for $NN ( `/usr/bin/find /var/named -name "*.zone"` ) {
+			chomp $NN;
+			si_conf( $NN, $NN, ";" );
+		}
+		for $NN ( `/usr/bin/find /var/named -name "*.db"` ) {
+			chomp $NN;
+			si_conf( $NN, $NN, ";" );
+		}
+	}
+	# SSH/OpenSSH
+	if ( -r "/etc/ssh/sshd_config" ) {
+		si_conf( "sshd_config", "/etc/ssh/sshd_config", "\#" );
+	} elsif ( "/etc/sshd_config" ) {
+		si_conf( "sshd_config", "/etc/sshd_config", "\#" );
+	}
+	# Postfix
+	if ( -d "/etc/postfix/" ) {
+		siprtt( "h2", "Postfix (postconf -n)" );
+		siprt( "pre" );
+		open( CONFIG, "/usr/sbin/postconf -n |" );
+		while ( <CONFIG> ) {
+			chomp();
+			siprtt( "verb", "$_\n" );
+		}
+		close( CONFIG );
+		siprt( "endpre" );
+	}
+	if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "/etc/aliases", "\#" ); }
+	# SuSE proxy suite
+	if ( -r "/etc/proxy-suite" ) {
+		for $NN ( `/usr/bin/find /etc/proxy-suite -name "*.conf"` ) {
+			chomp $NN;
+			si_conf( $NN, $NN, "\#" );
+		}
+	}
 }
 
 sub si_etc_suse() {
@@ -2103,19 +2234,32 @@ sub si_selection_rpm() {
 	print "Llatsniot:\n";
 }
 
+sub si_selection_yast2() {
+	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{SIZE}\n' |" );
+	my $total = 0;
+	my $num   = 0;
+	my @rpms  = ();
+	while ( <RPMS> ) {
+		my ( $name, $size ) = split /::/;
+		push @rpms, $name;
+		$total += $size;
+		$num++;
+	}
+	close( RPMS );
+	print "\# SuSE-Linux Configuration : ", int( $total / 1024 ), " : ", $num, "\n", "Description: $HOSTNAME $now_string\n", "Info:\n", "Ofni:\n", "Toinstall:\n";
+	for $rr ( sort @rpms ) { print $rr, "\n"; }
+	print "Llatsniot:\n";
+}
+
 sub si_getopts($) {
 }
 
+sub si_print_help () {
+	print "Options available:\n\t--format=<format>\tFormats: html, tex, yast1,yast2 (planned: plain, xml, alice)\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
+}
+
 sub si_run_sitar() {
-	if ( $printhelp || $siprt_mode eq "" ) {
-		print "Options available:\n\t--format=<format>\tFormats: html, tex, yast1, (planned: plain, xml, alice)\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
-	} elsif ( $siprt_mode eq "html" || $siprt_mode eq "tex" ) {
-		# @siprt_modes= ("html", "tex" );
-		# @siprt_modes= ("html" );
-		# for $mm (@siprt_modes) {
-		# $siprt_mode=$mm;
-		# open (SAVEOUT, ">&STDOUT");
-		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.$mm");
+	if ( $siprt_mode eq "html" || $siprt_mode eq "tex" ) {
 		open( SAVEOUT, ">&STDOUT" );
 		if ( $outfile ne "" ) {
 			open( STDOUT, ">$outfile" );
@@ -2126,8 +2270,7 @@ sub si_run_sitar() {
 		si_pci ();
 		si_pnp ();
 		if ( $mm eq "tex" ) {
-			print "\n\n\\newpage\n\n";
-			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
+			print "\n\\par\\begingroup\\tiny\\par\n";
 		}
 		# si_df();
 		si_software_raid ();
@@ -2138,33 +2281,25 @@ sub si_run_sitar() {
 		si_ips ();
 		si_compaq_smart ();
 		si_dac960 ();
-		if ( $mm eq "tex" ) {
-			print "\\par\\endgroup\\end\{sidewaystable\}";
-			print "\n\n\\newpage\n\n";
-			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
-		}
 		si_ifconfig ();
 		si_route ();
-		if ( $mm eq "tex" ) {
-			print "\\par\\endgroup\\end\{sidewaystable\}";
-			print "\n\n\\newpage\n\n";
-			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
-		}
 		si_packetfilter ();
 		if ( $mm eq "tex" ) {
-			print "\\par\\endgroup\\end\{sidewaystable\}";
-			print "\n\n\\newpage\n\n";
+			print "\n\\par\\endgroup\\par\n";
 		}
-		si_proc_sys ();
+		si_proc ();
 		si_etc ();
-		if ( $distribution eq "suse" ) {
+		if ( $distribution eq "unitedlinux" ) {
+			si_etc_united ();
+			si_installed_rpm ();
+			si_proc_config ();
+		} elsif ( $distribution eq "suse" ) {
 			si_etc_suse ();
 			si_installed_rpm ();
 			si_proc_config ();
 		} elsif ( $distribution eq "redhat" ) {
 			si_etc_redhat ();
 			si_installed_rpm ();
-			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
 		} elsif ( $distribution eq "debian" ) {
 			si_etc_debian ();
 			si_installed_deb ();
@@ -2182,30 +2317,43 @@ sub si_run_sitar() {
 		}
 		si_selection_rpm ();
 		open( STDOUT, ">&SAVEOUT" );
+	} elsif ( $siprt_mode eq "yast2" ) {
+		open( SAVEOUT, ">&STDOUT" );
+		if ( $outfile ne "" ) {
+			open( STDOUT, ">$outfile" );
+		}
+		si_selection_yast2 ();
+		open( STDOUT, ">&SAVEOUT" );
+	} elsif ( $siprt_mode eq "pci" ) {
 		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.pci");
 		# si_lspci();
 		# open (STDOUT,  ">&SAVEOUT");
 		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
 	}
 }
+# MAIN
 {
 	my @myname = split /\//, $0;
 	if ( $ENV{USER} ne "root" ) {
 		print( "Please run sitar as user root.\n" );
 		exit;
 	}
-	if ( ( ( $myname[-1] eq "sitar.pl" ) || ( $myname[-1] eq "sitar" ) ) && ( !$printhelp ) ) {
-		@siprt_modes = ( "html", "tex", "yast1" );
+	if ( ( ( $myname[-1] eq "sitar.pl" ) || ( $myname[-1] eq "sitar" ) ) && ( !$printhelp ) && ( !$siprt_mode ) && ( !$outfile ) ) {
+		@siprt_modes = ( "html", "tex", "yast1", "yast2" );
 		for $mm ( @siprt_modes ) {
 			$siprt_mode = $mm;
 			if ( $siprt_mode eq "yast1" ) {
-				$outfile = "/tmp/sitar-$HOSTNAME.sel";
+				$outfile = "/tmp/sitar-$HOSTNAME-yast1.sel";
+			} elsif ( $siprt_mode eq "yast2" ) {
+				$outfile = "/tmp/sitar-$HOSTNAME-yast2.sel";
 			} else {
 				$outfile = "/tmp/sitar-$HOSTNAME.$mm";
 			}
 			si_run_sitar ();
 		}
-	} else {
+	} elsif ( $siprt_mode && $outfile && ( !$printhelp ) ) {
 		si_run_sitar ();
+	} elsif ( ( $siprt_mode && ( !$outfile ) ) || ( ( !$siprt_mode ) && $outfile ) || $printhelp ) {
+		si_print_help ();
 	}
 }

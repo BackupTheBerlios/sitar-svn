@@ -25,6 +25,12 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.17  2002/11/28 01:35:16  mge
+#  - Added UnitedLinux finally
+#  - Fixed TeX output
+#  - Make --outfile --format run (did not work properly)
+#  Release 0.7.5
+#
 #  Revision 1.16  2002/11/27 13:58:26  mge
 #  Added patch for RedHat Linux from Andreas Rother <Andreas.Rother@eplus.de>
 #  Changes:
@@ -84,7 +90,7 @@
 PREFIX=usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.7.4
+RELEASE=0.7.5
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
