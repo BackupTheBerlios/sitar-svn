@@ -28,7 +28,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.9.x
+RELEASE=0.9.pre1
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -90,6 +90,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.35  2005/01/18 17:33:53  mge
+#  xml: better articleinfo
+#
 #  Revision 1.34  2005/01/18 14:13:43  mge
 #  added first XML support (simplified docbook)
 #

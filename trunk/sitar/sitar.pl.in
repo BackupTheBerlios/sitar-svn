@@ -239,9 +239,12 @@ my $config_dir  = "/var/lib/support/";
 # $html_header
 #
 my $sdocbook_header = "<?xml version=\"1.0\"?>
-<!DOCTYPE article PUBLIC \"-//OASIS//DTD Simplified DocBook XML V1.1CR2//EN\"
-                  \"http://docbook.org/xml/simple/1.1CR2/sdocbook.dtd\">
-<article>
+<!DOCTYPE article
+	PUBLIC \"-//OASIS//DTD Simplified DocBook XML V1.1CR2//EN\"
+	\"http://docbook.org/xml/simple/1.1CR2/sdocbook.dtd\" [
+<!ENTITY nbsp \"&#x000A0;\" >
+]>
+<article class=\"techreport\">
 <articleinfo>
   <corpauthor>SITAR</corpauthor>
   <copyright>
@@ -249,8 +252,10 @@ my $sdocbook_header = "<?xml version=\"1.0\"?>
     <year>2005</year>
     <holder>$COPYRIGHT</holder>
   </copyright>
-  <title>$HOSTNAME, $now_string</title>
-  <subtitle>$UNAME, $release</subtitle>
+  <bibliomisc><ulink url=\"http://sitar.berlios.de/\"></ulink></bibliomisc>
+  <title>$HOSTNAME</title>
+  <date>$now_string</date>
+  <subtitle>$release</subtitle>
 </articleinfo>";
 my $sdocbook_footer = "</article>";
 my $html_header     = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"
@@ -500,19 +505,19 @@ sub siprint($$$) {
 		if ( $m eq "h1" ) {
 			$seccnt++;
 			mysprint "<Sect1 id=\"", $seccnt, "\"\n><title>", $value, "</title></Sect1>";
-			addtoc_sdocbook( 1, "$seccnt", $value );
+			addtoc_sdocbook( 1, "$seccnt", "$seccnt.$value" );
 			$subseccnt = 0;
 		}
 		if ( $m eq "h2" ) {
 			$subseccnt++;
 			mysprint "<Sect2 id=\"", $seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title></Sect2>";
-			addtoc_sdocbook( 2, "$seccnt.$subseccnt", $value );
+			addtoc_sdocbook( 2, "$seccnt.$subseccnt", "$seccnt.$subseccnt&nbsp;$value" );
 			$subsubseccnt = 0;
 		}
 		if ( $m eq "h3" ) {
 			$subsubseccnt++;
 			mysprint "<Sect3 id=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n><title>", $value, "</title></Sect3>";
-			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt", $value );
+			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt", "$seccnt.$subseccnt.$subsubseccnt&nbsp;$value" );
 		}
 		if ( $m eq "tabborder" ) {
 			mysprint "<table frame=\"all\"><title>", $attr, "</title>";
@@ -2561,6 +2566,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.54  2005/01/18 17:33:53  mge
+#  xml: better articleinfo
+#
 #  Revision 1.53  2005/01/18 16:09:19  mge
 #  Simplified DocBook XML V1.1CR2
 #
