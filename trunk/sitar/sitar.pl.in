@@ -27,6 +27,10 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.25  2002/06/01 23:32:26  waldb
+#  added title to si_conf
+#  make configuration section more usable for debian
+#
 #  Revision 1.24  2002/06/01 21:14:24  waldb
 #  fixed tex output on debian systems
 #  removed restrictions from pod (iptables support is now included)
@@ -1650,10 +1654,9 @@ sub si_conf_secure($$$) {
     siprt("endpre");
 }
 
-sub si_conf($$) {
-    my ( $filename, $comment ) = @_;
-    siprtt( "h2", $filename );
-
+sub si_conf($$$) {
+    my ( $title, $filename, $comment ) = @_;
+    siprtt( "h2", "$title - $filename" );
     # print STDERR $filename, ": ", $comment, "\n";
     siprt("pre");
     if ( $comment eq "/**/" ) {
@@ -1766,65 +1769,50 @@ sub si_proc_sys () {
 
 sub si_etc() {
     siprtt( "h1", "Configuration" );
-}
+    
+    # SSH/OpenSSH
+    my @sshconf = qw ( /etc/ssh/sshd_config /etc/sshd_config );
+    foreach $file (@sshconf) {  
+      if ( -r $file ) { si_conf( "SSH/OpenSSH", $file, "\#" ); }
+    }
+    
+    # DNS - Bind
+    my @namedconf = qw ( /etc/named.conf /etc/bind/named.conf );
+    foreach $file (@namedconf) {
+        if ( -r $file ) { 
+          si_conf( "DNS/Bind", $file, "/**/" ); 
+          open (FILE, $file);
+            while(<FILE>) {
+              if ($_ =~ m/.*file "(.*)".*/) { si_conf( "Zones/DB", $1, "\#|;" ); }
+            }  
+          close FILE;
+        }
+    }
 
-sub si_etc_debian() {
-    siprtt( "h1", "Configuration" );
-}
+    # Samba
+    my @smbconf = qw ( /etc/smb.conf /etc/samba/smb.conf );
+    foreach $file (@smbconf) {
+      if ( -r $file ) { si_conf( "Samba", $file, "\#|;" ); }
+    }
 
-sub si_etc_suse() {
-    siprtt( "h1", "Configuration" );
-    my @lines = ();
-    open( RCCONFIG, "</etc/rc.config" );
-    while (<RCCONFIG>) {
-        s/="no"/=no/i;
-        s/="yes"/=yes/i;
-        if (m/START_POSTFIX=yes/i) {
-            push @lines, $_;
-            siprtt( "h2", "Postfix (postconf -n)" );
-            siprt("pre");
-            open( CONFIG, "/usr/sbin/postconf -n |" );
-            while (<CONFIG>) {
-                chomp();
-                siprtt( "verb", "$_\n" );
-            }
-            close(CONFIG);
-            siprt("endpre");
-            if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "\#" ); }
-        }
-        if ( !m/^#|^$|""/ ) {
-            push @lines, $_;
-        }
-    }
-    close(RCCONFIG);
-    siprtt( "h2", "/etc/rc.config" );
-    siprt("pre");
-    for $ll (@lines) {
-        siprtt( "verb", $ll );
+    # OpenLDAP
+    my @slapdconf = qw ( /etc/openldap/slapd.conf /etc/ldap/slapd.conf);
+    foreach $file (@slapdconf) {
+      if ( -r $file ) { si_conf( "OpenLDAP Server", $file, "\#" ); }
+    }           
+    my @ldapconf = qw ( /etc/openldap/ldap.conf /etc/ldap/ldap.conf);
+    foreach $file (@ldapconf) {
+      if ( -r $file ) { si_conf( "OpenLDAP Client", $file, "\#" ); }
+    }           
 
-        # my ($key,$val) = split /=/,$ll,2;
-# siprt("tabrow");siprtt("cell",$key);siprtt("cell",$val);siprt("endrow");
-    }
-    siprt("endpre");
-    if ( -r "/etc/sysconfig" ) {
-        for $NN (`/usr/bin/find /etc/sysconfig -type f`) {
-            chomp $NN;
-            si_conf( $NN, "\#" );
-        }
-    }
-    if ( -r "/etc/rc.config.d" ) {
-        for $NN (`/usr/bin/find /etc/rc.config.d -name "*.config"`) {
-            chomp $NN;
-            si_conf( $NN, "\#" );
-        }
-    }
+    # some more services/programs
     my %myfiles  = ();
     my @allfiles = qw (
       /etc/squid.conf
       /etc/syslog.conf
       /etc/dhcpd.conf
       /etc/httpd/httpd.conf
-      /etc/openldap/slapd.conf
+      /etc/apache/httpd.conf
       /etc/inetd.conf
       /etc/xinetd.conf
       /etc/printcap
@@ -1850,6 +1838,7 @@ sub si_etc_suse() {
       /var/spool/fax/etc/config
       /var/spool/fax/etc/config.modem
     );
+
     if ( -d $config_dir ) {
         foreach (`$LS -1 $config_dir/*.include`) {
             chomp($_);
@@ -1867,40 +1856,67 @@ sub si_etc_suse() {
                 if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
             }
             else {
-                if ( -r $mm ) { si_conf( $mm, "\#" ); }
+                if ( -r $mm ) { si_conf( "", $mm, "\#" ); }
             }
         }
     }
 
-    # Samba
-    if ( -r "/etc/smb.conf" ) { si_conf( "/etc/smb.conf", ";" ); }
+}
 
-    # named
-    if ( -r "/etc/named.conf" ) {
-        si_conf( "/etc/named.conf", "/**/" );
-        for $NN (`/usr/bin/find /var/named -name "*.zone"`) {
-            chomp $NN;
-            si_conf( $NN, ";" );
+sub si_etc_debian() {
+    # special function for debian specific configuration
+    #siprtt( "h1", "Configuration" );
+}
+
+sub si_etc_suse() {
+    # special function for suse specific configuration
+    # siprtt( "h1", "Configuration" );
+    my @lines = ();
+    open( RCCONFIG, "</etc/rc.config" );
+    while (<RCCONFIG>) {
+        s/="no"/=no/i;
+        s/="yes"/=yes/i;
+        if (m/START_POSTFIX=yes/i) {
+            push @lines, $_;
+            siprtt( "h2", "Postfix (postconf -n)" );
+            siprt("pre");
+            open( CONFIG, "/usr/sbin/postconf -n |" );
+            while (<CONFIG>) {
+                chomp();
+                siprtt( "verb", "$_\n" );
+            }
+            close(CONFIG);
+            siprt("endpre");
+            if ( -r "/etc/aliases" ) { si_conf( "Aliases", "/etc/aliases", "\#" ); }
         }
-        for $NN (`/usr/bin/find /var/named -name "*.db"`) {
-            chomp $NN;
-            si_conf( $NN, ";" );
+        if ( !m/^#|^$|""/ ) {
+            push @lines, $_;
         }
     }
-
-    # SSH/OpenSSH
-    if ( -r "/etc/ssh/sshd_config" ) {
-        si_conf( "/etc/ssh/sshd_config", "\#" );
+    close(RCCONFIG);
+    siprtt( "h2", "/etc/rc.config" );
+    siprt("pre");
+    for $ll (@lines) {
+        siprtt( "verb", $ll );
     }
-    elsif ("/etc/sshd_config") {
-        si_conf( "/etc/sshd_config", "\#" );
+    siprt("endpre");
+    if ( -r "/etc/sysconfig" ) {
+        for $NN (`/usr/bin/find /etc/sysconfig -type f`) {
+            chomp $NN;
+            si_conf("Sysconfig", $NN, "\#" );
+        }
     }
-
+    if ( -r "/etc/rc.config.d" ) {
+        for $NN (`/usr/bin/find /etc/rc.config.d -name "*.config"`) {
+            chomp $NN;
+            si_conf("", $NN, "\#" );
+        }
+    }
     # SuSE proxy suite
     if ( -r "/etc/proxy-suite" ) {
         for $NN (`/usr/bin/find /etc/proxy-suite -name "*.conf"`) {
             chomp $NN;
-            si_conf( $NN, "\#" );
+            si_conf( "SuSE-FTP-Proxysuite", $NN, "\#" );
         }
     }
 }
@@ -1969,10 +1985,8 @@ sub si_installed_deb() {
     close STATUS;
     for ( $i = 0 ; $i < $#debs + 1 ; $i++ ) {
         if ( $debs[$i] =~ /^Status:.* installed$/im ) {
-            $debs[$i] =~
-s/^Package:(.*)$(\n.*)*^Status:(.*)$(\n.*)*^Installed-Size:(.*)$(\n.*)*^Version:(.*)$(\n.*)*^Description:(.*)$(\n.*)*/$1$mark$3$mark$5$mark$7$mark$9/m;
-            my ( $name, $status, $size, $version, $description ) =
-              split ( /$mark/, $debs[$i] );
+            $debs[$i] =~ s/^Package:(.*)$(\n.*)*^Status:(.*)$(\n.*)*^Installed-Size:(.*)$(\n.*)*^Version:(.*)$(\n.*)*^Description:(.*)$(\n.*)*/$1$mark$3$mark$5$mark$7$mark$9/m;
+            my ( $name, $status, $size, $version, $description ) = split ( /$mark/, $debs[$i] );
             $total += $size;
             $num++;
             siprt("tabrow");
@@ -2120,6 +2134,7 @@ sub si_run_sitar() {
             print "\n\n\\newpage\n\n";
         }
         si_proc_sys ();
+        si_etc ();
         if ( $distribution eq "suse" ) {
             si_etc_suse ();
             si_installed_rpm ();
@@ -2129,11 +2144,7 @@ sub si_run_sitar() {
             si_etc_debian ();
             si_installed_deb ();
             si_kernel_config ();
-
             #si_selection_deb ();
-        }
-        else {
-            si_etc ();
         }
         siprt("toc");
         siprt("body");
