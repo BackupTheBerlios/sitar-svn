@@ -28,7 +28,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.pre3
+Version:	0.9.pre4
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -91,6 +91,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.40  2005/01/28 16:18:07  mge
+#  exit with error, if target directory of output-file does not exist
+#
 #  Revision 1.39  2005/01/24 12:53:32  mge
 #  added HD and SM to list of contributors/helpers
 #

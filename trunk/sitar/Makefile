@@ -29,7 +29,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.9.pre3
+RELEASE=0.9.pre4
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -91,6 +91,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.39  2005/01/28 16:18:07  mge
+#  exit with error, if target directory of output-file does not exist
+#
 #  Revision 1.38  2005/01/24 12:53:32  mge
 #  added HD and SM to list of contributors/helpers
 #
