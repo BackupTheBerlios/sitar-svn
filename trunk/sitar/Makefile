@@ -23,6 +23,10 @@
 #               Waldemar Brodkorb
 #
 #  $Log: Makefile,v $
+#  Revision 1.10  2001/09/03 10:28:27  waldb
+#  added removing of deb-selections
+#  creation of symlink support_all.pl
+#
 #  Revision 1.9  2001/08/21 19:00:28  waldb
 #  added variable DOCDIR to install documentation in a correct way for
 #  all distributions, modified sitar.spec to use macro %doc for docfiles
@@ -56,7 +60,7 @@ default	:	sitar.pl sitar.1 sitar.html sitar.ps
 tar:		/tmp/sitar-${RELEASE}.tar.gz
 
 clean:
-	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl sitar.1 sitar.html sitar.ps pod2htm*
+	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps pod2htm* *-selections
 
 /tmp/sitar-${RELEASE}.tar.gz:	clean
 	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.gz sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
@@ -72,6 +76,7 @@ sitar.pl:	sitar.pl.in Makefile
 			-e 's/%%RELEASE%%/${RELEASE}/;'\
 			sitar.pl.in > sitar.pl
 	chmod 755 sitar.pl
+	ln -fs sitar.pl support_all.pl
 
 sitar.1:	sitar.pl
 	pod2man --center=" " sitar.pl > sitar.01
