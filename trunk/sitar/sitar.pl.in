@@ -238,8 +238,9 @@ my $config_dir  = "/var/lib/support/";
 #
 # $html_header
 #
-my $sdocbook_header ="<!DOCTYPE article PUBLIC \"-//OASIS//DTD DocBook XML V4.1.2//EN\"
-          \"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd\">
+my $sdocbook_header ="<!DOCTYPE article PUBLIC \"-//OASIS//DTD Simplified DocBook XML V4.1.2.5//EN\"
+        \"http://www.oasis-open.org/docbook/xml/simple/4.1.2.5/sdocbook.dtd\">
+
 <article>
 <articleinfo>
   <corpauthor>SITAR</corpauthor>
@@ -366,6 +367,7 @@ sub addtoc($$$) {
 		for ( $ll = $lastTOClevel; $ll > $level; $ll--) {
 			$TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n\n";
 		}
+		$TOCBuffer = join "", $TOCBuffer, "</li>\n";
 	} elsif ( $lastTOClevel != 0 ) {
 		$TOCBuffer = join "", $TOCBuffer, "</li>\n";
 	} else {
@@ -374,19 +376,21 @@ sub addtoc($$$) {
 	$lastTOClevel = $level;
 }
 
-sub addtoc_sdocbook($$) {
-	my ( $level, $ancor ) = @_;
+sub addtoc_sdocbook($$$) {
+	my ( $level, $ancor, $value ) = @_;
 	if ( $level > $lastTOClevel ) {
 		$TOCBuffer = join "", $TOCBuffer, "<itemizedlist>\n";
 	} elsif ( $level < $lastTOClevel ) {
 		for ( $ll = $lastTOClevel; $ll > $level; $ll--) {
 			$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n</itemizedlist>\n\n";
 		}
+		$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n";
 	} elsif ( $lastTOClevel != 0 ) {
 		$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n";
 	} else {
 	}
-	$TOCBuffer = join "", $TOCBuffer, "<listitem><para><xref linkend=\"", $ancor, "\">\n";
+	$TOCBuffer = join "", $TOCBuffer, "<listitem><para><xref linkend=\"", 
+		$ancor, "\"/>", $value, "\n";
 	$lastTOClevel = $level;
 }
 
@@ -497,19 +501,19 @@ sub siprint($$$) {
 		if ( $m eq "h1" ) {
 			$seccnt++;
 			mysprint "<Sect1 id=\"", $seccnt, "\"\n><title>", $value, "</title></Sect1>";
-			addtoc_sdocbook( 1, "$seccnt" );
+			addtoc_sdocbook( 1, "$seccnt", "$seccnt.&nbsp;$value" );
 			$subseccnt = 0;
 		}
 		if ( $m eq "h2" ) {
 			$subseccnt++;
 			mysprint "<Sect2 id=\"", $seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title></Sect2>";
-			addtoc_sdocbook( 2, "$seccnt.$subseccnt" );
+			addtoc_sdocbook( 2, "$seccnt.$subseccnt", "$seccnt.$subseccnt&nbsp;$value" );
 			$subsubseccnt = 0;
 		}
 		if ( $m eq "h3" ) {
 			$subsubseccnt++;
 			mysprint "<Sect3 id=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n><title>", $value, "</title></Sect3>";
-			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt" );
+			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt", "$seccnt.$subseccnt.$subsubseccnt&nbsp;$value" );
 		}
 		if ( $m eq "tabborder" ) {
 			mysprint "<table frame=\"all\"><title>", $attr, "</title>";
@@ -2220,6 +2224,9 @@ sub si_installed_sles() {
 		my ( $mydist, $mypack ) = split /::/, $pack;
 		chomp $mydist;
 		chomp $mypack;
+		$mypack =~ s/\&/\&amp;/g;
+		$mypack =~ s/</\&lt;/g;
+		$mypack =~ s/>/\&gt;/g;
 		if ( $mypack eq $ULPACK_RAW_NAME ) {
 			siprtt( "h2", "$mydist" );
 			siprttt( "tabborder", "lllp{.5\\textwidth}", "Installed Packages: $mydist" );
@@ -2545,6 +2552,9 @@ sub si_run_sitar() {
 
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.50  2005/01/18 15:26:47  mge
+#  first release with simplified docbook xml
+#
 #  Revision 1.49  2005/01/18 14:13:43  mge
 #  added first XML support (simplified docbook)
 #
