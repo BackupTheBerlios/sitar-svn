@@ -67,7 +67,6 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 %attr(700, root, root) /usr/sbin/support_all.pl
 /usr/share/man/man1/sitar.1.gz
 /usr/share/man/man1/support_all.1.gz
-/usr/share/sitar/suse.png
 /usr/share/sitar/proc.txt
 
 %clean
@@ -77,6 +76,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.32  2005/01/18 11:23:42  mge
+#  removed suse.png suse.xpm
+#
 #  Revision 1.31  2005/01/18 11:21:36  mge
 #  SuSE Linux AG -> SuSE Linux, a Novell Business
 #

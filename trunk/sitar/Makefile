@@ -82,10 +82,12 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 	install	-m 644	sitar.ps			${DESTDIR}/${DOCDIR}/sitar/sitar.ps
 	install	-m 644	LICENSE				${DESTDIR}/${DOCDIR}/sitar/LICENSE
 	install -m 644 	proc.txt			${DESTDIR}/${PREFIX}/share/sitar/proc.txt
-	install -m 755 	suse.png			${DESTDIR}/${PREFIX}/share/sitar/suse.png
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.33  2005/01/18 11:23:42  mge
+#  removed suse.png suse.xpm
+#
 #  Revision 1.32  2005/01/18 11:21:36  mge
 #  SuSE Linux AG -> SuSE Linux, a Novell Business
 #
