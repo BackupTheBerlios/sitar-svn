@@ -23,6 +23,7 @@
 #		Bernhard Thoni		Pascal Fuckerieder
 #		Andreas Rother		Uwe Hering
 #		Jan Jensen		Falko Trojahn
+#		Stephan Martin		Holger Dopp
 #
 
 Vendor:		SuSE Linux, a Novell Business
@@ -90,6 +91,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.39  2005/01/24 12:53:32  mge
+#  added HD and SM to list of contributors/helpers
+#
 #  Revision 1.38  2005/01/24 09:48:15  mge
 #  fixed error in TeX-output (forgotten chomp)
 #

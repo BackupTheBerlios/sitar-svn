@@ -23,6 +23,7 @@
 #		Bernhard Thoni 		Pascal Fuckerieder
 #		Andreas Rother 		Uwe Hering
 #		Jan Jensen 		Falko Trojahn
+#		Stephan Martin		Holger Dopp
 #
 
 PREFIX=/usr
@@ -90,6 +91,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.38  2005/01/24 12:53:32  mge
+#  added HD and SM to list of contributors/helpers
+#
 #  Revision 1.37  2005/01/24 09:48:14  mge
 #  fixed error in TeX-output (forgotten chomp)
 #

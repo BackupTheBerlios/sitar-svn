@@ -24,6 +24,7 @@
 #		Bernhard Thoni		Pascal Fuckerieder
 #		Andreas Rother		Uwe Hering
 #		Jan Jensen		Falko Trojahn
+#		Stephan Martin		Holger Dopp
 #
 
 =head1 NAME
@@ -2651,6 +2652,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.64  2005/01/24 12:53:32  mge
+#  added HD and SM to list of contributors/helpers
+#
 #  Revision 1.63  2005/01/24 12:31:06  mge
 #  better manpage
 #
