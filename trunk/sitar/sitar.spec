@@ -26,6 +26,9 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.13  2002/03/18 16:18:19  mge
+#  release 0.7.0
+#
 #  Revision 1.12  2002/03/18 16:11:45  mge
 #  cosmetic changes
 #
@@ -66,8 +69,8 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.6.9
-Release:	4
+Version:	0.7.0
+Release:	5
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
 Copyright:	GPL
@@ -85,7 +88,7 @@ Authors:
 --------
 	Matthias Eckermann <mge@suse.de>,
 	Stephan Mueller, Janto Trappe, Waldemar Brodkorb, Bjoern Jacke,
-	Bernhard Thoni
+	Bernhard Thoni, Pascal Fuckerieder
 
 %prep
 %setup
