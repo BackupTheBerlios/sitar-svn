@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2002 SuSE Linux AG
+#  Copyright (C) 1999-2003 SuSE Linux AG
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,11 @@
 #		Andreas Rother
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.36  2003/01/10 16:26:18  mge
+#  - (United Linux / SuSE Linux only): split packages by Packager
+#  - minor TeX improvements
+#  - release 0.8.6
+#
 #  Revision 1.35  2002/12/16 10:45:25  mge
 #  minor changes
 #
@@ -228,7 +233,7 @@ For more information on SITAR, see: http://sitar.berlios.de/
 
 =head1 LICENSE
 
-Copyright (C) 1999-2002 SuSE Linux AG
+Copyright (C) 1999-2003 SuSE Linux AG
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -289,12 +294,16 @@ if ( -e $DEBIAN ) {
 	$release      = `/usr/bin/head -1 /etc/redhat-release`;
 	$distribution = "redhat";
 	$RPM          = "/bin/rpm";
-} elsif ( -e $SUSE ) {
-	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
-	$distribution = "suse";
+} elsif ( ( -e $UNITED ) && ( -e $SUSE ) ) {
+	$release      = `/usr/bin/head -1 /etc/UnitedLinux-release` . `/usr/bin/head -1 /etc/SuSE-release`;
+	$distribution = "sles";
 	$RPM          = "/bin/rpm";
 } elsif ( -e $UNITED ) {
 	$release      = `/usr/bin/head -1 /etc/UnitedLinux-release`;
+	$distribution = "unitedlinux";
+	$RPM          = "/bin/rpm";
+} elsif ( -e $SUSE ) {
+	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
 	$distribution = "suse";
 	$RPM          = "/bin/rpm";
 } else {
@@ -302,10 +311,17 @@ if ( -e $DEBIAN ) {
 	print "\n distribution not supported!!\n\n";
 }
 #
+my $ULPACK_RAW_NAME 	= "http://www.unitedlinux.com/feedback";
+my $ULPACK_NICE_NAME	= "United Linux";
+my $SUSEPACK_RAW_NAME	= "http://www.suse.de/feedback";
+my $SUSEPACK_NICE_NAME	= "SuSE Linux";
+#
 # global vars
 #
-my $LS     = "/bin/ls";
-my $STATUS = "/var/lib/dpkg/status";
+my $LS     	= "/bin/ls";
+my $SORTPRG	= "/usr/bin/sort";
+my $UNIQPRG	= "/usr/bin/uniq";
+my $STATUS 	= "/var/lib/dpkg/status";
 chomp( my $HOSTNAME = `/bin/hostname -f` );
 my $UNAME       = `/bin/uname -a`;
 my $UNAMER      = `/bin/uname -r`;
@@ -485,6 +501,8 @@ sub siprint($$$) {
 			$value =~ s/\#/\\\#/g;
 			$value =~ s/%/\\%/g;
 			$value =~ s/\&/\\\&/g;
+			$value =~ s/</\$<\$/g;
+			$value =~ s/>/\$>\$/g;
 		}
 		## s/(\")(\w)/\"\`$2/g; s/(\w)(\")/$1\"\'/g; s/([.,;?!])(\")/$1\"\'/g;
 		if ( $m eq "h1" ) { print "\\section\{",       $value, "\}\n"; }
@@ -704,7 +722,7 @@ sub si_software_raid() {
 }
 
 sub si_pnp() {
-	if ( -r "/sbin/lspnp" ) {
+	if ( ( -r "/sbin/lspnp" ) && ( -r "/proc/bus/pnp" ) ) {
 		open( IN, "/sbin/lspnp | " );
 		siprtt( "h2",        "PNP-Devices" );
 		siprtt( "tabborder", "lll" );
@@ -2209,6 +2227,71 @@ sub si_installed_deb() {
 	siprt( "endtab" );
 }
 
+sub si_installed_sles() {
+	siprtt( "h1", "Installed Packages" );
+	my $total = 0;
+	my $num   = 0;
+	my @packagers;
+        open( PACKS, "$RPM -qa --queryformat '%{PACKAGER}\n' | $SORTPRG | $UNIQPRG |" );
+        while ( <PACKS> ) { push @packagers, $_; }
+        close( PACKS );
+	my @rpms;
+	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{PACKAGER}\n' |" );
+	while ( <RPMS> ) { push @rpms, $_; }
+	close( RPMS );
+	for $pack ( sort @packagers ) {
+		chomp $pack;
+		if ( $pack eq $ULPACK_RAW_NAME ) {
+			siprtt( "h2", "$ULPACK_NICE_NAME ($pack)" );
+		} elsif ( $pack eq $SUSEPACK_RAW_NAME ) {
+			siprtt( "h2", "$SUSEPACK_NICE_NAME ($pack)" );
+		} else {
+			siprtt( "h2", "Packager: $pack" );
+		}
+		siprtt( "tabborder", "lllp{.5\\textwidth}" );
+		siprt( "tabrow" );
+		siprtt( "tabhead", "Name" );
+		siprtt( "tabhead", "Version" );
+		siprtt( "tabhead", "Size" );
+		siprtt( "tabhead", "Short Description" );
+		siprt( "endrow" );
+		my $packtotal = 0;
+		my $packnum   = 0;
+		for $rpm ( sort @rpms ) {
+			my ( $name, $ver, $size, $summary, $packager ) = split /::/, $rpm;
+			chomp $packager;
+			if ( $packager eq $pack ) {
+				$total += $size;
+				$num++;
+				$packtotal += $size;
+				$packnum++;
+				siprt( "tabrow" );
+				siprtt( "cell",     $name );
+				siprtt( "cell",     $ver );
+				siprtt( "cell",     $size );
+				siprtt( "cellwrap", $summary );
+				siprt( "endrow" );
+			}
+		}
+		siprt( "tabrow" );
+		siprtt( "tabhead", "Total" );
+		siprtt( "tabhead", "" );
+		siprtt( "tabhead", int( $packtotal / 1024 ) . " KBytes" );
+		siprtt( "tabhead", $packnum . " packets" );
+		siprt( "endrow" );
+		siprt( "endtab" );
+	}
+	siprtt( "h2", "Summary" );
+	siprtt( "tabborder", "lllp{.5\\textwidth}" );
+	siprt( "tabrow" );
+	siprtt( "tabhead", "Total" );
+	siprtt( "tabhead", "" );
+	siprtt( "tabhead", int( $total / 1024 ) . " KBytes" );
+	siprtt( "tabhead", $num . " packets" );
+	siprt( "endrow" );
+	siprt( "endtab" );
+}
+
 sub si_installed_rpm() {
 	siprtt( "h1",        "Installed Packages" );
 	siprtt( "tabborder", "lllp{.5\\textwidth}" );
@@ -2347,12 +2430,12 @@ sub si_run_sitar() {
 		si_proc();
 		if ( $distribution eq "unitedlinux" ) {
 			si_etc_united();
-			si_installed_rpm();
+			si_installed_sles();
 			si_proc_config();
-		} elsif ( $distribution eq "suse" ) {
+		} elsif ( $distribution eq "suse" || $distribution eq "sles" ) {
 			si_etc();
 			si_etc_suse();
-			si_installed_rpm();
+			si_installed_sles();
 			si_proc_config();
 		} elsif ( $distribution eq "redhat" ) {
 			si_etc_redhat();

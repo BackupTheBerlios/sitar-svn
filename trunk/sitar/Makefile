@@ -1,6 +1,6 @@
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2002 SuSE Linux AG
+#  Copyright (C) 1999-2003 SuSE Linux AG
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,11 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.24  2003/01/10 16:26:18  mge
+#  - (United Linux / SuSE Linux only): split packages by Packager
+#  - minor TeX improvements
+#  - release 0.8.6
+#
 #  Revision 1.23  2002/12/16 10:45:25  mge
 #  minor changes
 #
@@ -116,7 +121,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.5
+RELEASE=0.8.6
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps

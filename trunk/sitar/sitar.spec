@@ -1,6 +1,6 @@
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2002 SuSE Linux AG
+#  Copyright (C) 1999-2003 SuSE Linux AG
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,11 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.24  2003/01/10 16:26:18  mge
+#  - (United Linux / SuSE Linux only): split packages by Packager
+#  - minor TeX improvements
+#  - release 0.8.6
+#
 #  Revision 1.23  2002/12/16 10:45:25  mge
 #  minor changes
 #
@@ -107,11 +112,11 @@
 #  	CodingStyle Makefile sitar.pl.in sitar.spec
 #
 
-Vendor:		SuSE, Germany
-Distribution:	SuSE Linux
+Vendor:		SuSE Linux AG, Germany
+Distribution:	United Linux / SuSE Linux
 Name:		sitar
-Packager:	mge@suse.de
-Version:	0.8.5
+Packager:	Matthias G. Eckermann <mge@suse.de>
+Version:	0.8.6
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
