@@ -1,0 +1,40 @@
+			SITAR coding style
+							Matthias G. Eckermann
+								   2001-08-14
+
+To avoid formatting nightmare, I suggest following this rules of formatting
+the code of sitar and associated tools:
+
+	1. read /usr/src/linux/Documentation/CodingStyle carefully
+
+	2. most rules apply, with first an exception to chapter 2:
+	   even on functions, please "put the opening brace last on the line,
+	   and put the closing brace first, thusly":
+
+		        int function ( int x ) {
+                		body of function
+		        }
+	
+	3. Second exception to chapter 3. Remember: you don't want to win
+	   the next obfuscated programming contest; so please use long and
+	   descriptive names for variables, constants and functions. 
+	   Local names (like for( $i;$i<4;$i++ ) {... ) may be short.
+
+	4. Use QT-Style for brackets, i.e. one blank behind or before.
+
+	5. Mark globals as such and indicate their type, e.g.:
+		- for a constant write (uppercase!)
+			my $RELEASE = "%%RELEASE%%";
+		- for a global hash write
+			my %myhash_h;
+		- for a global array write
+			my @myarray_a;
+		- for a "normal" global write
+			my $myvar_g;
+
+	6. Never use blank lines except between functions. If your code
+	   is unreadable due to missing blank lines, rewrite the code.
+
+more to come ...
+		MgE
+

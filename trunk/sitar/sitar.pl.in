@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl -T
 #
 #  SITAR - System InformaTion At Runtime
 #  Copyright (C) 1999-2001 SuSE Linux AG
@@ -43,6 +43,7 @@ GetOptions (	'output=s'	=> \$siprt_mode,
 #
 # distribution test
 #
+$ENV{PATH} = ""; 
 my $SUSE = "/etc/SuSE-release";
 my $DEBIAN = "/etc/debian_version";
 my $release = "";
@@ -68,8 +69,7 @@ my $DPKG = "/usr/bin/dpkg";
 my $LS = "/bin/ls"; 
 my $HWINFO = "/usr/sbin/hwinfo";
 my $STATUS = "/var/lib/dpkg/status";
-
-$ENV{PATH} = ""; chomp(my $HOSTNAME = `/bin/hostname -f`);
+chomp(my $HOSTNAME = `/bin/hostname -f`);
 
 my $UNAME = `/bin/uname -a`; 
 my $UNAMER = `/bin/uname -r`; 
@@ -394,7 +394,7 @@ sub si_lsdev() {
   #	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
   #	Date:        1996-01-22 19:06:22
   #	Last Change: 1998-05-31 15:26:58
-  #       $Id: sitar.pl.in,v 1.4 2001/08/14 03:52:18 mge Exp $
+  #       $Id: sitar.pl.in,v 1.5 2001/08/14 19:51:56 mge Exp $
   my %device_h = ();
   use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
   my %dma      = ();
@@ -473,8 +473,8 @@ sub si_ide() {
 	  siprt("tabrow");siprtt("cell","/dev/hd$abc");siprtt("cell",$media);
 	  siprtt("cell",$model);siprtt("cell",$driver);
 	  if($media eq "disk") {
-	    $capa   = `/bin/cat /proc/ide/hd${abc}/capacity`;
-	    $cache	= `/bin/cat /proc/ide/hd${abc}/cache`;
+	    # $capa   = `/bin/cat /proc/ide/hd${abc}/capacity`;
+	    # $cache  = `/bin/cat /proc/ide/hd${abc}/cache`;
 	    open(GEO,"/proc/ide/hd${abc}/geometry ");
 	    while(<GEO>) {
 	      if(m/^logical/g){s/^logical\s+(.*)$/$1/gs; $geol=$_;}
@@ -486,7 +486,7 @@ sub si_ide() {
 	    #   if(m/FW_REV/g){s/FW_REV=\"(.*)\"$/$1/gs; $fw_rev=$_;}
 	    #   if(m/SERIAL_NO/g){s/SERIAL_NO=\"(.*)\"$/$1/gs; $serial=$_;}
 	    # }
-	    close(IDEINFO);
+	    # close(IDEINFO);
 	    siprtt("cell",$geop);
 	    siprtt("cell",$geol);
 	    siprtt("cell",$capa);
