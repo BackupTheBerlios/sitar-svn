@@ -31,6 +31,9 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.45  2004/03/22 14:28:24  mge
+#  move fstab to mount & lvm overview
+#
 #  Revision 1.44  2004/03/22 14:24:02  mge
 #  - fixed off by one in directory name
 #  - cleanups
@@ -1364,7 +1367,8 @@ sub si_mount() {
 		}
 	}
 	close( LVM );
-	siprtt( "h1",        "Partitions, Mounts, LVM" );
+	siprtt( "h1", "Partitions, Mounts, LVM" );
+	siprtt( "h2", "Overview" );
 	siprtt( "tabborder", "llllllllllllllll" );
 	@tarray = sort keys %mountp;
 	push @tarray, sort keys %blocks;
@@ -1456,7 +1460,8 @@ sub si_mount() {
 	#  "\n</tr>\n";
 	# }
 	# close(PART);
-	siprtt( "h2", "LVM Configuration Files" );
+	siprtt( "h2", "Configuration Files (fstab, lvm)" );
+	si_conf( "/etc/fstab", "/etc/fstab", "\#" );
 	si_conf( "/etc/lvm/lvm.conf", "/etc/lvm/lvm.conf", "\#" );
 	si_conf( "/etc/lvm/.cache",   "/etc/lvm/.cache",   "\#" );
 	for $NN ( sort `/usr/bin/find /etc/lvm/backup/ -type f` ) {
@@ -1897,7 +1902,6 @@ my @allconfigfiless = qw (
   /etc/dhclient-enter-hooks
   /etc/dhclient.conf 
   /etc/dhcpd.conf
-  /etc/fstab
   /etc/group
   /etc/grub.conf
   /etc/ha.d/authkeys
