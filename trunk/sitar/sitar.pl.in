@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2001 SuSE Linux AG
+#  Copyright (C) 1999-2002 SuSE Linux AG
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,10 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.23  2002/04/11 14:56:00  mge
+#  use perltidy with "-nbbb" now
+#  changed copyright to -2002
+#
 #  Revision 1.22  2002/04/11 14:43:32  mge
 #  added check for /etc/sysconfig
 #  release 0.7.1
@@ -201,9 +205,9 @@ my $siprt_mode = "";
 my $outfile    = "";
 my $printhelp;
 GetOptions(
-	'format=s' => \$siprt_mode,
-	'outfile=s'=> \$outfile,
-	'help'     => \$printhelp
+	'format=s'  => \$siprt_mode,
+	'outfile=s' => \$outfile,
+	'help'      => \$printhelp
 );
 #
 # distribution test
@@ -213,16 +217,15 @@ my $SUSE         = "/etc/SuSE-release";
 my $DEBIAN       = "/etc/debian_version";
 my $release      = "";
 my $distribution = "";
-my ($DPKG, $RPM);
-
+my ( $DPKG, $RPM );
 if ( -e $DEBIAN ) {
-	$release      	= `/usr/bin/head -1 /etc/debian_version`;
-	$distribution 	= "debian";
-        $DPKG		= "/usr/bin/dpkg";
+	$release      = `/usr/bin/head -1 /etc/debian_version`;
+	$distribution = "debian";
+	$DPKG         = "/usr/bin/dpkg";
 } elsif ( -e $SUSE ) {
-	$release      	= `/usr/bin/head -1 /etc/SuSE-release`;
-	$distribution 	= "suse";
-        $RPM		= "/bin/rpm";
+	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
+	$distribution = "suse";
+	$RPM          = "/bin/rpm";
 } else {
 	$distribution = "unknown";
 	print "\n distribution not supported!!\n\n";
@@ -286,7 +289,7 @@ my $html_header = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN
   </table>
   <hr>";
 my $html_footer = "<hr>
-<address>SITAR is &copy; 1999-2001 SuSE Linux AG</address>
+<address>SITAR is &copy; 1999-2002 SuSE Linux AG</address>
 </html>\n";
 #
 # $tex_header
@@ -316,7 +319,7 @@ my $tex_header = "\\documentclass[a4paper,headinclude,a4paper]\{scrartcl\}
 my $tex_footer     = "\n\\end\{document\}\n";
 my $old_tex_footer = "\n
 \\par\\noindent
-\\textsf{SITAR is \\textcopyright{} 1999-2001 SuSE Linux AG}\\par
+\\textsf{SITAR is \\textcopyright{} 1999-2002 SuSE Linux AG}\\par
 \\end\{document\}\n";
 #
 # Table of contents
@@ -387,7 +390,7 @@ sub siprint($$$) {
 		if ( $m eq "headcols" )  { mysprint "<th \nnowrap colspan=\"", $attr,  "\">", $value, "</th>"; }
 		if ( $m eq "verb" )   { mysprint $value; }
 		if ( $m eq "header" ) { print $html_header; }
-		if ( $m eq "toc" ) {
+		if ( $m eq "toc" )    {
 			for ( $ii = $lastTOClevel ; $ii > 0 ; $ii-- ) {
 				$TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n";
 			}
@@ -412,11 +415,11 @@ sub siprint($$$) {
 		if ( $m eq "tab" ) {
 			print "\\begingroup\\tiny\\par", "\\noindent\\begin\{longtable\}[l]\{\@\{\}", $value, "l\@\{\}\}\n";
 		}
-		if ( $m eq "endtab" ) { print "\\end\{longtable\}\\par\\endgroup\n"; }
-		if ( $m eq "tabrow" ) { }
-		if ( $m eq "endrow" ) { print "\\\\\n"; }
-		if ( $m eq "pre" )    { print "\\begin\{verbatim\}"; $IsVerbatim = 1; }
-		if ( $m eq "endpre" ) { print "\\end\{verbatim\}\n"; $IsVerbatim = 0; }
+		if ( $m eq "endtab" )   { print "\\end\{longtable\}\\par\\endgroup\n"; }
+		if ( $m eq "tabrow" )   { }
+		if ( $m eq "endrow" )   { print "\\\\\n"; }
+		if ( $m eq "pre" )      { print "\\begin\{verbatim\}"; $IsVerbatim = 1; }
+		if ( $m eq "endpre" )   { print "\\end\{verbatim\}\n"; $IsVerbatim = 0; }
 		if ( $m eq "multipre" ) {
 			print "\n\\par\\begingroup\\tiny\\par\n";
 			print "\\begin\{multicols\}\{2\}\n\\begin\{verbatim\}\n";
@@ -440,11 +443,8 @@ sub siprint($$$) {
 	} elsif ( $siprt_mode eq "sql" ) {
 	}
 }
-
 sub siprt($) { my ( $t1 ) = shift ( @_ ); siprint( $t1, "", "" ); }
-
 sub siprtt($$) { my ( $t1, $t2 ) = @_; siprint( $t1, $t2, "" ); }
-
 sub siprttt($$$) { my ( $t1, $t2, $t3 ) = @_; siprint( $t1, $t2, $t3 ); }
 
 sub si_cpu_and_memory() {
@@ -457,7 +457,6 @@ sub si_cpu_and_memory() {
 			my ( $proc, $value ) = split /:/;
 			chop( $proc );
 			chop( $value );
-
 			if ( $proc eq "cpus detected" ) {
 				siprt( "tabrow" );
 				siprttt( "headcolor", "cpus detected", "\#CCCCCC" );
@@ -507,116 +506,115 @@ sub si_cpu_and_memory() {
 }
 
 sub si_software_raid() {
-        siprtt( "h1",        "Software-Raids" );
-        siprtt( "tabborder", "llllll" );
-        siprt( "tabrow" );
-        siprtt( "tabhead", "Raid-Device" );
-        siprtt( "tabhead", "Raid-Level" );
-        siprtt( "tabhead", "Raid-Partitions" );
-        siprtt( "tabhead", "Blocks" );
-        siprtt( "tabhead", "Chunks" );
-        siprtt( "tabhead", "Algorithm" );
-        siprt( "endrow" );
-        open( IN1, "</proc/mdstat" ) || return ();
-        chomp( $UNAMER );
-        my $MDSTAT = "/proc/mdstat";
+	siprtt( "h1",        "Software-Raids" );
+	siprtt( "tabborder", "llllll" );
+	siprt( "tabrow" );
+	siprtt( "tabhead", "Raid-Device" );
+	siprtt( "tabhead", "Raid-Level" );
+	siprtt( "tabhead", "Raid-Partitions" );
+	siprtt( "tabhead", "Blocks" );
+	siprtt( "tabhead", "Chunks" );
+	siprtt( "tabhead", "Algorithm" );
+	siprt( "endrow" );
+	open( IN1, "</proc/mdstat" ) || return ();
+	chomp( $UNAMER );
+	my $MDSTAT  = "/proc/mdstat";
 	my $RAIDTAB = "/etc/raidtab";
-        my ($counter1, $counter2) = 0;
-	if ( ( -r $MDSTAT ) && ( ! -e $RAIDTAB) ) { 
+	my ( $counter1, $counter2 ) = 0;
+	if ( ( -r $MDSTAT ) && ( !-e $RAIDTAB ) ) {
 		# warn "MD-Devices exist, but there seems to be no /etc/raidtab!!!"; 
 		siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
 	}
-	if (( -r $MDSTAT ) && ( $UNAMER =~ m/^2\.4.*/ )) {
+	if ( ( -r $MDSTAT ) && ( $UNAMER =~ m/^2\.4.*/ ) ) {
 		#CODE for kernel-2.4 software-raid
-	        while (<IN1>) {
+		while ( <IN1> ) {
 			$counter1++;
 			$counter2 = 0;
-			if ( m/^(md\d+)\s:\sactive\s(raid\d)\s(.*)$/g) {
-				my $raiddev = $1;
-				my $level = $2;
-				my %md = ();
+			if ( m/^(md\d+)\s:\sactive\s(raid\d)\s(.*)$/g ) {
+				my $raiddev    = $1;
+				my $level      = $2;
+				my %md         = ();
 				my @partitions = split ( ' ', $3 );
-				$md{level} = $level;
+				$md{level}      = $level;
 				$md{partitions} = "@partitions";
 				open( IN2, "</tmp/mdstat" ) || return ();
-				while (<IN2>) {
-                                 $counter2++;
-                                 my $counter1plus1 = 0;
-                                 $counter1plus1 = ($counter1 + 1);
-                                 if ( $counter2 == $counter1plus1 ) {
-                                         my @md_options = split ( ' ', $_);
-                                         if ($level eq 'raid0') {
-                                             $md{blocks} = $md_options[0];
-                                             $md{chunks} = $md_options[2];
-                                             $md{algorithm} = " ";
-                                            }
-                                         if ($level eq 'raid1') {
-                                             $md{blocks} = $md_options[0];
-                                             $md{chunks} = " ";
-                                             $md{algorithm} = " ";
-                                            }
-                                         if ($level eq 'raid5') {
-                                             $md{blocks} = $md_options[0];
-                                             $md{chunks} = $md_options[4];
-                                             $md{algorithm} = $md_options[7];
-                                            }
-                                        }
-                                }
-                         close (IN2);
-                        #hier der code zur html-ausgabe
-                        siprt( "tabrow" );
-                        siprtt( "cell", $raiddev );
-                        siprtt( "cell", $md{level} );
-                        siprtt( "cell", @md{partitions} );
-                        siprtt( "cell", $md{blocks} );
-                        siprtt( "cell", $md{chunks} );
-                        siprtt( "cell", $md{algorithm} );
-                        siprt( "endrow" );
-			unless ( -e ( ($RAIDTAB) || ("/etc/raid0.conf") || ("/etc/raid1.conf") || ("/etc/raid5.conf") ) ) {
-			 siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
-                        }
-                        }
-                }
-        } elsif (( -r $MDSTAT ) && ( $UNAMER =~ m/^2\..*/ )) {
-         #CODE for kernel-2.2 software-raid
-         while (<IN1>)
-                {
-                 $counter1++;
-                 $counter2 = 0;
-                 if ( m/^(md\d+)\s:\sactive\s(raid\d)\s([h|s].*)\s(\d+)\s(block.*)$/g) {
-			my $raiddev = $1;
-			my $level = $2;
-			my %md = ();
-			my @partitions = split ( ' ', $3 );
-			$md{level} = $level;
-			$md{partitions} = "@partitions";
-			$md{blocks} = $4;
-			$md{chunks} = "";
-			$md{algorithm} = "";
-			if ( $5 =~ m/^blocks\s\w+\s\d,\s(\d+k)\s\w+,\s\w+\s(\d+)\s.*$/g ) {
-				$md{chunks} = $1;
-				$md{algorithm} = $2;
-			} elsif ( $5 =~ m/^blocks\s(\d+k)\s.*$/g ) {
-				$md{chunks} = $1;
-				$md{algorithm} = " ";
+				while ( <IN2> ) {
+					$counter2++;
+					my $counter1plus1 = 0;
+					$counter1plus1 = ( $counter1 + 1 );
+					if ( $counter2 == $counter1plus1 ) {
+						my @md_options = split ( ' ', $_ );
+						if ( $level eq 'raid0' ) {
+							$md{blocks}    = $md_options[0];
+							$md{chunks}    = $md_options[2];
+							$md{algorithm} = " ";
+						}
+						if ( $level eq 'raid1' ) {
+							$md{blocks}    = $md_options[0];
+							$md{chunks}    = " ";
+							$md{algorithm} = " ";
+						}
+						if ( $level eq 'raid5' ) {
+							$md{blocks}    = $md_options[0];
+							$md{chunks}    = $md_options[4];
+							$md{algorithm} = $md_options[7];
+						}
+					}
+				}
+				close( IN2 );
+				#hier der code zur html-ausgabe
+				siprt( "tabrow" );
+				siprtt( "cell", $raiddev );
+				siprtt( "cell", $md{level} );
+				siprtt( "cell", @md{partitions} );
+				siprtt( "cell", $md{blocks} );
+				siprtt( "cell", $md{chunks} );
+				siprtt( "cell", $md{algorithm} );
+				siprt( "endrow" );
+				unless ( -e ( ( $RAIDTAB ) || ( "/etc/raid0.conf" ) || ( "/etc/raid1.conf" ) || ( "/etc/raid5.conf" ) ) ) {
+					siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
+				}
 			}
-                        siprt( "tabrow" );
-                        siprtt( "cell", $raiddev );
-                        siprtt( "cell", $md{level} );
-                        siprtt( "cell", @md{partitions} );
-                        siprtt( "cell", $md{blocks} );
-                        siprtt( "cell", $md{chunks} );
-                        siprtt( "cell", $md{algorithm} );
-                        siprt( "endrow" );
-			unless ( -e ( ($RAIDTAB) || ("/etc/raid0.conf") || ("/etc/raid1.conf") || ("/etc/raid5.conf") ) ) {
-			 siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
-                        }
+		}
+	} elsif ( ( -r $MDSTAT ) && ( $UNAMER =~ m/^2\..*/ ) ) {
+		#CODE for kernel-2.2 software-raid
+		while ( <IN1> ) {
+			$counter1++;
+			$counter2 = 0;
+			if ( m/^(md\d+)\s:\sactive\s(raid\d)\s([h|s].*)\s(\d+)\s(block.*)$/g ) {
+				my $raiddev    = $1;
+				my $level      = $2;
+				my %md         = ();
+				my @partitions = split ( ' ', $3 );
+				$md{level}      = $level;
+				$md{partitions} = "@partitions";
+				$md{blocks}     = $4;
+				$md{chunks}     = "";
+				$md{algorithm}  = "";
+				if ( $5 =~ m/^blocks\s\w+\s\d,\s(\d+k)\s\w+,\s\w+\s(\d+)\s.*$/g ) {
+					$md{chunks}    = $1;
+					$md{algorithm} = $2;
+				} elsif ( $5 =~ m/^blocks\s(\d+k)\s.*$/g ) {
+					$md{chunks}    = $1;
+					$md{algorithm} = " ";
+				}
+				siprt( "tabrow" );
+				siprtt( "cell", $raiddev );
+				siprtt( "cell", $md{level} );
+				siprtt( "cell", @md{partitions} );
+				siprtt( "cell", $md{blocks} );
+				siprtt( "cell", $md{chunks} );
+				siprtt( "cell", $md{algorithm} );
+				siprt( "endrow" );
+				unless ( -e ( ( $RAIDTAB ) || ( "/etc/raid0.conf" ) || ( "/etc/raid1.conf" ) || ( "/etc/raid5.conf" ) ) ) {
+					siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
+				}
 			}
-                }
-        }
-	siprt ( "endtab" );
+		}
+	}
+	siprt( "endtab" );
 	unlink "/tmp/mdstat";
-	close (IN1);
+	close( IN1 );
 }
 
 sub si_pnp() {
@@ -685,7 +683,6 @@ sub si_lsdev() {
 	my %dma = ();
 	my %irq = ();
 	open( IRQ, "/proc/interrupts" ) || return ();
-
 	while ( <IRQ> ) {
 		next if /^[ \t]*[A-Z]/;
 		chop;
@@ -774,7 +771,6 @@ sub si_ide() {
 					siprtt( "cell", $media );
 					siprtt( "cell", $model );
 					siprtt( "cell", $driver );
-
 					if ( $media eq "disk" ) {
 						# $capa   = `/bin/cat /proc/ide/hd${abc}/capacity`;
 						# $cache  = `/bin/cat /proc/ide/hd${abc}/cache`;
@@ -815,7 +811,6 @@ sub si_dac960() {
 				my $onephysical;
 				my $first = 1;
 				my $open  = 0;
-
 				while ( <MYLEX> ) {
 					# print $_;
 					if ( m/^Configuring/ ) {
@@ -847,21 +842,18 @@ sub si_dac960() {
 						siprt( "endrow" );
 					} elsif ( $status eq "config" && m/^\s\s\w/ ) {
 						chomp( @fs = split /:|,/ );
-
 						if ( $fs[1] ne "" ) {
 							siprt( "tabrow" );
 							siprtt( "tabhead", $fs[0] );
 							siprtt( "cell",    $fs[1] );
 							siprt( "endrow" );
 						}
-
 						if ( $fs[3] ne "" ) {
 							siprt( "tabrow" );
 							siprtt( "tabhead", $fs[2] );
 							siprtt( "cell",    $fs[3] );
 							siprt( "endrow" );
 						}
-
 						if ( $fs[5] ne "" ) {
 							siprt( "tabrow" );
 							siprtt( "tabhead", $fs[4] );
@@ -909,7 +901,6 @@ sub si_compaq_smart() {
 		siprtt( "h1", "COMPAQ Smart Array" );
 		for ( $i = 0 ; $i < 10 ; $i++ ) {
 			my $cpa_mode = 1;
-
 			if ( -r "$cparray/ida$i" ) {
 				siprtt( "h2",        "Controller $i" );
 				siprtt( "tabborder", "ll" );
@@ -968,7 +959,6 @@ sub si_gdth() {
 				siprtt( "h2",        "Controller $i" );
 				siprtt( "tabborder", "llll" );
 				open( GDTH, "/proc/scsi/gdth/$i" );
-
 				while ( <GDTH> ) {
 					if ( !m/^\s+/ ) {
 						siprt( "tabrow" );
@@ -999,7 +989,6 @@ sub si_ips() {
 				siprtt( "h2",        "Controller $i" );
 				siprtt( "tabborder", "ll" );
 				open( IPS, "/proc/scsi/ips/$i" );
-
 				while ( <IPS> ) {
 					if ( ( m/^\s+/ ) && ( !m/^$/ ) ) {
 						my ( $key, $val ) = split /:/;
@@ -1027,7 +1016,6 @@ sub si_scsi() {
 				$channel = $2;
 				$id      = $3;
 				$lun     = $4;
-
 				if ( !$header ) {
 					siprtt( "h1",        "SCSI" );
 					siprtt( "tabborder", "lllllllll" );
@@ -1067,7 +1055,6 @@ sub si_scsi() {
 		}
 		close( SCSIINFO );
 	}
-
 	if ( $header ) {
 		siprt( "endtab" );
 	}
@@ -1087,7 +1074,6 @@ sub si_df() {
 	siprtt( "tabhead", "Use%" );
 	siprtt( "tabhead", "Mounted on" );
 	siprt( "endrow" );
-
 	while ( <DF> ) {
 		#if(m/^\d/){
 		if ( m/^\/dev/ ) {
@@ -1117,7 +1103,6 @@ sub si_mount() {
 	%mountopts = ();
 	@sarray    = ();
 	open( MOUNT, "/bin/mount |" );
-
 	while ( <MOUNT> ) {
 		if ( m/^\/dev/g ) {
 			@params = split /\s+/;
@@ -1128,7 +1113,6 @@ sub si_mount() {
 	}
 	close( MOUNT );
 	open( FDISK, "/sbin/fdisk -l |" );
-
 	while ( <FDISK> ) {
 		s/\*//gs;
 		if ( m/^\/dev/g ) {
@@ -1144,7 +1128,6 @@ sub si_mount() {
 	}
 	close( FDISK );
 	open( DFK, "/bin/df -PPk |" );
-
 	while ( <DFK> ) {
 		if ( m/^\/dev/g ) {
 			@dfkparams = split /\s+/, $_, 6;
@@ -1158,7 +1141,6 @@ sub si_mount() {
 	}
 	close( DFK );
 	open( LVM, "/proc/lvm |" );
-
 	while ( <LVM> ) {
 		if ( m/^LVM/g )        { }
 		if ( m/^Total/g )      { }
@@ -1181,7 +1163,6 @@ sub si_mount() {
 	@tarray = sort keys %mountp;
 	push @tarray, sort keys %blocks;
 	$oldtt = "";
-
 	for $tt ( sort @tarray ) {
 		if ( $oldtt ne $tt ) { push @sarray, $tt; }
 		$oldtt = $tt;
@@ -1207,7 +1188,6 @@ sub si_mount() {
 	siprt( "endrow" );
 	open( SAVEERR, ">&STDERR" );
 	open( STDERR,  ">/dev/null" );
-
 	for $tt ( sort @sarray ) {
 		open( TUNE, "/sbin/tune2fs -l $tt |" );
 		while ( <TUNE> ) {
@@ -1218,7 +1198,6 @@ sub si_mount() {
 			if ( m/^Maximum mount count:\s*(\w+)\s*$/g )  { $maxmount{$tt}   = $1; }
 		}
 		close( TUNE );
-
 		if ( ( $inodecount{$tt} != 0 ) && ( $blockcount{$tt} != 0 ) && ( $blocksize{$tt} != 0 ) ) {
 			$inodedensity{$tt} = ( 2**int( log( $blockcount{$tt} / $inodecount{$tt} ) / log( 2 ) + 0.5 ) ) * $blocksize{$tt};
 		} else {
@@ -1226,7 +1205,6 @@ sub si_mount() {
 		}
 	}
 	open( STDERR, ">&SAVEERR" );
-
 	for $tt ( sort @sarray ) {
 		siprt( "tabrow" );
 		siprtt( "cell", $tt );
@@ -1290,7 +1268,6 @@ sub si_ifconfig() {
 	siprtt( "tabhead", "MTU" );
 	siprtt( "tabhead", "Metric" );
 	siprt( "endrow" );
-
 	while ( <IFCONFIG> ) {
 		if ( m/^\S/g ) {
 			siprt( "tabrow" );
@@ -1336,7 +1313,6 @@ sub si_route() {
 	siprtt( "tabhead", "Use" );
 	siprtt( "tabhead", "IFace" );
 	siprt( "endrow" );
-
 	while ( <ROUTE> ) {
 		if ( m/^\d/ ) {
 			my ( $dest, $gate, $genmask, $flags, $metric, $ref, $use, $iface ) = split /\s+/;
@@ -1357,7 +1333,6 @@ sub si_route() {
 }
 
 sub si_ipvs () {
-
 }
 
 sub si_ipfwadm() {
@@ -1365,107 +1340,101 @@ sub si_ipfwadm() {
 }
 
 sub si_ipchains () {
-		my @protocols = ();
-		open( PROTO, "/etc/protocols" );
-
-		while ( <PROTO> ) {
-			if ( !m/^#/ ) {
-				m/^(\w+)\s+(\w+)\s+(\w+)\s*/g;
-				$protocols[$2] = $1;
-			}
+	my @protocols = ();
+	open( PROTO, "/etc/protocols" );
+	while ( <PROTO> ) {
+		if ( !m/^#/ ) {
+			m/^(\w+)\s+(\w+)\s+(\w+)\s*/g;
+			$protocols[$2] = $1;
 		}
-		close( PROTO );
-		open( CHAIN, "/proc/net/ip_fwchains" );
-		$no_header = 1;
-
-		while ( <CHAIN> ) {
-			( $empty, $chainname, $sourcedest, $ifname, $fw_flg, $fw_invflg, $proto, $packa, $packb, $bytea, $byteb, $portsrc, $portdest, $tos, $xor, $redir, $fw_mark, $outsize, $target ) = split /\s+/;
-			$sourcedest =~ m/(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)->(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)/g;
-			$source = join "", hex( $1 ), ".", hex( $2 ),  ".", hex( $3 ),  ".", hex( $4 ),  "/", hex( $5 ),  ".", hex( $6 ),  ".", hex( $7 ),  ".", hex( $8 );
-			$dest   = join "", hex( $9 ), ".", hex( $10 ), ".", hex( $11 ), ".", hex( $12 ), "/", hex( $13 ), ".", hex( $14 ), ".", hex( $15 ), ".", hex( $16 );
-			if ( $no_header ) {
-
-				if ( $chainname ne "" ) {
-					siprtt( "h2",        "Filter Rules" );
-					siprtt( "tabborder", "lllllllllllllllll" );
-					siprt( "tabrow" );
-					siprtt( "tabhead", "Name" );
-					siprtt( "tabhead", "Target" );
-					siprtt( "tabhead", "I.face" );
-					siprtt( "tabhead", "Proto" );
-					siprtt( "tabhead", "Src" );
-					siprtt( "tabhead", "Port" );
-					siprtt( "tabhead", "Dest" );
-					siprtt( "tabhead", "Port" );
-					siprtt( "tabhead", "Flag" );
-					siprtt( "tabhead", "Inv" );
-					siprtt( "tabhead", "TOS" );
-					siprtt( "tabhead", "XOR" );
-					siprtt( "tabhead", "RdPort" );
-					siprtt( "tabhead", "FWMark" );
-					# siprtt("tabhead","OutputSize");  
-					# siprtt("tabhead","Packets");
-					# siprtt("tabhead","Bytes");
-					siprt( "endrow" );
-					$no_header = 0;
-				}
-			}
-			@PORT = split '-', $portsrc;
-			if ( $PORT[0] == $PORT[1] ) { $portsrc = $PORT[0]; }
-			@PORT = split '-', $portdest;
-			siprt( "tabrow" );
-			siprtt( "cell", $chainname );
-			siprtt( "cell", $target );
-			siprtt( "cell", $ifname );
-			siprtt( "cell", ( ( $proto eq "0" ) ? "-" : $protocols[$proto] ) );
-			siprtt( "cell", $source );
-			siprtt( "cell", $portsrc );
-			siprtt( "cell", $dest );
-			siprtt( "cell", $portdest );
-			siprtt( "cell", $fw_flg );
-			siprtt( "cell", $fw_invflg );
-			siprtt( "cell", $tos );
-			siprtt( "cell", $xor );
-			siprtt( "cell", $redir );
-			siprtt( "cell", $fw_mark );
-			# siprtt("cell",$outsize);
-			# siprtt("cell","$packa,$packb");
-			# siprtt("cell","$bytea,$byteb");
-			siprt( "endrow" );
-		}
-		close( CHAIN );
-
+	}
+	close( PROTO );
+	open( CHAIN, "/proc/net/ip_fwchains" );
+	$no_header = 1;
+	while ( <CHAIN> ) {
+		( $empty, $chainname, $sourcedest, $ifname, $fw_flg, $fw_invflg, $proto, $packa, $packb, $bytea, $byteb, $portsrc, $portdest, $tos, $xor, $redir, $fw_mark, $outsize, $target ) = split /\s+/;
+		$sourcedest =~ m/(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)->(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)/g;
+		$source = join "", hex( $1 ), ".", hex( $2 ),  ".", hex( $3 ),  ".", hex( $4 ),  "/", hex( $5 ),  ".", hex( $6 ),  ".", hex( $7 ),  ".", hex( $8 );
+		$dest   = join "", hex( $9 ), ".", hex( $10 ), ".", hex( $11 ), ".", hex( $12 ), "/", hex( $13 ), ".", hex( $14 ), ".", hex( $15 ), ".", hex( $16 );
 		if ( $no_header ) {
-			## siprtt("h2","No Filter Rules active");
-		} else {
-			siprt( "endtab" );
-		}
-		$no_header = 1;
-		open( NAMES, "/proc/net/ip_fwnames" );
-
-		while ( <NAMES> ) {
-			( $chainname, $policy, $refcount ) = split /\s+/;
-			if ( $no_header ) {
-				siprtt( "h2",        "Filter Policy" );
-				siprtt( "tabborder", "lll" );
+			if ( $chainname ne "" ) {
+				siprtt( "h2",        "Filter Rules" );
+				siprtt( "tabborder", "lllllllllllllllll" );
 				siprt( "tabrow" );
 				siprtt( "tabhead", "Name" );
-				siprtt( "tabhead", "Policy" );
-				siprtt( "tabhead", "RefCount" );
+				siprtt( "tabhead", "Target" );
+				siprtt( "tabhead", "I.face" );
+				siprtt( "tabhead", "Proto" );
+				siprtt( "tabhead", "Src" );
+				siprtt( "tabhead", "Port" );
+				siprtt( "tabhead", "Dest" );
+				siprtt( "tabhead", "Port" );
+				siprtt( "tabhead", "Flag" );
+				siprtt( "tabhead", "Inv" );
+				siprtt( "tabhead", "TOS" );
+				siprtt( "tabhead", "XOR" );
+				siprtt( "tabhead", "RdPort" );
+				siprtt( "tabhead", "FWMark" );
+				# siprtt("tabhead","OutputSize");  
+				# siprtt("tabhead","Packets");
+				# siprtt("tabhead","Bytes");
 				siprt( "endrow" );
 				$no_header = 0;
 			}
+		}
+		@PORT = split '-', $portsrc;
+		if ( $PORT[0] == $PORT[1] ) { $portsrc = $PORT[0]; }
+		@PORT = split '-', $portdest;
+		siprt( "tabrow" );
+		siprtt( "cell", $chainname );
+		siprtt( "cell", $target );
+		siprtt( "cell", $ifname );
+		siprtt( "cell", ( ( $proto eq "0" ) ? "-" : $protocols[$proto] ) );
+		siprtt( "cell", $source );
+		siprtt( "cell", $portsrc );
+		siprtt( "cell", $dest );
+		siprtt( "cell", $portdest );
+		siprtt( "cell", $fw_flg );
+		siprtt( "cell", $fw_invflg );
+		siprtt( "cell", $tos );
+		siprtt( "cell", $xor );
+		siprtt( "cell", $redir );
+		siprtt( "cell", $fw_mark );
+		# siprtt("cell",$outsize);
+		# siprtt("cell","$packa,$packb");
+		# siprtt("cell","$bytea,$byteb");
+		siprt( "endrow" );
+	}
+	close( CHAIN );
+	if ( $no_header ) {
+		## siprtt("h2","No Filter Rules active");
+	} else {
+		siprt( "endtab" );
+	}
+	$no_header = 1;
+	open( NAMES, "/proc/net/ip_fwnames" );
+	while ( <NAMES> ) {
+		( $chainname, $policy, $refcount ) = split /\s+/;
+		if ( $no_header ) {
+			siprtt( "h2",        "Filter Policy" );
+			siprtt( "tabborder", "lll" );
 			siprt( "tabrow" );
-			siprtt( "cell", $chainname );
-			siprtt( "cell", $policy );
-			siprtt( "cell", $refcount );
+			siprtt( "tabhead", "Name" );
+			siprtt( "tabhead", "Policy" );
+			siprtt( "tabhead", "RefCount" );
 			siprt( "endrow" );
+			$no_header = 0;
 		}
-
-		if ( $no_header == 0 ) {
-			siprt( "endtab" );
-		}
-		close( NAMES );
+		siprt( "tabrow" );
+		siprtt( "cell", $chainname );
+		siprtt( "cell", $policy );
+		siprtt( "cell", $refcount );
+		siprt( "endrow" );
+	}
+	if ( $no_header == 0 ) {
+		siprt( "endtab" );
+	}
+	close( NAMES );
 }
 
 sub si_iptables () {
@@ -1474,7 +1443,6 @@ sub si_iptables () {
 	while ( <TABLES> ) {
 		chomp();
 		siprtt( "h2", "Table $_" );
-
 		siprt( "pre" );
 		open( CONFIG, "/usr/sbin/iptables -v -L -n -t $_ |" );
 		while ( <CONFIG> ) {
@@ -1490,15 +1458,15 @@ sub si_iptables () {
 sub si_packetfilter() {
 	if ( -r "/proc/net/ip_input" ) {
 		siprtt( "h1", "Packet Filter (ipfwadm)" );
-		si_ipfwadm();
+		si_ipfwadm ();
 	} elsif ( -r "/proc/net/ip_fwnames" ) {
 		siprtt( "h1", "Packet Filter (ipchains)" );
-		si_ipchains();
+		si_ipchains ();
 	} elsif ( -r "/proc/net/ip_tables_names" ) {
 		siprtt( "h1", "Packet Filter (iptables)" );
-		si_iptables();
+		si_iptables ();
 	} else {
-		siprtt( "h1", "Packet Filter" );
+		siprtt( "h1",   "Packet Filter" );
 		siprtt( "verb", "No packet filter installed." );
 	}
 }
@@ -1524,7 +1492,7 @@ sub si_conf_secure($$$) {
 		while ( <CONFIG> ) {
 			chomp();
 			if ( !m/^($comment)|^$/ ) {
-				if ( m/$blankout/) {
+				if ( m/$blankout/ ) {
 					s/($blankout.*=)(.*)/$1### sensitive data blanked out ###/;
 				}
 				siprtt( "verb", "$_\n" );
@@ -1553,7 +1521,6 @@ sub si_conf($$) {
 		$/ = $old_recsep;
 	} else {
 		open( CONFIG, "<$filename" );
-
 		while ( <CONFIG> ) {
 			chomp();
 			if ( !m/^($comment)|^$/ ) {
@@ -1579,7 +1546,6 @@ sub si_build_proc_description() {
 	my @proc_a = split /\n\n/;
 	close( PROCTXT );
 	$/ = $old_slash;
-
 	for $NN ( @proc_a ) {
 		my @mypair = split /\n/, $NN, 2;
 		my $newkey = $mypair[0];
@@ -1609,7 +1575,6 @@ sub si_proc_sys_net () {
 	  token-ring
 	  unix
 	);
-
 	for $NET ( $nettypes ) {
 		if ( ( -d "/proc/sys/net/$NET" ) ) {
 			opendir( DIR, "/proc/sys/net/$NET" );
@@ -1619,7 +1584,6 @@ sub si_proc_sys_net () {
 				siprtt( "tabborder", "llp{.5\\textwidth}" );
 				open( SAVEERR, ">&STDERR" );
 				open( STDERR,  ">/dev/null" );
-
 				for $NN ( sort `/usr/bin/find /proc/sys/net/$NET/ -type f` ) {
 					chomp $NN;
 					$value = `/bin/cat $NN`;
@@ -1664,7 +1628,6 @@ sub si_etc_suse() {
 	while ( <RCCONFIG> ) {
 		s/="no"/=no/i;
 		s/="yes"/=yes/i;
-
 		if ( m/START_POSTFIX=yes/i ) {
 			push @lines, $_;
 			siprtt( "h2", "Postfix (postconf -n)" );
@@ -1678,7 +1641,6 @@ sub si_etc_suse() {
 			siprt( "endpre" );
 			if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "\#" ); }
 		}
-
 		if ( !m/^#|^$|""/ ) {
 			push @lines, $_;
 		}
@@ -1686,14 +1648,12 @@ sub si_etc_suse() {
 	close( RCCONFIG );
 	siprtt( "h2", "/etc/rc.config" );
 	siprt( "pre" );
-
 	for $ll ( @lines ) {
 		siprtt( "verb", $ll );
 		# my ($key,$val) = split /=/,$ll,2;
 		# siprt("tabrow");siprtt("cell",$key);siprtt("cell",$val);siprt("endrow");
 	}
 	siprt( "endpre" );
-
 	if ( -r "/etc/sysconfig" ) {
 		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
 			chomp $NN;
@@ -1750,11 +1710,10 @@ sub si_etc_suse() {
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/pppoed.conf" ) ||
-			     ( $mm eq "/etc/lilo.conf"   ) ) {
-				if ( -r $mm )	{ si_conf_secure( $mm, "\#", "[Pp]assword"); }
+			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/lilo.conf" ) ) {
+				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
-				if ( -r $mm )	{ si_conf( $mm, "\#" ); }
+				if ( -r $mm ) { si_conf( $mm, "\#" ); }
 			}
 		}
 	}
@@ -1763,7 +1722,6 @@ sub si_etc_suse() {
 	# named
 	if ( -r "/etc/named.conf" ) {
 		si_conf( "/etc/named.conf", "/**/" );
-
 		for $NN ( `/usr/bin/find /var/named -name "*.zone"` ) {
 			chomp $NN;
 			si_conf( $NN, ";" );
@@ -1794,7 +1752,6 @@ sub si_kernel_config() {
 	siprtt( "h1", "Kernel Configuration" );
 	siprt( "multipre" );
 	open( CONFIG, "<$config" );
-
 	while ( <CONFIG> ) {
 		chomp();
 		if ( !m/^($comment)|^$/ ) {
@@ -1817,7 +1774,6 @@ sub si_proc_config() {
 		siprtt( "h1", "Kernel Configuration" );
 		siprt( "multipre" );
 		open( CONFIG, "$GZIP -dc /proc/config.gz |" );
-
 		while ( <CONFIG> ) {
 			chomp();
 			if ( !m/^($comment)|^$/ ) {
@@ -1846,13 +1802,11 @@ sub si_installed_deb() {
 	sysopen( STATUS, "$STATUS", O_RDONLY ) || die "can't open '$STATUS'";
 	$pos[0] = 0;
 	while ( <STATUS> ) { $pos[$#pos + 1] = tell if /^$/; }
-
 	for ( $i = 0 ; $i < $#pos ; $i++ ) {
 		seek( STATUS, $pos[$i], seek_set ) || die "can't seek!";
 		while ( <STATUS> ) { last if /^$/; $debs[$i] .= $_; }
 	}
 	close STATUS;
-
 	for ( $i = 0 ; $i < $#debs + 1 ; $i++ ) {
 		if ( $debs[$i] =~ /^Status:.* installed$/im ) {
 			$debs[$i] =~ s/^Package:(.*)$(\n.*)*^Status:(.*)$(\n.*)*^Installed-Size:(.*)$(\n.*)*^Version:(.*)$(\n.*)*^Description:(.*(\n.*)*)$/$1$mark$3$mark$5$mark$7$mark$9/m;
@@ -1893,7 +1847,6 @@ sub si_installed_rpm() {
 	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{VERSION}::%{SIZE}::%{SUMMARY}\n' |" );
 	while ( <RPMS> ) { push @rpms, $_; }
 	close( RPMS );
-
 	for $rpm ( sort @rpms ) {
 		my ( $name, $ver, $size, $summary ) = split /::/, $rpm;
 		$total += $size;
@@ -1939,7 +1892,6 @@ sub si_selection_rpm() {
 	}
 	close( RPMS );
 	print "\# SuSE-Linux Configuration : ", int( $total / 1024 ), " : ", $num, "\n", "Description: $HOSTNAME $now_string\n", "Info:\n", "Ofni:\n", "Toinstall:\n";
-
 	for $rr ( sort @rpms ) { print $rr, "\n"; }
 	print "Llatsniot:\n";
 }
@@ -1958,7 +1910,6 @@ sub si_run_sitar() {
 		# open (SAVEOUT, ">&STDOUT");
 		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.$mm");
 		open( SAVEOUT, ">&STDOUT" );
-
 		if ( $outfile ne "" ) {
 			open( STDOUT, ">$outfile" );
 		}
@@ -1967,13 +1918,12 @@ sub si_run_sitar() {
 		si_lsdev ();
 		si_pci ();
 		si_pnp ();
-
 		if ( $mm eq "tex" ) {
 			print "\n\n\\newpage\n\n";
 			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
 		}
 		# si_df();
-		si_software_raid();
+		si_software_raid ();
 		si_mount ();
 		si_ide ();
 		si_scsi ();
@@ -2028,27 +1978,24 @@ sub si_run_sitar() {
 		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
 	}
 }
-
 {
 	my @myname = split /\//, $0;
 	if ( $ENV{USER} ne "root" ) {
-		print ( "Please run sitar as user root.\n" );
-		exit;	
+		print( "Please run sitar as user root.\n" );
+		exit;
 	}
-	if ( 	( ( $myname[-1] eq "sitar.pl" ) || ( $myname[-1] eq "sitar" ) ) 
-		&& ( ! $printhelp ) ) {
-		@siprt_modes= ("html", "tex", "yast1" );
-		for $mm (@siprt_modes) {
+	if ( ( ( $myname[-1] eq "sitar.pl" ) || ( $myname[-1] eq "sitar" ) ) && ( !$printhelp ) ) {
+		@siprt_modes = ( "html", "tex", "yast1" );
+		for $mm ( @siprt_modes ) {
 			$siprt_mode = $mm;
-			if ( $siprt_mode eq "yast1") {
-				$outfile    = "/tmp/sitar-$HOSTNAME.sel";
+			if ( $siprt_mode eq "yast1" ) {
+				$outfile = "/tmp/sitar-$HOSTNAME.sel";
 			} else {
-				$outfile    = "/tmp/sitar-$HOSTNAME.$mm";
+				$outfile = "/tmp/sitar-$HOSTNAME.$mm";
 			}
-			si_run_sitar();
+			si_run_sitar ();
 		}
 	} else {
-		si_run_sitar();
+		si_run_sitar ();
 	}
 }
-
