@@ -217,6 +217,7 @@ if ( -e $DEBIAN ) {
 	$distribution = "unknown";
 	print "\n distribution not supported!!\n\n";
 }
+chomp $release;
 #
 my $ULPACK_RAW_NAME    = "http://www.unitedlinux.com/feedback";
 my $ULPACK_NICE_NAME   = "United Linux";
@@ -2627,6 +2628,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.62  2005/01/24 09:48:15  mge
+#  fixed error in TeX-output (forgotten chomp)
+#
 #  Revision 1.61  2005/01/19 01:54:59  mge
 #  version: 0.9.pre2; added sdocbook to help
 #

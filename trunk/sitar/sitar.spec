@@ -27,7 +27,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.pre2
+Version:	0.9.pre3
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -90,6 +90,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.38  2005/01/24 09:48:15  mge
+#  fixed error in TeX-output (forgotten chomp)
+#
 #  Revision 1.37  2005/01/19 01:55:00  mge
 #  version: 0.9.pre2; added sdocbook to help
 #

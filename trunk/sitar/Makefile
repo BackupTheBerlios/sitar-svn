@@ -28,7 +28,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.9.pre2
+RELEASE=0.9.pre3
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -90,6 +90,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.37  2005/01/24 09:48:14  mge
+#  fixed error in TeX-output (forgotten chomp)
+#
 #  Revision 1.36  2005/01/19 01:49:56  mge
 #  xml: well-formed and valid (as tested so far:-)
 #
