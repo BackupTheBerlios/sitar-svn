@@ -16,14 +16,18 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-#  Authors:
+#  Authors/Contributors:
 #               Matthias G. Eckermann
 #               Stephan Müller
 #               Janto Trappe
 #               Waldemar Brodkorb
 #               Björn Jacke
+#		Bernhard Thoni
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.11  2002/01/14 15:37:39  mge
+#  Added sitar-0.6.8-sw-raid.v0.1.patch by Bernhard Thoni
+#
 #  Revision 1.10  2001/09/07 01:13:54  mge
 #  - cosmetic changes
 #
@@ -58,7 +62,7 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.6.8
+Version:	0.6.9
 Release:	4
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
@@ -76,7 +80,8 @@ Comment: Sitar is an ancient Indian instrument as well.
 Authors:
 --------
 	Matthias Eckermann <mge@suse.de>,
-	Stephan Mueller, Janto Trappe, Waldemar Brodkorb, Bjoern Jacke
+	Stephan Mueller, Janto Trappe, Waldemar Brodkorb, Bjoern Jacke,
+	Bernhard Thoni
 
 %prep
 %setup

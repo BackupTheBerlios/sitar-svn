@@ -17,14 +17,18 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-#  Authors:
+#  Authors/Contributors:
 #		Matthias G. Eckermann
 #		Stephan Müller
 #		Janto Trappe
 #		Waldemar Brodkorb
 #		Björn Jacke
+#		Bernhard Thoni
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.19  2002/01/14 15:37:39  mge
+#  Added sitar-0.6.8-sw-raid.v0.1.patch by Bernhard Thoni
+#
 #  Revision 1.18  2001/09/10 21:05:45  mge
 #  - iptables, begin of work
 #
@@ -499,6 +503,167 @@ sub si_cpu_and_memory() {
 	siprt( "endtab" );
 }
 
+sub si_software_raid() {
+        siprtt( "h1",        "Software-Raids" );
+        siprtt( "tabborder", "llllll" );
+        siprt( "tabrow" );
+        siprtt( "tabhead", "Raid-Device" );
+        siprtt( "tabhead", "Raid-Level" );
+        siprtt( "tabhead", "Raid-Partitions" );
+        siprtt( "tabhead", "Blocks" );
+        siprtt( "tabhead", "Chunks" );
+        siprtt( "tabhead", "Algorithm" );
+        siprt( "endrow" );
+
+
+        open( IN1, "</proc/mdstat" ) || return ();
+        chomp( $UNAMER );
+        my $MDSTAT = "/proc/mdstat";
+	my $RAIDTAB = "/etc/raidtab";
+        my ($counter1, $counter2) = 0;
+
+
+if ( ( -r $MDSTAT ) && ( ! -e $RAIDTAB) ) { warn "MD-Devices exist, but there seems to be no /etc/raidtab!!!"; }
+
+if (( -r $MDSTAT ) && ( $UNAMER =~ m/^2\.4.*/ ))
+        {
+         #CODE for kernel-2.4 software-raid
+         while (<IN1>)
+                {
+                 $counter1++;
+                 $counter2 = 0;
+                 if ( m/^(md\d+)\s:\sactive\s(raid\d)\s(.*)$/g)
+                        {
+                         my $raiddev = $1;
+                         my $level = $2;
+                         my %md = ();
+                         my @partitions = split ( ' ', $3 );
+                         $md{level} = $level;
+                         $md{partitions} = "@partitions";
+
+                         open( IN2, "</tmp/mdstat" ) || return ();
+                         while (<IN2>)
+                                {
+                                 $counter2++;
+                                 my $counter1plus1 = 0;
+                                 $counter1plus1 = ($counter1 + 1);
+                                 if ( $counter2 == $counter1plus1 )
+                                        {
+                                         my @md_options = split ( ' ', $_);
+                                         if ($level eq 'raid0')
+                                            {
+                                             $md{blocks} = $md_options[0];
+                                             $md{chunks} = $md_options[2];
+                                             $md{algorithm} = " ";
+                                            }
+                                         if ($level eq 'raid1')
+                                            {
+                                             $md{blocks} = $md_options[0];
+                                             $md{chunks} = " ";
+                                             $md{algorithm} = " ";
+                                            }
+                                         if ($level eq 'raid5')
+                                            {
+                                             $md{blocks} = $md_options[0];
+                                             $md{chunks} = $md_options[4];
+                                             $md{algorithm} = $md_options[7];
+                                            }
+                                        }
+                                }
+                         close (IN2);
+
+                        #hier der code zur html-ausgabe
+                        siprt( "tabrow" );
+                        siprtt( "cell", $raiddev );
+                        siprtt( "cell", $md{level} );
+                        siprtt( "cell", @md{partitions} );
+                        siprtt( "cell", $md{blocks} );
+                        siprtt( "cell", $md{chunks} );
+                        siprtt( "cell", $md{algorithm} );
+                        siprt( "endrow" );
+
+
+
+			unless ( -e ( ($RAIDTAB) || ("/etc/raid0.conf") || ("/etc/raid1.conf") || ("/etc/raid5.conf") ) )
+			{
+			 siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
+                        }
+
+
+
+                        }
+                }
+
+        }
+
+elsif (( -r $MDSTAT ) && ( $UNAMER =~ m/^2\..*/ ))
+        {
+         #CODE for kernel-2.2 software-raid
+         while (<IN1>)
+                {
+                 $counter1++;
+                 $counter2 = 0;
+                 if ( m/^(md\d+)\s:\sactive\s(raid\d)\s([h|s].*)\s(\d+)\s(block.*)$/g)
+                        {
+                         my $raiddev = $1;
+                         my $level = $2;
+                         my %md = ();
+                         my @partitions = split ( ' ', $3 );
+                         $md{level} = $level;
+                         $md{partitions} = "@partitions";
+                         $md{blocks} = $4;
+                         $md{chunks} = "";
+                         $md{algorithm} = "";
+
+                        if ( $5 =~ m/^blocks\s\w+\s\d,\s(\d+k)\s\w+,\s\w+\s(\d+)\s.*$/g )
+                        {
+                         $md{chunks} = $1;
+                         $md{algorithm} = $2;
+                        }
+
+                        elsif ( $5 =~ m/^blocks\s(\d+k)\s.*$/g )
+                        {
+                         $md{chunks} = $1;
+                         $md{algorithm} = " ";
+                        }
+
+
+
+
+                        siprt( "tabrow" );
+                        siprtt( "cell", $raiddev );
+                        siprtt( "cell", $md{level} );
+                        siprtt( "cell", @md{partitions} );
+                        siprtt( "cell", $md{blocks} );
+                        siprtt( "cell", $md{chunks} );
+                        siprtt( "cell", $md{algorithm} );
+                        siprt( "endrow" );
+
+
+			unless ( -e ( ($RAIDTAB) || ("/etc/raid0.conf") || ("/etc/raid1.conf") || ("/etc/raid5.conf") ) )
+			{
+			 siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
+                        }
+
+
+
+			}
+                }
+        }
+
+
+siprt ( "endtab" );
+
+unlink "/tmp/mdstat";
+close (IN1);
+
+}
+
+
+
+
+
+
 sub si_pnp() {
 	if ( -r "/sbin/lspnp" ) {
 		open( IN, "/sbin/lspnp | " );
@@ -562,7 +727,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.18 2001/09/10 21:05:45 mge Exp $
+	#       $Id: sitar.pl.in,v 1.19 2002/01/14 15:37:39 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -629,7 +794,7 @@ sub si_lsdev() {
 
 sub si_ide() {
 	my $exists_ide = 0;
-	for $abc ( "a" .. "d" ) {
+	for $abc ( "a" .. "i" ) {
 		if ( -r "/proc/ide/hd$abc" ) { $exists_ide = 1; }
 	}
 
@@ -1578,6 +1743,10 @@ sub si_etc_suse() {
 	  /etc/inittab
 	  /etc/passwd
 	  /etc/group
+	  /etc/raidtab
+	  /etc/raid0.conf
+	  /etc/raid1.conf
+	  /etc/raid5.conf
 	  /etc/rc.firewall
 	  /var/spool/fax/etc/config
 	  /var/spool/fax/etc/config.modem
@@ -1818,6 +1987,7 @@ sub si_run_sitar() {
 			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
 		}
 		# si_df();
+		si_software_raid();
 		si_mount ();
 		si_ide ();
 		si_scsi ();
