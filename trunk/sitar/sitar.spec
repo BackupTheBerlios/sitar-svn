@@ -30,6 +30,9 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.27  2003/08/29 11:42:16  mge
+#  fixes SuSE bug #29632
+#
 #  Revision 1.26  2003/08/08 08:05:52  mge
 #  - fixed BUG #561 /tmp/mdstat (but not perfect, still uses tmp-file:-(
 #  - better yast2 selections
@@ -128,7 +131,7 @@ Vendor:		SuSE Linux AG, Germany
 #Distribution:	United Linux / SuSE Linux
 Name:		sitar
 Packager:	Matthias G. Eckermann <mge@suse.de>
-Version:	0.8.8
+Version:	0.8.9
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2

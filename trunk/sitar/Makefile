@@ -30,6 +30,9 @@
 #		Falko Trojahn
 #
 #  $Log: Makefile,v $
+#  Revision 1.27  2003/08/29 11:42:16  mge
+#  fixes SuSE bug #29632
+#
 #  Revision 1.26  2003/08/08 08:05:52  mge
 #  - fixed BUG #561 /tmp/mdstat (but not perfect, still uses tmp-file:-(
 #  - better yast2 selections
@@ -134,7 +137,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.8
+RELEASE=0.8.9
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps

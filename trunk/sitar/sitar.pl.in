@@ -31,6 +31,9 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.42  2003/08/29 11:42:16  mge
+#  fixes SuSE bug #29632
+#
 #  Revision 1.41  2003/08/08 10:54:28  mge
 #  reorganized and simplified /etc/-parsing / config-file management
 #
@@ -309,27 +312,27 @@ my $release      = "";
 my $distribution = "";
 my ( $DPKG, $RPM );
 if ( -e $DEBIAN ) {
-	$release      = `/usr/bin/head -1 /etc/debian_version`;
+	$release      = `/usr/bin/head -n 1 /etc/debian_version`;
 	$distribution = "debian";
 	$DPKG         = "/usr/bin/dpkg";
 } elsif ( -e $REDHAT ) {
-	$release      = `/usr/bin/head -1 /etc/redhat-release`;
+	$release      = `/usr/bin/head -n 1 /etc/redhat-release`;
 	$distribution = "redhat";
 	$RPM          = "/bin/rpm";
 } elsif ( ( -e $UNITED ) && ( -e $SUSE ) ) {
-	$release      = `/usr/bin/head -1 /etc/UnitedLinux-release` . `/usr/bin/head -1 /etc/SuSE-release`;
+	$release      = `/usr/bin/head -n 1 /etc/UnitedLinux-release` . `/usr/bin/head -n 1 /etc/SuSE-release`;
 	$distribution = "sles";
 	$RPM          = "/bin/rpm";
 } elsif ( -e $UNITED ) {
-	$release      = `/usr/bin/head -1 /etc/UnitedLinux-release`;
+	$release      = `/usr/bin/head -n 1 /etc/UnitedLinux-release`;
 	$distribution = "unitedlinux";
 	$RPM          = "/bin/rpm";
 } elsif ( -e $SLOX ) {
-	$release      = `/usr/bin/head -1 /etc/SLOX-release`;
+	$release      = `/usr/bin/head -n 1 /etc/SLOX-release`;
 	$distribution = "sles";
 	$RPM          = "/bin/rpm";
 } elsif ( -e $SUSE ) {
-	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
+	$release      = `/usr/bin/head -n 1 /etc/SuSE-release`;
 	$distribution = "suse";
 	$RPM          = "/bin/rpm";
 } else {
