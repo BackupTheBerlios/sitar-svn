@@ -28,7 +28,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.pre7
+Version:	0.9.pre8
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -94,6 +94,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.43  2005/03/08 15:37:01  mge
+#  added support for AppArmor by Immunix
+#
 #  Revision 1.42  2005/02/11 20:04:48  mge
 #  0.9.pre7: added cvs2rpmlog.pl for changelog in RPM
 #

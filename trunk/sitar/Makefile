@@ -29,7 +29,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.9.pre7
+RELEASE=0.9.pre8
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -91,6 +91,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.42  2005/03/08 15:37:01  mge
+#  added support for AppArmor by Immunix
+#
 #  Revision 1.41  2005/02/11 20:04:48  mge
 #  0.9.pre7: added cvs2rpmlog.pl for changelog in RPM
 #

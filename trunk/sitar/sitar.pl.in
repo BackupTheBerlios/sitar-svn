@@ -263,6 +263,9 @@ my $now_string  = localtime();
 my %proc_h      = ();
 my $machinetype = `/bin/uname -m`;
 my $config_dir  = "/var/lib/support";
+my $apparmor_verbose_name = "AppArmor (by Immunix)";
+my $apparmor_kernel_path  = "/subdomain";
+my $apparmor_config_path  = "/etc/subdomain.d";
 #
 # HEADER
 #
@@ -466,6 +469,7 @@ sub siprint($$$$) {
 		if ( $m eq "cellspan" )    {
 			mysprint "<td \nnowrap colspan=\"", $attr, "\">", $value, "</td>";
 		}
+		if ( $m eq "emptycell" ){ mysprint "<td>&nbsp;</td>"; }
 		if ( $m eq "cell" )     { mysprint "<td \nnowrap>", $value, "</td>"; }
 		if ( $m eq "cellwrap" ) { mysprint "<td>",          $value, "</td>"; }
 		if ( $m eq "cellcolor" ) {
@@ -521,6 +525,7 @@ sub siprint($$$$) {
 			$IsVerbatim = 0;
 		}
 		if ( $m eq "cellspan" )  { print $value, "\&"; }
+		if ( $m eq "emptycell" ) { print "\&"; }
 		if ( $m eq "cell" )      { print $value, "\&"; }
 		if ( $m eq "cellwrap" )  { print $value, "\&"; }
 		if ( $m eq "cellcolor" ) { print $value, "\&"; }
@@ -574,6 +579,7 @@ sub siprint($$$$) {
 		if ( $m eq "endtab" )   { mysprint "</tbody></tgroup></table>\n"; }
 		if ( $m eq "tabrow" )   { mysprint "<row\n>"; }
 		if ( $m eq "endrow" )   { mysprint "</row>\n"; }
+		if ( $m eq "emptycell" ){ mysprint "<entry>&nbsp;</entry>"; }
 		if ( $m eq "cell" )     { mysprint "<entry>", $value, "</entry>"; }
 		if ( $m eq "cellwrap" ) { mysprint "<entry><para>", $value, "</para></entry>"; }
 		if ( $m eq "cellspan" ) { mysprint "<entry namest=\"c1\" nameend=\"c", $attr, "\">", $value, "</entry>"; }
@@ -1961,6 +1967,13 @@ sub si_conf($$$) {
 		close( CONFIG );
 		siprtt( "verb", $ttt );
 		$/ = $old_recsep;
+	} elsif( $comment eq "" ) {
+		open( CONFIG, "<$filename" );
+		while ( <CONFIG> ) {
+			chomp();
+			siprtt( "verb", "$_\n" );
+		}
+		close( CONFIG );
 	} else {
 		open( CONFIG, "<$filename" );
 		while ( <CONFIG> ) {
@@ -2031,6 +2044,56 @@ sub si_proc_sys_net () {
 		}
 	}
 }
+
+sub si_immunix_apparmor () {
+	if ( ( -d "$apparmor_kernel_path" ) && ( -d "$apparmor_config_path" ) ) {
+		siprtt( "h1", $apparmor_verbose_name );
+		siprtt( "h2", "Current Configuration" );
+		siprtttt( "tabborder", "lll", "Configuration", 3 );
+		open( SAVEERR, ">&STDERR" );
+		open( STDERR,  ">/dev/null" );
+		for $NN ( sort `/usr/bin/find $apparmor_kernel_path/ -type f` ) {
+			chomp $NN;
+			$value = `/bin/cat $NN`;
+			if ( $value ne "" ) {
+				my $MM = $NN;
+				$MM =~ s/$apparmor_kernel_path\///;
+				$OO = $MM;
+				$OO =~ s/(\w+\/)*(\w+)$/$+/;
+				chomp $OO;
+				if( $OO eq "profiles" ) {
+					siprt( "tabrow" );
+					siprtt( "cell", $OO );
+					siprt( "emptycell" );
+					siprt( "emptycell" );
+					siprt( "endrow" );
+					for $TT ( split( /\)/, $value ) ) {
+						my( $tname, $tenforce) = split( /\(/, $TT );
+						siprt( "tabrow" );
+						siprt( "emptycell" );
+						siprtt( "cell", $tname );
+						siprtt( "cell", $tenforce );
+						siprt( "endrow" );
+					}
+				} else {
+					siprt( "tabrow" );
+					siprtt( "cell", $OO );
+					siprtt( "cell", $value );
+					siprt( "emptycell" );
+					siprt( "endrow" );
+				}
+			}
+		}
+		open( STDERR, ">&SAVEERR" );
+		siprt( "endtab" );
+		siprtt( "h2", "Profiles" );
+		for $NN ( `/usr/bin/find $apparmor_config_path -type f` ) {
+			chomp $NN;
+			si_conf( $NN, $NN, "" );
+		}
+	}
+}
+
 my @allconfigfiless = qw (
   /boot/grub/menu.lst
   /etc/apache/httpd.conf
@@ -2563,6 +2626,7 @@ sub si_run_sitar() {
 		if ( $mm eq "tex" ) {
 			print "\n\\par\\endgroup\\par\n";
 		}
+		si_immunix_apparmor();
 		si_proc();
 		if ( $distribution eq "unitedlinux" ) {
 			si_chkconfig();
@@ -2655,6 +2719,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.67  2005/03/08 15:37:01  mge
+#  added support for AppArmor by Immunix
+#
 #  Revision 1.66  2005/02/09 13:02:04  mge
 #  small patch regarding /proc/cpuinfo
 #
