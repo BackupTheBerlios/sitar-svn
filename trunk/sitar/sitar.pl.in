@@ -28,6 +28,9 @@
 #		Andreas Rother
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.37  2003/01/17 08:39:24  mge
+#  enhanced package list (sort by packager && || distribution)
+#
 #  Revision 1.36  2003/01/10 16:26:18  mge
 #  - (United Linux / SuSE Linux only): split packages by Packager
 #  - minor TeX improvements
@@ -2232,21 +2235,26 @@ sub si_installed_sles() {
 	my $total = 0;
 	my $num   = 0;
 	my @packagers;
-        open( PACKS, "$RPM -qa --queryformat '%{PACKAGER}\n' | $SORTPRG | $UNIQPRG |" );
+        open( PACKS, "$RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $SORTPRG | $UNIQPRG |" );
         while ( <PACKS> ) { push @packagers, $_; }
         close( PACKS );
 	my @rpms;
-	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{PACKAGER}\n' |" );
+	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::a\n' |" );
 	while ( <RPMS> ) { push @rpms, $_; }
 	close( RPMS );
 	for $pack ( sort @packagers ) {
 		chomp $pack;
-		if ( $pack eq $ULPACK_RAW_NAME ) {
-			siprtt( "h2", "$ULPACK_NICE_NAME ($pack)" );
-		} elsif ( $pack eq $SUSEPACK_RAW_NAME ) {
-			siprtt( "h2", "$SUSEPACK_NICE_NAME ($pack)" );
+		my ( $mydist, $mypack ) = split /::/, $pack;
+		chomp $mydist;
+		chomp $mypack;
+		if ( $mypack eq $ULPACK_RAW_NAME ) {
+			siprtt( "h2", "$mydist" );
+		} elsif ( $mypack eq $SUSEPACK_RAW_NAME ) {
+			siprtt( "h2", "$mydist" );
+		} elsif ( $mydist eq "(none)" ) {
+			siprtt( "h2", "Packages by $mypack" );
 		} else {
-			siprtt( "h2", "Packager: $pack" );
+			siprtt( "h2", "$mydist ($mypack)" );
 		}
 		siprtt( "tabborder", "lllp{.5\\textwidth}" );
 		siprt( "tabrow" );
@@ -2258,9 +2266,9 @@ sub si_installed_sles() {
 		my $packtotal = 0;
 		my $packnum   = 0;
 		for $rpm ( sort @rpms ) {
-			my ( $name, $ver, $size, $summary, $packager ) = split /::/, $rpm;
-			chomp $packager;
-			if ( $packager eq $pack ) {
+			my ( $name, $ver, $size, $summary, $distrib, $packager, $aa ) = split /::/, $rpm;
+#	print STDERR "|$rpm|\n\t\t"."|$pack|"."\n\t\t\t".$distrib."::".$packager."\n"; 
+			if ( ($pack) eq ($distrib."::".$packager) ) {
 				$total += $size;
 				$num++;
 				$packtotal += $size;
