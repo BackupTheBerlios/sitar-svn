@@ -26,6 +26,12 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.18  2002/11/28 08:07:36  mge
+#  Release 0.8.0:
+#  	- yast2 output
+#  	- /proc/sys/net fixes
+#  	- better TeX output
+#
 #  Revision 1.17  2002/11/28 01:35:17  mge
 #  - Added UnitedLinux finally
 #  - Fixed TeX output
@@ -85,10 +91,10 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.7.5
-Release:	8
+Version:	0.8.0
+Release:	0
 Summary:	System InformaTion At Runtime
-Source:		sitar-%{version}.tar.gz
+Source0:	sitar-%{version}.tar.gz
 Copyright:	GPL
 Group: 		Applications/System
 BuildRoot:	/tmp/root-%{name}/

@@ -25,6 +25,12 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.18  2002/11/28 08:07:36  mge
+#  Release 0.8.0:
+#  	- yast2 output
+#  	- /proc/sys/net fixes
+#  	- better TeX output
+#
 #  Revision 1.17  2002/11/28 01:35:16  mge
 #  - Added UnitedLinux finally
 #  - Fixed TeX output
@@ -87,10 +93,10 @@
 #
 #
 
-PREFIX=usr
+PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.7.5
+RELEASE=0.8.0
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
