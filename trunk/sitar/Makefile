@@ -23,6 +23,10 @@
 #               Waldemar Brodkorb
 #
 #  $Log: Makefile,v $
+#  Revision 1.9  2001/08/21 19:00:28  waldb
+#  added variable DOCDIR to install documentation in a correct way for
+#  all distributions, modified sitar.spec to use macro %doc for docfiles
+#
 #  Revision 1.8  2001/08/20 22:26:34  mge
 #  make "support_all.pl" and "sitar.pl" work slightly different:
 #  "sitar.pl" will do everything, as the old "sitar.pl" did, "support_all.pl"
@@ -42,6 +46,7 @@
 #
 
 PREFIX=usr
+DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
 RELEASE=0.6.7
 RELDATE=$(shell date +"%Y%m%d")
@@ -82,21 +87,19 @@ sitar.ps:	sitar.1
 	groff -man -Tps sitar.1 > sitar.ps
 
 install:	sitar.pl sitar.1 sitar.ps sitar.html
-	-rm						${DESTDIR}/${PREFIX}/share/man/man1/sitar.1.gz
 	install	-d					${DESTDIR}/${PREFIX}/sbin\
 							${DESTDIR}/${PREFIX}/share/sitar\
 							${DESTDIR}/${PREFIX}/share/man/man1\
-							${DESTDIR}/${PREFIX}/share/doc/packages/sitar/
-	install	-d					${DESTDIR}/${PREFIX}/share/doc/packages/sitar/
+							${DESTDIR}/${DOCDIR}/sitar/
 	install -m 700 	sitar.pl			${DESTDIR}/${PREFIX}/sbin/sitar.pl
 	ln -sf /${PREFIX}/sbin/sitar.pl			${DESTDIR}/${PREFIX}/sbin/support_all.pl
 	ln -sf /${PREFIX}/sbin/sitar.pl			${DESTDIR}/${PREFIX}/sbin/sitar
 	install -m 644 	sitar.1				${DESTDIR}/${PREFIX}/share/man/man1/sitar.1
 	gzip						${DESTDIR}/${PREFIX}/share/man/man1/sitar.1
 	ln -sf /${PREFIX}/share/man/man1/sitar.1.gz 	${DESTDIR}/${PREFIX}/share/man/man1/support_all.1.gz
-	install	-m 644	sitar.html			${DESTDIR}/${PREFIX}/share/doc/packages/sitar/sitar.html
-	install	-m 644	sitar.ps			${DESTDIR}/${PREFIX}/share/doc/packages/sitar/sitar.ps
-	install	-m 644	LICENSE				${DESTDIR}/${PREFIX}/share/doc/packages/sitar/LICENSE
+	install	-m 644	sitar.html			${DESTDIR}/${DOCDIR}/sitar/sitar.html
+	install	-m 644	sitar.ps			${DESTDIR}/${DOCDIR}/sitar/sitar.ps
+	install	-m 644	LICENSE				${DESTDIR}/${DOCDIR}/sitar/LICENSE
 	install -m 644 	proc.txt			${DESTDIR}/${PREFIX}/share/sitar/proc.txt
 	install -m 755 	suse.png			${DESTDIR}/${PREFIX}/share/sitar/suse.png
 

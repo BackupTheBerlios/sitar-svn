@@ -23,6 +23,10 @@
 #               Waldemar Brodkorb
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.7  2001/08/21 19:00:28  waldb
+#  added variable DOCDIR to install documentation in a correct way for
+#  all distributions, modified sitar.spec to use macro %doc for docfiles
+#
 #  Revision 1.6  2001/08/20 22:26:34  mge
 #  make "support_all.pl" and "sitar.pl" work slightly different:
 #  "sitar.pl" will do everything, as the old "sitar.pl" did, "support_all.pl"
@@ -46,7 +50,7 @@ Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
 Version:	0.6.7
-Release:	1
+Release:	2
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
 Copyright:	GPL
@@ -76,14 +80,12 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 %{?suse_check}
 
 %files
+%doc sitar.html sitar.ps LICENSE
 %attr(700, root, root) /usr/sbin/sitar.pl
 %attr(700, root, root) /usr/sbin/sitar
 %attr(700, root, root) /usr/sbin/support_all.pl
 /usr/share/man/man1/sitar.1.gz
 /usr/share/man/man1/support_all.1.gz
-/usr/share/doc/packages/sitar/sitar.html
-/usr/share/doc/packages/sitar/sitar.ps
-/usr/share/doc/packages/sitar/LICENSE
 /usr/share/sitar/suse.png
 /usr/share/sitar/proc.txt
 
