@@ -25,6 +25,9 @@
 #
 
 use Getopt::Long;
+use Fcntl;
+
+
 
 my $RELEASE        = "%%RELEASE%%";
 my $PREFIX         = "%%PREFIX%%";
@@ -37,15 +40,39 @@ GetOptions (	'output=s'	=> \$siprt_mode,
 	     	'help'		=> \$printhelp
 	   );
 
+#
+# distribution test
+#
+my $SUSE = "/etc/SuSE-release";
+my $DEBIAN = "/etc/debian_version";
+my $release = "";
+my $distribution = "";
+
+if (-e $DEBIAN) {
+	$release = `/usr/bin/head -1 /etc/debian_version`;
+	$distribution = "debian";
+} elsif (-e $SUSE) {
+	$release = `/usr/bin/head -1 /etc/SuSE-release`;
+	$distribution = "suse";
+} else {
+	$distribution = "unknown";
+	print "\n distribution not supported!!\n\n";
+}
+
+#
+# global vars
+#
+
 my $RPM = "/bin/rpm"; 
+my $DPKG = "/usr/bin/dpkg";
 my $LS = "/bin/ls"; 
 my $HWINFO = "/usr/sbin/hwinfo";
+my $STATUS = "/var/lib/dpkg/status";
 
 $ENV{PATH} = ""; chomp(my $HOSTNAME = `/bin/hostname -f`);
 
 my $UNAME = `/bin/uname -a`; 
 my $UNAMER = `/bin/uname -r`; 
-my $SuSE_release = `/usr/bin/head -1 /etc/SuSE-release`;
 
 my $now_string = localtime();
 my %proc_h = ();
@@ -94,7 +121,7 @@ my $html_header    = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional/
       <td valign=\"bottom\"><h1>$HOSTNAME, $now_string</h1></td>
     </tr>
     <tr>
-      <td valign=\"top\"><h2>$UNAME<br>$SuSE_release</h2></td>
+      <td valign=\"top\"><h2>$UNAME<br>$release</h2></td>
     </tr>
   </table>
   <hr>";
@@ -121,7 +148,7 @@ my $tex_header = "\\documentclass[a4paper,headinclude,a4paper]\{scrartcl\}
 % 
 \\begin\{document\} 
 \\title\{$HOSTNAME, $now_string \\\\
-\{\\normalsize $UNAME\\ $SuSE_release\} \}
+\{\\normalsize $UNAME\\ $release\} \}
 \\author\{$RELEASE\}
 \\maketitle
 \\tableofcontents 
@@ -367,7 +394,7 @@ sub si_lsdev() {
   #	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
   #	Date:        1996-01-22 19:06:22
   #	Last Change: 1998-05-31 15:26:58
-  #       $Id: sitar.pl.in,v 1.3 2001/08/14 03:40:20 mge Exp $
+  #       $Id: sitar.pl.in,v 1.4 2001/08/14 03:52:18 mge Exp $
   my %device_h = ();
   use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
   my %dma      = ();
@@ -683,6 +710,31 @@ sub si_scsi() {
   if($header){
     siprt("endtab");
   }
+}
+
+sub si_df() {
+  my %rule = ();
+  my $isbegin=1;
+  open(DF, "/bin/df |");
+  siprtt("h1","Filesystem disk space usage");
+  siprtt("tabborder","llllllll");
+  siprt("tabrow");
+  siprtt("tabhead","Filesystem"); siprtt("tabhead","1k-blocks");
+  siprtt("tabhead","Used");     siprtt("tabhead","Available");
+  siprtt("tabhead","Use%");      siprtt("tabhead","Mounted on");
+  siprt("endrow");
+  while(<DF>) {
+    #if(m/^\d/){
+    if(m/^\/dev/){
+      my ($filesys,$blocks,$used,$avail,$useperc,$mounted) = split /\s+/;
+      siprt("tabrow");
+      siprtt("cell",$filesys);siprtt("cell",$blocks);siprtt("cell",$used);
+      siprtt("cell",$avail);siprtt("cell",$useperc);siprtt("cell",$mounted);
+      siprt("endrow");
+    }
+  }
+  siprt("endtab");
+  close(DF);
 }
 
 sub si_mount() {
@@ -1087,6 +1139,14 @@ sub si_proc_sys () {
 
 sub si_etc() {
  siprtt("h1","configuration");
+}
+
+sub si_etc_debian() {
+ siprtt("h1","configuration");
+}
+
+sub si_etc_suse() {
+ siprtt("h1","configuration");
   my @lines = ();
   open (RCCONFIG, "</etc/rc.config");
   while (<RCCONFIG>) {
@@ -1196,6 +1256,22 @@ sub si_etc() {
   }
 }
 
+sub si_kernel_config() {
+  my $comment="\#";
+  my $config="/boot/config-$UNAMER";
+  siprtt("h1", "Kernel Configuration");
+  siprt("multipre");
+  open (CONFIG, "<$config");			
+  while (<CONFIG>) {
+    chomp();
+    if(!m/^($comment)|^$/) {
+      siprtt("verb","$_\n");
+    }
+  }
+  close (CONFIG);
+  siprt("endmultipre");  
+}
+
 sub si_proc_config() {
   my $GZIP;
   my $comment="\#";
@@ -1219,7 +1295,44 @@ sub si_proc_config() {
   }
 }
 
-sub si_installed() {
+sub si_installed_deb() {
+  siprtt("h1","Installed packages");
+  siprtt("tabborder","llll");
+  siprt("tabrow");siprtt("tabhead","Name");siprtt("tabhead","Status");siprtt("tabhead","Version");
+  siprtt("tabhead","Size");siprtt("tabhead","Short Description");siprt("endrow");
+  my $total = 0;
+  my $num   = 0;
+  my @debs;
+  my $mark = "--sitar-mark-$now_string--";
+  
+  sysopen (STATUS, "$STATUS", O_RDONLY) || die "can't open '$STATUS'";
+  $pos[0] = 0;
+  while (<STATUS>) { $pos[$#pos+1] = tell if /^$/; }
+
+  for ($i=0;$i<$#pos;$i++) {
+    seek (STATUS, $pos[$i], seek_set) || die "can't seek!";
+    while (<STATUS>) { last if /^$/; $debs[$i] .= $_; }
+  }
+  close STATUS;
+
+  for ($i=0;$i<$#debs+1;$i++) {
+    if ($debs[$i] =~ /^Status:.* installed$/im) {
+        $debs[$i] =~ s/^Package:(.*)$(\n.*)*^Status:(.*)$(\n.*)*^Installed-Size:(.*)$(\n.*)*^Version:(.*)$(\n.*)*^Description:(.*(\n.*)*)$/$1$mark$3$mark$5$mark$7$mark$9/m;
+        my ($name, $status, $size, $version, $description) = split (/$mark/, $debs[$i]);
+        $total += $size;
+        $num++;
+        siprt("tabrow");siprtt("cell",$name);siprtt("cell",$status);siprtt("cell",$version);
+        siprtt("cell",$size);siprtt("cellwrap",$description);siprt("endrow");
+    }
+  }
+
+  siprt("tabrow");siprtt("tabhead","Total");siprtt("tabhead","");siprtt("tabhead","");
+  siprtt("tabhead",int($total/1024)." MBytes");
+  siprtt("tabhead",$num." packets");siprt("endrow");
+  siprt("endtab");
+}
+
+sub si_installed_rpm() {
   siprtt("h1","Installed packages");
   siprtt("tabborder","llll");
   siprt("tabrow");siprtt("tabhead","Name");siprtt("tabhead","Version");
@@ -1244,7 +1357,18 @@ sub si_installed() {
   siprt("endtab");
 }
 
-sub si_selection() {
+sub si_selection_deb() {
+  my $deb_sel = "sitar-$HOSTNAME-deb-selections";
+  sysopen (DEBSEL, "$deb_sel", O_CREAT|O_EXCL|O_WRONLY) || die "can't create '$deb_sel'!";
+  open (IN, "$DPKG --get-selections |");
+  while (<IN>) {
+    print DEBSEL $_;
+  }
+  close IN;
+  close DEBSEL;
+}
+
+sub si_selection_rpm() {
   open (RPMS, "$RPM -qa --queryformat '%{NAME}::%{SIZE}\n' |");
   my $total = 0;
   my $num   = 0;
@@ -1270,6 +1394,7 @@ sub si_getopts($) {
 
 }
 
+
 {
 	if($printhelp || $siprt_mode eq "" ) {
 		print "Options available:\n\t--output=<format>\tFormats: html, latex, (planned: plain, xml, alice)\n\t--file=<file>\t\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
@@ -1293,6 +1418,7 @@ sub si_getopts($) {
 			print "\n\n\\newpage\n\n";
 			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
 		}
+		# si_df();
 		si_mount();
 		si_ide();
 		si_scsi();
@@ -1318,13 +1444,24 @@ sub si_getopts($) {
 		 	print "\n\n\\newpage\n\n";
 		}
 		si_proc_sys();
-		si_etc();
-		si_installed();
+	if ($distribution eq "suse") {
+	   si_etc_suse();
+	   si_installed_rpm();
 		si_proc_config();
+	} elsif ($distribution eq "debian") {
+	   si_etc_debian();
+	   si_installed_deb();
+	   si_kernel_config();
+	   si_selection_deb();
+	} else {
+	   si_etc();
+	}
 		siprt("toc");
 		siprt("body");
 		siprt("footer");
 		open (STDOUT,  ">&SAVEOUT");
+
+	
 		# print "\t/tmp/sitar-$HOSTNAME.$mm\n";
 		# }
 		# open (SAVEOUT, ">&STDOUT");
@@ -1338,4 +1475,5 @@ sub si_getopts($) {
 		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
 	}
 }
+
 
