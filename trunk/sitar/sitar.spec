@@ -46,7 +46,7 @@ Packager:	Matthias G. Eckermann <mge@suse.de>
 Sitar prepares system information using perl and binary tools, and by
 reading the /proc file system.
 
-Output is in HTML (LaTeX, planned: XML, SQL), and can be converted to
+Output is in HTML, LaTeX and (docbook) XML, and can be converted to
 PS and PDF.
 
 This program must be run as "root".
