@@ -30,6 +30,9 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.30  2004/09/17 14:56:07  mge
+#  added lspci for kernel 2.6 without /proc/pci
+#
 #  Revision 1.29  2004/03/22 14:24:02  mge
 #  - fixed off by one in directory name
 #  - cleanups
@@ -139,8 +142,7 @@
 Vendor:		SUSE LINUX AG, Germany
 #Distribution:	United Linux / SuSE Linux
 Name:		sitar
-Packager:	Matthias G. Eckermann <mge@suse.de>
-Version:	0.8.11
+Version:	0.8.12
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -148,6 +150,9 @@ Copyright:	GPL
 Group: 		Applications/System
 BuildRoot:	/tmp/root-%{name}/
 BuildArch: 	noarch
+
+Packager:	Matthias G. Eckermann <mge@suse.de>
+Distribution:   SuSE SLES-9 (i586) Addon
 
 %description 
 Prepare system information using perl and binary tools,
@@ -173,7 +178,7 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 %{?suse_check}
 
 %files
-%doc sitar.html sitar.ps LICENSE
+%doc /usr/share/doc/packages/sitar
 %attr(700, root, root) /usr/sbin/sitar.pl
 %attr(700, root, root) /usr/sbin/sitar
 %attr(700, root, root) /usr/sbin/support_all.pl

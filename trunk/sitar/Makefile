@@ -30,6 +30,9 @@
 #		Falko Trojahn
 #
 #  $Log: Makefile,v $
+#  Revision 1.31  2004/09/17 14:56:07  mge
+#  added lspci for kernel 2.6 without /proc/pci
+#
 #  Revision 1.30  2004/03/22 14:38:46  mge
 #  - Update LICENSE to 2004
 #  - fix typo in Makefile ( cvzSpf -> tvSjpf )
@@ -148,9 +151,9 @@
 #
 
 PREFIX=/usr
-DOCDIR=${PREFIX}/share/doc
+DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.8.11
+RELEASE=0.8.12
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -165,7 +168,7 @@ clean:
 
 rpm:	clean
 	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
-	- (pushd /tmp/ ; rpm -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
+	- (pushd /tmp/ ; rpmbuild -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
 	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
 sitar.pl:	sitar.pl.in Makefile
