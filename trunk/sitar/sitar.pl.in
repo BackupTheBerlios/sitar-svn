@@ -76,6 +76,10 @@ C<.html> for HTML, C<.tex> for LaTeX, C<.sel> for YaST-Selection-files.
 
 =back
 
+=head1 FILES
+
+From a tool called C<PaDS> by Thorsten Wandersmann sitar inherited the ability, to extend the list of configuration files. To achieve that, just put a perl-snippet in the directory C</var/lib/support/>; this snippet B<must> have the extension C<.include> and may include only one perl-statement: an array-declaration for the array C<@files>, that contains the file-names with full path, see EXAMPLES below.
+
 =head1 ERRORS
 
 The program may B<silently> fail if either the C</proc> Filesystem does not exist or the program is not startet by the C<root> user.
@@ -98,6 +102,17 @@ and twice (as an ordinary user):
 
 C<pdflatex /tmp/$HOSTNAME.tex>
 
+A typical file to include the configurations files of the application C<foobar> could look like this:
+
+ # /var/lib/support/foobar.include
+ 
+ @files= (
+ 	"/etc/opt/foobar/foo.conf",
+ 	"/etc/opt/foobar/bar.conf"
+ 	);
+
+ # eof
+ 
 =head1 AUTHOR
 
 The SITAR project was created by Matthias G. Eckermann <mge@suse.de>; Stephan
@@ -2446,6 +2461,9 @@ sub si_run_sitar() {
 
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.48  2005/01/18 11:46:35  mge
+#  added information about /var/lib/support/*.include
+#
 #  Revision 1.47  2005/01/18 11:21:36  mge
 #  SuSE Linux AG -> SuSE Linux, a Novell Business
 #
