@@ -39,16 +39,24 @@ BuildArch: 	noarch
 Packager:	Matthias G. Eckermann <mge@suse.de>
 
 %description 
-Prepare system information using perl and binary tools,
-reading the /proc filesystem, ...
-Output is in HTML and LaTeX (planned: XML, SQL), 
-can be converted to PS and PDF.
-This program must run as "root".
+Sitar prepares system information using perl and binary tools, and by
+reading the /proc file system.
+
+Output is in HTML (LaTeX, planned: XML, SQL), and can be converted to
+PS and PDF.
+
+This program must be run as "root".
+
+sitar.pl includes scsiinfo by Eric Youngdale, Michael Weller
+<eowmob@exp-math.uni-essen.de> and ide_info by David A. Hinds
+<dhinds@hyper.stanford.edu>.
+
 Comment: Sitar is an ancient Indian instrument as well.
+
 Authors:
 --------
-	Matthias Eckermann <mge@suse.de>
-	and contributors
+    Matthias Eckermann  <mge@suse.de>
+    and contributors
 
 %prep
 %setup
@@ -57,16 +65,22 @@ Authors:
 make
 
 %install
+if [ -n "$RPM_BUILD_ROOT" ] ; then
+   [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+fi
 make DESTDIR=${RPM_BUILD_ROOT} install
+rm -rf $RPM_BUILD_ROOT/usr/share/doc/sitar
 %{?suse_check}
 
 %files
-%doc /usr/share/doc/packages/sitar
+%defattr(-,root,root)
+%doc sitar.html sitar.ps LICENSE
 %attr(700, root, root) /usr/sbin/sitar.pl
 %attr(700, root, root) /usr/sbin/sitar
 %attr(700, root, root) /usr/sbin/support_all.pl
 /usr/share/man/man1/sitar.1.gz
 /usr/share/man/man1/support_all.1.gz
+%dir /usr/share/sitar
 /usr/share/sitar/proc.txt
 
 %clean
@@ -76,6 +90,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.33  2005/01/18 11:31:41  mge
+#  *** empty log message ***
+#
 #  Revision 1.32  2005/01/18 11:23:42  mge
 #  removed suse.png suse.xpm
 #
