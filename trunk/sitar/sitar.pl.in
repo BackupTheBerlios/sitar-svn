@@ -236,7 +236,9 @@ my %proc_h      = ();
 my $machinetype = `/bin/uname -m`;
 my $config_dir  = "/var/lib/support";
 #
-# $html_header
+# HEADER
+#
+# # <?xml-stylesheet type="text/css2" href="file:///xyz.css"?>
 #
 my $sdocbook_header = "<?xml version=\"1.0\"?>
 <!DOCTYPE article
@@ -2595,6 +2597,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.58  2005/01/18 18:37:48  mge
+#  reminder on how to include stylesheets into xml files
+#
 #  Revision 1.57  2005/01/18 18:35:23  mge
 #  further enhance handling of .include files
 #
