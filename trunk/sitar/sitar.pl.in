@@ -24,6 +24,9 @@
 #		Waldemar Brodkorb
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.12  2001/08/17 11:15:57  mge
+#  more lines for manpage
+#
 #  Revision 1.11  2001/08/15 04:30:51  mge
 #  cosmetic change
 #
@@ -53,15 +56,37 @@ Prepare system information using perl, reading the /proc filesystem. Output is i
 
 =item B<--help>
 
+Prints a short summary of options.
+
 =item B<--format>=I<format>
 
+Tell SITAR, which output format to use. At the moment three formats are supported:
+
+=over
+
+=item LaTeX
+
+=item HTML
+
+=item YaST1-sel
+
+=back
+
 =item B<--outfile>=I<file> 
+
+All formatted output will be stored in the file given here.
+Please don't forget to give the right extension here:
+C<.html> for HTML, C<.tex> for LaTeX, C<.sel> for YaST1-sel-files.
 
 =back
 
 =head1 ERRORS
 
+The program may B<silently> fail if either the C</proc> Filesystem does not exist or the program is not startet by the C<root> user.
+
 =head1 DIAGNOSTICS
+
+While running, stdout is redirected to the designated C<outfile> file. So one will find diagnostics in this file; this (not very helpful) behaviour may change in the future.
 
 =head1 EXAMPLES
 
@@ -75,6 +100,8 @@ Prepare system information using perl, reading the /proc filesystem. Output is i
 
 =head1 RESTRICTIONS
 
+Up to now SITAR does not support C<iptables> or other stuff proprietary to Linux Kernel 2.4. We are working on some of these issues.
+
 =head1 NOTES
 
 =head1 SEE ALSO
@@ -83,7 +110,7 @@ Prepare system information using perl, reading the /proc filesystem. Output is i
 
 The SITAR project was created by Matthias G. Eckermann <mge@suse.de>; Stephan
 Müller helped with Firewalling and Security issues; Janto Trappe and Waldemar
-Brodkorb created the Debian port; an adaption to RedHat Linux was done by.
+Brodkorb created the Debian port.
 
 For more information on SITAR, see: http://sitar.berlios.de/
 
@@ -504,7 +531,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.11 2001/08/15 04:30:51 mge Exp $
+	#       $Id: sitar.pl.in,v 1.12 2001/08/17 11:15:57 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
