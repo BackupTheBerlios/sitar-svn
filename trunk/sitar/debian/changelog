@@ -1,9 +1,0 @@
-sitar (0.6.7-1) unstable; urgency=low
-
-  * Initial release.
-
- --  Waldemar Brodkorb <waldemar.brodkorb@web.de>  Tue, 21 Aug 2001 12:48:43 +0200
-
-Local variables:
-mode: debian-changelog
-End:
