@@ -25,6 +25,14 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.15  2002/06/01 21:14:24  waldb
+#  fixed tex output on debian systems
+#  removed restrictions from pod (iptables support is now included)
+#  only shortdescriptions for deb's
+#  commented out selection routine for debs
+#  software raid section only when /proc/mdstat exist
+#  new version in Makefile
+#
 #  Revision 1.14  2002/04/11 14:43:32  mge
 #  added check for /etc/sysconfig
 #  release 0.7.1
@@ -68,7 +76,7 @@
 PREFIX=usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.7.1
+RELEASE=0.7.3
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
