@@ -24,12 +24,13 @@
 #		Andreas Rother 		Uwe Hering
 #		Jan Jensen 		Falko Trojahn
 #		Stephan Martin		Holger Dopp
+#		Seth Arnold
 #
 
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.9.pre8
+RELEASE=0.9.pre10
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -91,6 +92,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.43  2005/03/11 08:55:38  mge
+#  improved Immunix/AppArmor integration; thanks to Seth Arnold
+#
 #  Revision 1.42  2005/03/08 15:37:01  mge
 #  added support for AppArmor by Immunix
 #

@@ -24,11 +24,12 @@
 #		Andreas Rother		Uwe Hering
 #		Jan Jensen		Falko Trojahn
 #		Stephan Martin		Holger Dopp
+#		Seth Arnold
 #
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.pre8
+Version:	0.9.pre10
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -93,12 +94,23 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Fri Mar 11 2005 - mge@suse.de
+- 0.9.pre10
+- improved Immunix/AppArmor integration; thanks to Seth Arnold
+* Tue Mar 08 2005 - mge@suse.de
+- 0.9.pre9
+- add some stat()-information to config-files
+- exclude listing backup-files from /etc/sysconfig
+  (*~ #* *.bak *.bac *.orig *.ori) by request of mh@novell.com
 * Tue Mar 08 2005 - mge@suse.de
 - 0.9.pre8
 - add support for AppArmor (subdomain) by Immunix
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.45  2005/03/11 08:55:38  mge
+#  improved Immunix/AppArmor integration; thanks to Seth Arnold
+#
 #  Revision 1.44  2005/03/08 18:19:45  mge
 #  added first support for stat() in config-files; used perltidy again
 #

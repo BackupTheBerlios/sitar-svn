@@ -25,6 +25,7 @@
 #		Andreas Rother		Uwe Hering
 #		Jan Jensen		Falko Trojahn
 #		Stephan Martin		Holger Dopp
+#		Seth Arnold
 #
 
 =head1 NAME
@@ -265,7 +266,9 @@ my $machinetype           = `/bin/uname -m`;
 my $config_dir            = "/var/lib/support";
 my $apparmor_verbose_name = "AppArmor (by Immunix)";
 my $apparmor_kernel_path  = "/subdomain";
-my $apparmor_config_path  = "/etc/subdomain.d";
+my $apparmor_config_path  = "/etc/logprof.conf";
+my $apparmor_config_directory  = "/etc/immunix/";
+my $apparmor_profiles_path  = "/etc/subdomain.d";
 #
 # HEADER
 #
@@ -1915,13 +1918,17 @@ sub si_packetfilter() {
 	}
 }
 
-sub si_conf_filename_stat($) {
-	my ( $filename ) = @_;
+sub si_conf_filename_stat($$) {
+	my ( $filename, $comment ) = @_;
 	my ( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
 	siprtttt( "tabborder", "ll", "stat:$filename", 2 );
 	siprt( "tabrow" );
+	siprtt( "cell", "uid gid" );
+	siprtt( "cell", "$ff_uid $ff_gid" );
+	siprt( "endrow" );
+	siprt( "tabrow" );
 	siprtt( "cell", "mode" );
-	siprtt( "cell", ( $ff_mode ) );
+	siprtt( "cell", sprintf "%lo", ( $ff_mode & 07777 ) );
 	siprt( "endrow" );
 	siprt( "tabrow" );
 	siprtt( "cell", "size" );
@@ -1931,82 +1938,89 @@ sub si_conf_filename_stat($) {
 	siprtt( "cell", "mtime" );
 	siprtt( "cell", localtime( $ff_mtime ) );
 	siprt( "endrow" );
+	siprt( "tabrow" );
+	siprtt( "cell", "line comment char" );
+	siprtt( "cell", $comment );
+	siprt( "endrow" );
 	siprt( "endtab" );
 }
 
 sub si_conf_secure($$$) {
 	my ( $filename, $comment, $blankout ) = @_;
-	siprtt( "h3", $filename );
-	# print STDERR $filename, ": ", $comment, "\n";
-	si_conf_filename_stat( $filename );
-	siprt( "pre" );
-	if ( $comment eq "/**/" ) {
-		open( CONFIG, $filename );
-		my $old_recsep = $/;
-		undef $/;
-		$ttt = <CONFIG>;
-		$ttt =~ s#/\*.*?\*/##gs;
-		$ttt =~ s#//.*##g;
-		$ttt =~ s/\n\s*\n/\n/gs;
-		close( CONFIG );
-		siprtt( "verb", $ttt );
-		$/ = $old_recsep;
-	} else {
-		open( CONFIG, "<$filename" );
-		while ( <CONFIG> ) {
-			chomp();
-			if ( !m/^\s*($comment)|^\s*$|^$/ ) {
-				if ( m/$blankout/ ) {
-					s/($blankout.*=)(.*)/$1### sensitive data blanked out ###/;
+	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
+		siprtt( "h3", $filename );
+		# print STDERR $filename, ": ", $comment, "\n";
+		si_conf_filename_stat( $filename, $comment );
+		siprt( "pre" );
+		if ( $comment eq "/**/" ) {
+			open( CONFIG, $filename );
+			my $old_recsep = $/;
+			undef $/;
+			$ttt = <CONFIG>;
+			$ttt =~ s#/\*.*?\*/##gs;
+			$ttt =~ s#//.*##g;
+			$ttt =~ s/\n\s*\n/\n/gs;
+			close( CONFIG );
+			siprtt( "verb", $ttt );
+			$/ = $old_recsep;
+		} else {
+			open( CONFIG, "<$filename" );
+			while ( <CONFIG> ) {
+				chomp();
+				if ( !m/^\s*($comment)|^\s*$|^$/ ) {
+					if ( m/$blankout/ ) {
+						s/($blankout.*=)(.*)/$1### sensitive data blanked out ###/;
+					}
+					siprtt( "verb", "$_\n" );
 				}
-				siprtt( "verb", "$_\n" );
 			}
+			close( CONFIG );
 		}
-		close( CONFIG );
+		siprt( "endpre" );
 	}
-	siprt( "endpre" );
 }
 
 sub si_conf($$$) {
 	my ( $title, $filename, $comment ) = @_;
-	## if( ( $NN !~ /*.orig/ /*.org/ /*.bak/ /*~/ /\#*/ ) && () )
-	if ( $title eq $filename ) {
-		siprtt( "h3", "$filename" );
-	} else {
-		siprtt( "h3", "$title - $filename" );
-	}
-	si_conf_filename_stat( $filename );
-	# print STDERR $filename, ": ", $comment, "\n";
-	siprt( "pre" );
-	if ( $comment eq "/**/" ) {
-		open( CONFIG, $filename );
-		my $old_recsep = $/;
-		undef $/;
-		$ttt = <CONFIG>;
-		$ttt =~ s#/\*.*?\*/##gs;
-		$ttt =~ s#//.*##g;
-		$ttt =~ s/\n\s*\n/\n/gs;
-		close( CONFIG );
-		siprtt( "verb", $ttt );
-		$/ = $old_recsep;
-	} elsif ( $comment eq "" ) {
-		open( CONFIG, "<$filename" );
-		while ( <CONFIG> ) {
-			chomp();
-			siprtt( "verb", "$_\n" );
+	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
+		if ( $title eq $filename ) {
+			siprtt( "h3", "$filename" );
+		} else {
+			siprtt( "h3", "$title - $filename" );
 		}
-		close( CONFIG );
-	} else {
-		open( CONFIG, "<$filename" );
-		while ( <CONFIG> ) {
-			chomp();
-			if ( !m/^\s*($comment)|^\s*$|^$/ ) {
+		si_conf_filename_stat( $filename, $comment );
+		# print STDERR $filename, ": ", $comment, "\n";
+		siprt( "pre" );
+		if ( $comment eq "/**/" ) {
+			open( CONFIG, $filename );
+			my $old_recsep = $/;
+			undef $/;
+			$ttt = <CONFIG>;
+			$ttt =~ s#/\*.*?\*/##gs;
+			$ttt =~ s#//.*##g;
+			$ttt =~ s/\n\s*\n/\n/gs;
+			close( CONFIG );
+			siprtt( "verb", $ttt );
+			$/ = $old_recsep;
+		} elsif ( $comment eq "" ) {
+			open( CONFIG, "<$filename" );
+			while ( <CONFIG> ) {
+				chomp();
 				siprtt( "verb", "$_\n" );
 			}
+			close( CONFIG );
+		} else {
+			open( CONFIG, "<$filename" );
+			while ( <CONFIG> ) {
+				chomp();
+				if ( !m/^\s*($comment)|^\s*$|^$/ ) {
+					siprtt( "verb", "$_\n" );
+				}
+			}
+			close( CONFIG );
 		}
-		close( CONFIG );
+		siprt( "endpre" );
 	}
-	siprt( "endpre" );
 }
 
 sub si_build_proc_description() {
@@ -2068,7 +2082,7 @@ sub si_proc_sys_net () {
 }
 
 sub si_immunix_apparmor () {
-	if ( ( -d "$apparmor_kernel_path" ) && ( -d "$apparmor_config_path" ) ) {
+	if ( ( -d "$apparmor_kernel_path" ) && ( -d "$apparmor_profiles_path" ) ) {
 		siprtt( "h1", $apparmor_verbose_name );
 		siprtt( "h2", "Current Configuration" );
 		siprtttt( "tabborder", "lll", "Configuration", 3 );
@@ -2108,8 +2122,17 @@ sub si_immunix_apparmor () {
 		}
 		open( STDERR, ">&SAVEERR" );
 		siprt( "endtab" );
+		if ( -f "$apparmor_config_path" ) {
+			si_conf( $apparmor_config_path, $apparmor_config_path, "\#" );
+		}
+		if ( -d "$apparmor_config_directory" ) {
+			for $NN ( `/usr/bin/find $apparmor_config_directory -type f` ) {
+				chomp $NN;
+				si_conf( $NN, $NN, "\#" );
+			}
+		}
 		siprtt( "h2", "Profiles" );
-		for $NN ( `/usr/bin/find $apparmor_config_path -type f` ) {
+		for $NN ( `/usr/bin/find $apparmor_profiles_path -type f` ) {
 			chomp $NN;
 			si_conf( $NN, $NN, "" );
 		}
@@ -2740,6 +2763,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.69  2005/03/11 08:55:38  mge
+#  improved Immunix/AppArmor integration; thanks to Seth Arnold
+#
 #  Revision 1.68  2005/03/08 18:19:45  mge
 #  added first support for stat() in config-files; used perltidy again
 #
