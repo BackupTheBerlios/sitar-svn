@@ -1,17 +1,36 @@
 #!/usr/bin/perl 
 
+use Getopt::Long;
+
 my $RELEASE        = "%%RELEASE%%";
-my $RELDATE        = "%%RELDATE%%";
 my $PREFIX         = "%%PREFIX%%";
-my $RPM            = "/bin/rpm";
-$ENV{PATH}         = "";
-chomp(my $HOSTNAME = `/bin/hostname -f`);
-my $UNAME          = `/bin/uname -a`;
-my $UNAMER         = `/bin/uname -r`;
-my $SuSE_release   = `/usr/bin/head -1 /etc/SuSE-release`;
-my $now_string     = localtime();
-my %proc_h         = ();
-my $machinetype    = `/bin/uname -m`;
+
+my $siprt_mode = ""; 
+my $outfile = ""; 
+my $printhelp;
+GetOptions (	'output=s'	=> \$siprt_mode, 
+		'file=s' 	=> \$outfile, 
+	     	'help'		=> \$printhelp
+	   );
+
+my $RPM = "/bin/rpm"; 
+my $LS = "/bin/ls"; 
+my $HWINFO = "/usr/sbin/hwinfo";
+
+$ENV{PATH} = ""; chomp(my $HOSTNAME = `/bin/hostname -f`);
+
+my $UNAME = `/bin/uname -a`; 
+my $UNAMER = `/bin/uname -r`; 
+my $SuSE_release = `/usr/bin/head -1 /etc/SuSE-release`;
+
+my $now_string = localtime();
+my %proc_h = ();
+my $machinetype = `/bin/uname -m`;
+my $config_dir = "/var/lib/support/";
+
+#
+# $html_header
+#
 my $html_header    = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"
   \"http://www.w3.org/TR/REC-html40/loose.dtd\">
 <html>
@@ -43,13 +62,12 @@ my $html_header    = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional/
     ADDRESS         { font-family: sans-serif; font-style: italic; }
   -->
   </style>
-    <title>sitar: $HOSTNAME, $now_string</title>
+    <title>$HOSTNAME, $now_string</title>
 </head>
 <body bgcolor=\"#FFFFFF\">
   <table summary=\"header\" border=\"0\" width=\"100%\">
     <tr>
-      <td rowspan=\"2\" align=\"left\"><img src=\"suse.png\" alt=\"SuSE\" width=\"88\"></td>
-      <td valign=\"bottom\"><h1>sitar: $HOSTNAME, $now_string</h1></td>
+      <td valign=\"bottom\"><h1>$HOSTNAME, $now_string</h1></td>
     </tr>
     <tr>
       <td valign=\"top\"><h2>$UNAME<br>$SuSE_release</h2></td>
@@ -57,12 +75,12 @@ my $html_header    = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional/
   </table>
   <hr>";
 my  $html_footer ="<hr>
-<address>
-sitar $RELEASE &copy; $RELDATE by SuSE Linux Solutions AG, 
-<a href=\"mailto:mge\@suse.de\">mge\@suse.de</a>
-</address>
+<address>&copy; 2001 SuSE Linux AG</address>
 </html>\n";
 
+#
+# $tex_header
+#
 $UNAME	  =~ s/\_/\\_/g;
 $UNAME	  =~ s/\#/\\\#/g;
 my $tex_header = "\\documentclass[a4paper,11pt,headinclude,a4paper]\{scrartcl\} 
@@ -77,9 +95,9 @@ my $tex_header = "\\documentclass[a4paper,11pt,headinclude,a4paper]\{scrartcl\}
 \\newcommand\{\\tm\}\{\\texttrademark\} 
 % 
 \\begin\{document\} 
-\\title\{sitar: $HOSTNAME, $now_string \\\\
+\\title\{$HOSTNAME, $now_string \\\\
 \{\\normalsize $UNAME\\ $SuSE_release\} \}
-\\author\{sitar $RELEASE \\textcopyright{} $RELDATE by SuSE Linux Solutions AG\}
+\\author\{$RELEASE \\textcopyright{} 2001 by SuSE Linux AG\}
 \\maketitle
 \\tableofcontents 
 \\newpage
@@ -87,14 +105,16 @@ my $tex_header = "\\documentclass[a4paper,11pt,headinclude,a4paper]\{scrartcl\}
 my $tex_footer="\n\\end\{document\}\n";
 my $old_tex_footer = "\n
 \\par\\noindent
-\\textsf{sitar $RELEASE \\textcopyright{} $RELDATE by Matthias G. Eckermann,\\\\
-  SuSE Linux Solutions AG, Gesch\\\"aftsstelle M\\\"unchen}\\par
+\\textsf{\\textcopyright{} 2001 SuSE Linux AG}\\par
 \\end\{document\}\n";
 
+
+#
+# Table of contents
+#
 my  $seccnt=0;
 my  $subseccnt=0;
 my  $subsubseccnt=0;
-my  $siprt_mode;
 my  $OutputBuffer="";
 my  $TOCBuffer="";
 my  $lastTOClevel=0;
@@ -171,7 +191,7 @@ sub siprint($$$) {
     }
     if($m eq "body")     {print $OutputBuffer;}
     if($m eq "footer")   {print $html_footer;}
-  }elsif($siprt_mode eq "tex") {
+  }elsif( $siprt_mode eq "tex" || $siprt_mode eq "latex" ) {
     if($IsVerbatim==0) {
       $value =~ s/\_/\\_/g;
       $value =~ s/\#/\\\#/g;
@@ -322,7 +342,7 @@ sub si_lsdev() {
   #	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
   #	Date:        1996-01-22 19:06:22
   #	Last Change: 1998-05-31 15:26:58
-  #       $Id: sitar.pl.in,v 1.1 2001/08/14 02:57:40 mge Exp $
+  #       $Id: sitar.pl.in,v 1.2 2001/08/14 03:10:53 mge Exp $
   my %device_h = ();
   use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
   my %dma      = ();
@@ -409,17 +429,19 @@ sub si_ide() {
 	      if(m/^physical/g){s/^physical\s+(.*)$/$1/gs; $geop=$_;}
 	    }
 	    close(GEO);
-	    open(IDEINFO,"$PREFIX/share/sitar/si_ide_info ${hddev} | ");
-	    while(<IDEINFO>) {
-	      if(m/FW_REV/g){s/FW_REV=\"(.*)\"$/$1/gs; $fw_rev=$_;}
-	      if(m/SERIAL_NO/g){s/SERIAL_NO=\"(.*)\"$/$1/gs; $serial=$_;}
-	    }
+	    # open(IDEINFO,"$HWINFO --disk | ");
+	    # while(<IDEINFO>) {
+	    #   if(m/FW_REV/g){s/FW_REV=\"(.*)\"$/$1/gs; $fw_rev=$_;}
+	    #   if(m/SERIAL_NO/g){s/SERIAL_NO=\"(.*)\"$/$1/gs; $serial=$_;}
+	    # }
 	    close(IDEINFO);
 	    siprtt("cell",$geop);
 	    siprtt("cell",$geol);
 	    siprtt("cell",$capa);
-	    siprtt("cell",$fw_rev);
-	    siprtt("cell",$serial)
+	    # siprtt("cell",$fw_rev);
+	    # siprtt("cell",$serial)
+	    siprtt("cell","-");
+	    siprtt("cell","-")
 	  }else{
 	    siprttt("headcol", "", "5");
 	  }
@@ -632,41 +654,6 @@ sub si_scsi() {
       }else{}
     }
     close(SCSIINFO);
-  }
-  if($header){
-    siprt("endtab");
-  }
-}
-
-sub si_scsi_old() {
-  my $s=`$PREFIX/share/sitar/si_scsiinfo -l`;
-  $s=~ s/ /:/gs;
-  # $l=chop($s);
-  my $header=0;
-  for $n (split /:/,$s) {
-    if($n ne "\n"){
-      open(SCSIINFO, "$PREFIX/share/sitar/si_scsiinfo -is $n | ");
-      while(<SCSIINFO>) {
-	if(!$header){
-          siprtt("h1","SCSI");
-          siprtt("tabborder","lllll");
-          siprt("tabrow");siprtt("tabhead","Device");siprtt("tabhead","Vendor");
-          siprtt("tabhead","Name");siprtt("tabhead","Firmware");
-          siprtt("tabhead","Serial");siprt("endrow");
-	  $header=1;
-        }
-	if(m/Vendor:\s+(.*)$/gs){$vendor=$1;}
-	if(m/Product:\s+(.*)$/gs){ $product=$1;}
-	if(m/Revision level:\s+([^ ]*)/gs){$rev=$1;}
-	if(m/Serial Number\s+\'([^ ]*)/gs){$serial=$1;}
-      }
-      close(SCSIINFO);
-      if($header){
-        siprt("tabrow");siprtt("cell",$n);siprtt("cell",$vendor);
-        siprtt("cell",$product);siprtt("cell",$rev);siprtt("cell",$serial);
-        siprt("endrow");
-      }
-    }
   }
   if($header){
     siprt("endtab");
@@ -1074,31 +1061,12 @@ sub si_proc_sys () {
 }
 
 sub si_etc() {
- siprtt("h1","/etc");
+ siprtt("h1","configuration");
   my @lines = ();
   open (RCCONFIG, "</etc/rc.config");
   while (<RCCONFIG>) {
     s/="no"/=no/i;
     s/="yes"/=yes/i;
-    if(m/START_DHCPD=yes/i)   {push @lines, $_; si_conf("/etc/dhcpd.conf", "\#");}
-    if(m/START_HTTPD=yes/i)   {push @lines, $_; si_conf("/etc/httpd/httpd.conf", "\#");}
-    if(m/START_SLAPD=yes/i)   {push @lines, $_; si_conf("/etc/openldap/slapd.conf", "\#");}
-    if(m/START_INETD=yes/i)   {push @lines, $_; si_conf("/etc/inetd.conf", "\#");}
-    if(m/START_XINETD=yes/i)  {push @lines, $_; si_conf("/etc/xinetd.conf", "\#");}
-    if(m/START_INN=yes/i)     {push @lines, $_; si_conf("", "\#");}
-    if(m/START_LPD=yes/i)     {push @lines, $_; si_conf("/etc/printcap", "\#");}
-    if(m/START_NAMED=yes/i)   {
-      push @lines, $_; 
-      si_conf("/etc/named.conf", "/**/");
-      for $NN (`/usr/bin/find /var/named -name "*.zone"` ) {
-	chomp $NN;
-	si_conf($NN, ";");
-      }
-      for $NN (`/usr/bin/find /var/named -name "*.db"` ) {
-	chomp $NN;
-	si_conf($NN, ";");
-      }
-    }
     if(m/START_POSTFIX=yes/i) {
       push @lines, $_; 
       siprtt("h2","postfix (postconf -n)");
@@ -1112,27 +1080,11 @@ sub si_etc() {
       siprt("endpre");  
       if(-r "/etc/aliases")    {si_conf("/etc/aliases", "\#");}
     }
-    if(m/START_SMB=yes/i)     {push @lines, $_; si_conf("/etc/smb.conf", ";");}
-    if(m/START_SQUID=yes/i)   {push @lines, $_; si_conf("/etc/squid.conf", "\#");}
-    if(m/START_SSHD=yes/i)    {
-      push @lines, $_; 
-      if(-r "/etc/ssh/sshd_config"){
-	si_conf("/etc/ssh/sshd_config", "\#");
-      }else{
-	si_conf("/etc/sshd_config", "\#");
-      }
-    }
-    if(m/START_SYSLOG=yes/i)  {si_conf("/etc/syslog.conf", "\#");}
     if(!m/^#|^$|""/) {
       push @lines, $_;
     }
   }
   close (RCCONFIG);
-  if(-r "/etc/modules.conf"){
-    si_conf("/etc/modules.conf", "\#");
-  }else{
-    si_conf("/etc/conf.modules", "\#");
-  }
   siprtt("h2","/etc/rc.config");
   siprt("pre");
   for $ll (@lines) {
@@ -1141,21 +1093,76 @@ sub si_etc() {
     # siprt("tabrow");siprtt("cell",$key);siprtt("cell",$val);siprt("endrow");
   }
   siprt("endpre");
-  if(-r "/etc/hosts")                      {si_conf("/etc/hosts", "\#");}
-  if(-r "/etc/lilo.conf")                  {si_conf("/etc/lilo.conf", "\#");}
-  if(-r "/etc/fstab")                      {si_conf("/etc/fstab", "\#");}
-  if(-r "/etc/inittab")                    {si_conf("/etc/inittab", "\#");}
-  if(-r "/etc/passwd")                     {si_conf("/etc/passwd", "\#");}
-  if(-r "/etc/group")                      {si_conf("/etc/group", "\#");}
-  if(-r "/etc/rc.firewall")                {si_conf("/etc/rc.firewall", "\#");}
-  if(-r "/var/spool/fax/etc/config")       {si_conf("/var/spool/fax/etc/config", "\#");}
-  if(-r "/var/spool/fax/etc/config.modem") {si_conf("/var/spool/fax/etc/config.modem", "\#");}
   if(-r "/etc/rc.config.d" )       {
       for $NN (`/usr/bin/find /etc/rc.config.d -name "*.config"` ) {
 	chomp $NN;
 	si_conf($NN, "\#");
       }
   }
+  my %myfiles=();
+  my @allfiles = qw (
+	/etc/squid.conf
+	/etc/syslog.conf
+	/etc/dhcpd.conf
+	/etc/httpd/httpd.conf
+	/etc/openldap/slapd.conf
+	/etc/inetd.conf
+	/etc/xinetd.conf
+	/etc/printcap
+	/etc/hosts
+	/etc/lilo.conf
+	/etc/fstab
+	/etc/inittab
+	/etc/passwd
+	/etc/group
+	/etc/rc.firewall
+	/var/spool/fax/etc/config
+	/var/spool/fax/etc/config.modem
+  );
+  if(-d $config_dir){
+	  foreach (`$LS -1 $config_dir/*.include`) {
+		chomp ($_);
+	        do "$_";
+        	push @allfiles, @files; 
+	  }
+  }
+  foreach (@allfiles) {
+	$myfiles{$_}=0;
+  }
+  foreach $mm (sort keys %myfiles) {
+	if( $mm !~ /proc/) {
+  		if(-r $mm)	{si_conf($mm, "\#");}
+	}
+  }
+  #
+  # Samba
+  #  
+  if(-r "/etc/smb.conf") {si_conf("/etc/smb.conf", ";");}
+  #
+  # named
+  #  
+  if(-r "/etc/named.conf") {
+	si_conf("/etc/named.conf", "/**/");
+	for $NN (`/usr/bin/find /var/named -name "*.zone"` ) {
+		chomp $NN;
+		si_conf($NN, ";");
+	}
+  	for $NN (`/usr/bin/find /var/named -name "*.db"` ) {
+		chomp $NN;
+		si_conf($NN, ";");
+  	}
+  }
+  #
+  # SSH/OpenSSH
+  #
+  if(-r "/etc/ssh/sshd_config"){
+	si_conf("/etc/ssh/sshd_config", "\#");
+  }elsif( "/etc/sshd_config"){
+	si_conf("/etc/sshd_config", "\#");
+  }
+  #
+  # SuSE proxy suite
+  #
   if(-r "/etc/proxy-suite" )       {
       for $NN (`/usr/bin/find /etc/proxy-suite -name "*.conf"` ) {
 	chomp $NN;
@@ -1234,79 +1241,76 @@ sub si_selection() {
   print "Llatsniot:\n";
 }
 
-sub si_print_help() {
-
-}
-
 sub si_getopts($) {
 
 }
 
-sub si_lspci() {
-  print `/sbin/lspci -bxxxvv`;
-}
-
 {
-  print "sitar $RELEASE © $RELDATE by SuSE Linux Solutions AG (mge\@suse.de)\n";
-  ## print "\t- expect problems with newer FDISKs!\t\n";
-  print "Results are in / Ergebnisse finden Sie in:\n";
-  ## @siprt_modes= ("html", "tex", "xml", "sql", "tex-side");
-  @siprt_modes= ("html", "tex" );
-  for $mm (@siprt_modes) {
-    $siprt_mode=$mm;
-    open (SAVEOUT, ">&STDOUT");
-    open (STDOUT,  ">/tmp/sitar-$HOSTNAME.$mm");
-    siprt("header");
-    si_cpu_and_memory();
-    si_lsdev();
-    si_pci();
-    si_pnp();
-    if($mm eq "tex"){
-      print "\n\n\\newpage\n\n";
-      print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
-    }
-    si_mount();
-    si_ide();
-    si_scsi();
-    si_gdth();
-    si_ips();
-    si_compaq_smart();
-    si_dac960();
-    if($mm eq "tex"){
-      print "\\par\\endgroup\\end\{sidewaystable\}";
-      print "\n\n\\newpage\n\n";
-      print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
-    }
-    si_ifconfig();
-    si_route();
-    if($mm eq "tex"){
-      print "\\par\\endgroup\\end\{sidewaystable\}";
-      print "\n\n\\newpage\n\n";
-      print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
-    }
-    si_ipchains ();
-    if($mm eq "tex"){
-      print "\\par\\endgroup\\end\{sidewaystable\}";
-      print "\n\n\\newpage\n\n";
-    }
-    si_proc_sys();
-    si_etc();
-    si_installed();
-    si_proc_config();
-    siprt("toc");
-    siprt("body");
-    siprt("footer");
-    open (STDOUT,  ">&SAVEOUT");
-    print "\t/tmp/sitar-$HOSTNAME.$mm\n";
-  }
-  open (SAVEOUT, ">&STDOUT");
-  open (STDOUT,  ">/tmp/sitar-$HOSTNAME.sel");
-  si_selection();
-  open (STDOUT,  ">&SAVEOUT");
-  print "\t/tmp/sitar-$HOSTNAME.sel\n";
-  open (STDOUT,  ">/tmp/sitar-$HOSTNAME.pci");
-  si_lspci();
-  open (STDOUT,  ">&SAVEOUT");
-  print "\t/tmp/sitar-$HOSTNAME.pci\n";
+	if($printhelp || $siprt_mode eq "" ) {
+		print "Options available:\n\t--output=<format>\tFormats: html, latex, (planned: plain, xml, alice)\n\t--file=<file>\t\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
+	}elsif( $siprt_mode eq "html" || $siprt_mode eq "latex" ) {
+		# @siprt_modes= ("html", "tex" );
+		# @siprt_modes= ("html" );
+		# for $mm (@siprt_modes) {
+		# $siprt_mode=$mm;
+		# open (SAVEOUT, ">&STDOUT");
+		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.$mm");
+		open (SAVEOUT, ">&STDOUT");
+		if( $outfile ne "" ) {
+			open (STDOUT,  ">$outfile");
+		}
+		siprt("header");
+		si_cpu_and_memory();
+		si_lsdev();
+		si_pci();
+		si_pnp();
+		if($mm eq "tex"){
+			print "\n\n\\newpage\n\n";
+			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
+		}
+		si_mount();
+		si_ide();
+		si_scsi();
+		si_gdth();
+		si_ips();
+		si_compaq_smart();
+		si_dac960();
+		if($mm eq "tex"){
+			print "\\par\\endgroup\\end\{sidewaystable\}";
+			print "\n\n\\newpage\n\n";
+			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
+		}
+		si_ifconfig();
+		si_route();
+		if($mm eq "tex"){
+		  	print "\\par\\endgroup\\end\{sidewaystable\}";
+		  	print "\n\n\\newpage\n\n";
+		  	print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
+		}
+		si_ipchains ();
+		if($mm eq "tex"){
+		  	print "\\par\\endgroup\\end\{sidewaystable\}";
+		 	print "\n\n\\newpage\n\n";
+		}
+		si_proc_sys();
+		si_etc();
+		si_installed();
+		si_proc_config();
+		siprt("toc");
+		siprt("body");
+		siprt("footer");
+		open (STDOUT,  ">&SAVEOUT");
+		# print "\t/tmp/sitar-$HOSTNAME.$mm\n";
+		# }
+		# open (SAVEOUT, ">&STDOUT");
+		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.sel");
+		# si_selection();
+		# open (STDOUT,  ">&SAVEOUT");
+		# print "\t/tmp/sitar-$HOSTNAME.sel\n";
+		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.pci");
+		# si_lspci();
+		# open (STDOUT,  ">&SAVEOUT");
+		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
+	}
 }
 
