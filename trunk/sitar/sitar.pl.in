@@ -239,8 +239,8 @@ my $config_dir  = "/var/lib/support/";
 # $html_header
 #
 my $sdocbook_header = "<?xml version=\"1.0\"?>
-<!DOCTYPE article PUBLIC \"-//OASIS//DTD Simplified DocBook XML V4.1.2.5//EN\"
-        \"http://www.oasis-open.org/docbook/xml/simple/4.1.2.5/sdocbook.dtd\">
+<!DOCTYPE article PUBLIC \"-//OASIS//DTD Simplified DocBook XML V1.1CR2//EN\"
+                  \"http://docbook.org/xml/simple/1.1CR2/sdocbook.dtd\">
 <article>
 <articleinfo>
   <corpauthor>SITAR</corpauthor>
@@ -389,8 +389,7 @@ sub addtoc_sdocbook($$$) {
 		$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n";
 	} else {
 	}
-	$TOCBuffer = join "", $TOCBuffer, 
-		"<listitem><para><xref linkend=\"$ancor\"/>$ancor $value\n";
+	$TOCBuffer = join "", $TOCBuffer, "<listitem><para><xref linkend=\"$ancor\"/>$ancor $value\n";
 	$lastTOClevel = $level;
 }
 
@@ -2562,6 +2561,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.53  2005/01/18 16:09:19  mge
+#  Simplified DocBook XML V1.1CR2
+#
 #  Revision 1.52  2005/01/18 15:53:48  mge
 #  removed nbsp in TOC
 #
