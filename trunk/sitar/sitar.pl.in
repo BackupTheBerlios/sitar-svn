@@ -27,6 +27,10 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.28  2002/11/27 14:20:12  mge
+#  fixed TeX output and other issues.
+#  TeX output needs more work (sideways!)
+#
 #  Revision 1.27  2002/11/27 14:00:25  mge
 #  fixed small patch error / typo
 #
@@ -238,14 +242,14 @@ my $REDHAT       = "/etc/redhat-release";
 my $release      = "";
 my $distribution = "";
 my ( $DPKG, $RPM );
-} elsif ( -e $REDHAT ) {
-	$release      = `/usr/bin/head -1 /etc/redhat-release`;
-	$distribution = "redhat";
-	$RPM          = "/bin/rpm";
 if ( -e $DEBIAN ) {
 	$release      = `/usr/bin/head -1 /etc/debian_version`;
 	$distribution = "debian";
 	$DPKG         = "/usr/bin/dpkg";
+} elsif ( -e $REDHAT ) {
+	$release      = `/usr/bin/head -1 /etc/redhat-release`;
+	$distribution = "redhat";
+	$RPM          = "/bin/rpm";
 } elsif ( -e $SUSE ) {
 	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
 	$distribution = "suse";
@@ -1732,6 +1736,8 @@ sub si_proc_sys_net () {
 			}
 		}
 	}
+}
+
 sub si_etc_redhat() {
 	si_usercrontab ();
 	siprtt( "h1", "Sysconfig" );
@@ -1740,16 +1746,16 @@ sub si_etc_redhat() {
 		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
 			chomp $NN;
 			if ( `/usr/bin/file -b $NN | /bin/grep -i -e text` ) {
-				si_conf( $NN, "\#" );
+				si_conf( $NN, $NN, "\#" );
 			}
 		}
 	}
 	siprtt( "h1", "Configuration" );
 	# SSH/OpenSSH
 	if ( -r "/etc/ssh/sshd_config" ) {
-		si_conf( "/etc/ssh/sshd_config", "\#" );
+		si_conf( "sshd_config", "/etc/ssh/sshd_config", "\#" );
 	} elsif ( "/etc/sshd_config" ) {
-		si_conf( "/etc/sshd_config", "\#" );
+		si_conf( "sshd_config", "/etc/sshd_config", "\#" );
 	}
 	
 	my %myfiles  = ();
@@ -1790,12 +1796,10 @@ sub si_etc_redhat() {
 			if ( ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
-				if ( -r $mm ) { si_conf( $mm, "\#" ); }
+				if ( -r $mm ) { si_conf( $mm, $mm, "\#"); }
 			}
 		}
 	}
-}
-
 }
 
 sub si_proc_sys () {
@@ -1885,7 +1889,7 @@ sub si_etc() {
 			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
-				if ( -r $mm ) { si_conf( "", $mm, "\#" ); }
+				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
 			}
 		}
 	}
@@ -1937,7 +1941,7 @@ sub si_etc_suse() {
 	if ( -r "/etc/rc.config.d" ) {
 		for $NN ( `/usr/bin/find /etc/rc.config.d -name "*.config"` ) {
 			chomp $NN;
-			si_conf( "", $NN, "\#" );
+			si_conf( $NN, $NN, "\#" );
 		}
 	}
 	# SuSE proxy suite
@@ -2137,9 +2141,6 @@ sub si_run_sitar() {
 		if ( $mm eq "tex" ) {
 			print "\\par\\endgroup\\end\{sidewaystable\}";
 			print "\n\n\\newpage\n\n";
-		} elsif ( $distribution eq "redhat" ) {
-			si_etc_redhat ();
-			si_installed_rpm ();
 			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
 		}
 		si_ifconfig ();
@@ -2160,6 +2161,10 @@ sub si_run_sitar() {
 			si_etc_suse ();
 			si_installed_rpm ();
 			si_proc_config ();
+		} elsif ( $distribution eq "redhat" ) {
+			si_etc_redhat ();
+			si_installed_rpm ();
+			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
 		} elsif ( $distribution eq "debian" ) {
 			si_etc_debian ();
 			si_installed_deb ();
