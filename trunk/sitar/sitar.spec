@@ -85,15 +85,23 @@ rm -rf $RPM_BUILD_ROOT/usr/share/doc/sitar
 %dir /usr/share/sitar
 /usr/share/sitar/proc.txt
 
-%changelog -n sitar.changes
+# # %changelog -n sitar.changes
 
 %clean
 if [ -n "$RPM_BUILD_ROOT" ] ; then
    [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 fi
 
+%changelog
+* Tue Mar 08 2005 - mge@suse.de
+- 0.9.pre8
+- add support for AppArmor (subdomain) by Immunix
+
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.44  2005/03/08 18:19:45  mge
+#  added first support for stat() in config-files; used perltidy again
+#
 #  Revision 1.43  2005/03/08 15:37:01  mge
 #  added support for AppArmor by Immunix
 #

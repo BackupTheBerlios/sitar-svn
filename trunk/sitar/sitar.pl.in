@@ -259,10 +259,10 @@ my $UNAME = `/bin/uname -a`;
 chomp $UNAME;
 my $UNAMER = `/bin/uname -r`;
 chomp $UNAMER;
-my $now_string  = localtime();
-my %proc_h      = ();
-my $machinetype = `/bin/uname -m`;
-my $config_dir  = "/var/lib/support";
+my $now_string            = localtime();
+my %proc_h                = ();
+my $machinetype           = `/bin/uname -m`;
+my $config_dir            = "/var/lib/support";
 my $apparmor_verbose_name = "AppArmor (by Immunix)";
 my $apparmor_kernel_path  = "/subdomain";
 my $apparmor_config_path  = "/etc/subdomain.d";
@@ -469,9 +469,9 @@ sub siprint($$$$) {
 		if ( $m eq "cellspan" )    {
 			mysprint "<td \nnowrap colspan=\"", $attr, "\">", $value, "</td>";
 		}
-		if ( $m eq "emptycell" ){ mysprint "<td>&nbsp;</td>"; }
-		if ( $m eq "cell" )     { mysprint "<td \nnowrap>", $value, "</td>"; }
-		if ( $m eq "cellwrap" ) { mysprint "<td>",          $value, "</td>"; }
+		if ( $m eq "emptycell" ) { mysprint "<td>&nbsp;</td>"; }
+		if ( $m eq "cell" )      { mysprint "<td \nnowrap>", $value, "</td>"; }
+		if ( $m eq "cellwrap" )  { mysprint "<td>", $value, "</td>"; }
 		if ( $m eq "cellcolor" ) {
 			mysprint "<td bgcolor=\"", $attr, "\" \nnowrap>", $value, "</td>";
 		}
@@ -524,16 +524,16 @@ sub siprint($$$$) {
 			print "\\end\{multicols\}\\par\\endgroup\\par\n";
 			$IsVerbatim = 0;
 		}
-		if ( $m eq "cellspan" )  { print $value, "\&"; }
+		if ( $m eq "cellspan" ) { print $value, "\&"; }
 		if ( $m eq "emptycell" ) { print "\&"; }
 		if ( $m eq "cell" )      { print $value, "\&"; }
 		if ( $m eq "cellwrap" )  { print $value, "\&"; }
 		if ( $m eq "cellcolor" ) { print $value, "\&"; }
 		if ( $m eq "headcolor" ) { print $value, "\&"; }
 		if ( $m eq "tabhead" )   { print $value, "\&"; }
-		if ( $m eq "verb" )   { print $value; }
-		if ( $m eq "header" ) { print $tex_header; }
-		if ( $m eq "footer" ) { print $tex_footer; }
+		if ( $m eq "verb" )      { print $value; }
+		if ( $m eq "header" )    { print $tex_header; }
+		if ( $m eq "footer" )    { print $tex_footer; }
 	} elsif ( $siprt_mode eq "sdocbook" ) {
 		$value =~ s/\&/\&amp;/g;
 		$value =~ s/</\&lt;/g;
@@ -547,9 +547,9 @@ sub siprint($$$$) {
 				$lastSEClevel--;
 			}
 			$seccnt++;
-			mysprint "<section label=\"sec",$seccnt, "\" id=\"sec",$seccnt, "\"\n><title>", $value, "</title><para />\n";
+			mysprint "<section label=\"sec", $seccnt, "\" id=\"sec", $seccnt, "\"\n><title>", $value, "</title><para />\n";
 			addtoc_sdocbook( 1, "$seccnt", "$seccnt.$value" );
-			$subseccnt = 0;
+			$subseccnt    = 0;
 			$lastSEClevel = 1;
 		}
 		if ( $m eq "h2" ) {
@@ -558,7 +558,7 @@ sub siprint($$$$) {
 				$lastSEClevel--;
 			}
 			$subseccnt++;
-			mysprint "<section label=\"sec",$seccnt, ".", $subseccnt, "\" id=\"sec",$seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title><para />\n";
+			mysprint "<section label=\"sec", $seccnt, ".", $subseccnt, "\" id=\"sec", $seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title><para />\n";
 			addtoc_sdocbook( 2, "$seccnt.$subseccnt", "$seccnt.$subseccnt&nbsp;$value" );
 			$subsubseccnt = 0;
 			$lastSEClevel = 2;
@@ -568,21 +568,21 @@ sub siprint($$$$) {
 				mysprint "\n</section>\n";
 			}
 			$subsubseccnt++;
-			mysprint "<section label=\"sec",$seccnt,".",$subseccnt,".", $subsubseccnt,"\" id=\"sec",$seccnt,".",$subseccnt,".", $subsubseccnt,"\"\n><title>", $value, "</title><para />\n";
+			mysprint "<section label=\"sec", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\" id=\"sec", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n><title>", $value, "</title><para />\n";
 			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt", "$seccnt.$subseccnt.$subsubseccnt&nbsp;$value" );
 			$lastSEClevel = 3;
 		}
 		if ( $m eq "tabborder" ) {
-			mysprint "<table frame=\"all\"><title>", $attr, "</title><tgroup cols=\"", $colsnum,"\"><tbody>";
+			mysprint "<table frame=\"all\"><title>", $attr, "</title><tgroup cols=\"", $colsnum, "\"><tbody>";
 		}
-		if ( $m eq "tab" )      { mysprint "<table frame=\"none\"><title></title><tgroup cols=\"", $colsnum,"\"><tbody>"; }
-		if ( $m eq "endtab" )   { mysprint "</tbody></tgroup></table>\n"; }
-		if ( $m eq "tabrow" )   { mysprint "<row\n>"; }
-		if ( $m eq "endrow" )   { mysprint "</row>\n"; }
-		if ( $m eq "emptycell" ){ mysprint "<entry>&nbsp;</entry>"; }
-		if ( $m eq "cell" )     { mysprint "<entry>", $value, "</entry>"; }
-		if ( $m eq "cellwrap" ) { mysprint "<entry><para>", $value, "</para></entry>"; }
-		if ( $m eq "cellspan" ) { mysprint "<entry namest=\"c1\" nameend=\"c", $attr, "\">", $value, "</entry>"; }
+		if ( $m eq "tab" ) { mysprint "<table frame=\"none\"><title></title><tgroup cols=\"", $colsnum, "\"><tbody>"; }
+		if ( $m eq "endtab" )    { mysprint "</tbody></tgroup></table>\n"; }
+		if ( $m eq "tabrow" )    { mysprint "<row\n>"; }
+		if ( $m eq "endrow" )    { mysprint "</row>\n"; }
+		if ( $m eq "emptycell" ) { mysprint "<entry>&nbsp;</entry>"; }
+		if ( $m eq "cell" )      { mysprint "<entry>", $value, "</entry>"; }
+		if ( $m eq "cellwrap" )  { mysprint "<entry><para>", $value, "</para></entry>"; }
+		if ( $m eq "cellspan" )  { mysprint "<entry namest=\"c1\" nameend=\"c", $attr, "\">", $value, "</entry>"; }
 		if ( $m eq "cellcolor" ) { mysprint "<entry>", $value, "</entry>"; }
 		if ( $m eq "headcolor" ) { mysprint "<entry>", $value, "</entry>"; }
 		if ( $m eq "tabhead" )   { mysprint "<entry>", $value, "</entry>"; }
@@ -602,14 +602,14 @@ sub siprint($$$$) {
 			mysprint "\n]]>\n</programlisting>\n";
 			$IsVerbatim = 0;
 		}
-		if ( $m eq "verb" ) { mysprint $value; }
+		if ( $m eq "verb" )   { mysprint $value; }
 		if ( $m eq "header" ) { print $sdocbook_header; }
 		if ( $m eq "body" )   {
 			while ( $lastSEClevel > 0 ) {
 				mysprint "\n</section>\n";
 				$lastSEClevel--;
 			}
-			print $OutputBuffer; 
+			print $OutputBuffer;
 		}
 		if ( $m eq "footer" ) { print $sdocbook_footer; }
 		if ( $m eq "toc" )    {
@@ -1611,7 +1611,7 @@ sub si_ifconfig() {
 	my %rule    = ();
 	my $isbegin = 1;
 	open( IFCONFIG, "/sbin/ifconfig -v |" );
-	siprtt( "h1",   "Networking Interfaces" );
+	siprtt( "h1", "Networking Interfaces" );
 	siprt( "pre" );
 	siprtt( "verb", "skipping IPv6 Options" );
 	siprt( "endpre" );
@@ -1908,17 +1908,37 @@ sub si_packetfilter() {
 		siprtt( "h1", "Packet Filter (iptables)" );
 		si_iptables();
 	} else {
-		siprtt( "h1",   "Packet Filter" );
+		siprtt( "h1", "Packet Filter" );
 		siprt( "pre" );
 		siprtt( "verb", "No packet filter installed." );
 		siprt( "endpre" );
 	}
 }
 
+sub si_conf_filename_stat($) {
+	my ( $filename ) = @_;
+	my ( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
+	siprtttt( "tabborder", "ll", "stat:$filename", 2 );
+	siprt( "tabrow" );
+	siprtt( "cell", "mode" );
+	siprtt( "cell", ( $ff_mode ) );
+	siprt( "endrow" );
+	siprt( "tabrow" );
+	siprtt( "cell", "size" );
+	siprtt( "cell", $ff_size );
+	siprt( "endrow" );
+	siprt( "tabrow" );
+	siprtt( "cell", "mtime" );
+	siprtt( "cell", localtime( $ff_mtime ) );
+	siprt( "endrow" );
+	siprt( "endtab" );
+}
+
 sub si_conf_secure($$$) {
 	my ( $filename, $comment, $blankout ) = @_;
 	siprtt( "h3", $filename );
 	# print STDERR $filename, ": ", $comment, "\n";
+	si_conf_filename_stat( $filename );
 	siprt( "pre" );
 	if ( $comment eq "/**/" ) {
 		open( CONFIG, $filename );
@@ -1949,11 +1969,13 @@ sub si_conf_secure($$$) {
 
 sub si_conf($$$) {
 	my ( $title, $filename, $comment ) = @_;
+	## if( ( $NN !~ /*.orig/ /*.org/ /*.bak/ /*~/ /\#*/ ) && () )
 	if ( $title eq $filename ) {
 		siprtt( "h3", "$filename" );
 	} else {
 		siprtt( "h3", "$title - $filename" );
 	}
+	si_conf_filename_stat( $filename );
 	# print STDERR $filename, ": ", $comment, "\n";
 	siprt( "pre" );
 	if ( $comment eq "/**/" ) {
@@ -1967,7 +1989,7 @@ sub si_conf($$$) {
 		close( CONFIG );
 		siprtt( "verb", $ttt );
 		$/ = $old_recsep;
-	} elsif( $comment eq "" ) {
+	} elsif ( $comment eq "" ) {
 		open( CONFIG, "<$filename" );
 		while ( <CONFIG> ) {
 			chomp();
@@ -2061,14 +2083,14 @@ sub si_immunix_apparmor () {
 				$OO = $MM;
 				$OO =~ s/(\w+\/)*(\w+)$/$+/;
 				chomp $OO;
-				if( $OO eq "profiles" ) {
+				if ( $OO eq "profiles" ) {
 					siprt( "tabrow" );
 					siprtt( "cell", $OO );
 					siprt( "emptycell" );
 					siprt( "emptycell" );
 					siprt( "endrow" );
 					for $TT ( split( /\)/, $value ) ) {
-						my( $tname, $tenforce) = split( /\(/, $TT );
+						my ( $tname, $tenforce ) = split( /\(/, $TT );
 						siprt( "tabrow" );
 						siprt( "emptycell" );
 						siprtt( "cell", $tname );
@@ -2093,7 +2115,6 @@ sub si_immunix_apparmor () {
 		}
 	}
 }
-
 my @allconfigfiless = qw (
   /boot/grub/menu.lst
   /etc/apache/httpd.conf
@@ -2593,9 +2614,9 @@ sub si_print_help () {
 }
 
 sub si_run_sitar() {
-	open( TESTFILE, ">$outfile" ) || 
-		die "ERROR:\tThe output-file:\n\t$outfile\n\tcan not be opened for writing. Probably the parent-directory\n\tdoes not exist. - Exiting ..." ;
-	close ( TESTFILE );
+	open( TESTFILE, ">$outfile" )
+	  || die "ERROR:\tThe output-file:\n\t$outfile\n\tcan not be opened for writing. Probably the parent-directory\n\tdoes not exist. - Exiting ...";
+	close( TESTFILE );
 	if ( $siprt_mode eq "html" || $siprt_mode eq "tex" || $siprt_mode eq "sdocbook" ) {
 		open( SAVEOUT, ">&STDOUT" );
 		if ( $outfile ne "" ) {
@@ -2719,6 +2740,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.68  2005/03/08 18:19:45  mge
+#  added first support for stat() in config-files; used perltidy again
+#
 #  Revision 1.67  2005/03/08 15:37:01  mge
 #  added support for AppArmor by Immunix
 #
