@@ -502,6 +502,9 @@ sub siprint($$$) {
 		$value =~ s/\&/\&amp;/g;
 		$value =~ s/</\&lt;/g;
 		$value =~ s/>/\&gt;/g;
+		$attr =~ s/\&/\&amp;/g;
+		$attr =~ s/</\&lt;/g;
+		$attr =~ s/>/\&gt;/g;
 		if ( $m eq "h1" ) {
 			$seccnt++;
 			mysprint "<Sect1 id=\"", $seccnt, "\"\n><title>", $value, "</title></Sect1>";
@@ -540,8 +543,14 @@ sub siprint($$$) {
 			mysprint "\n]]>\n</programlisting>\n";
 			$IsVerbatim = 0;
 		}
-		if ( $m eq "multipre" )    { mysprint "<screen>";    $IsVerbatim = 1; }
-		if ( $m eq "endmultipre" ) { mysprint "</screen>\n"; $IsVerbatim = 0; }
+		if ( $m eq "multipre" )    {
+			mysprint "<programlisting>\n<![CDATA[\n";
+			$IsVerbatim = 1;
+		}
+		if ( $m eq "endmultipre" ) {
+			mysprint "\n]]>\n</programlisting>\n";
+			$IsVerbatim = 0;
+		}
 		if ( $m eq "verb" )        { mysprint $value; }
 		if ( $m eq "header" ) { print $sdocbook_header; }
 		if ( $m eq "body" )   { print $OutputBuffer; }
@@ -2246,9 +2255,9 @@ sub si_installed_sles() {
 		my ( $mydist, $mypack ) = split /::/, $pack;
 		chomp $mydist;
 		chomp $mypack;
-		$mypack =~ s/\&/\&amp;/g;
-		$mypack =~ s/</\&lt;/g;
-		$mypack =~ s/>/\&gt;/g;
+		# $mypack =~ s/\&/\&amp;/g;
+		# $mypack =~ s/</\&lt;/g;
+		# $mypack =~ s/>/\&gt;/g;
 		if ( $mypack eq $ULPACK_RAW_NAME ) {
 			siprtt( "h2", "$mydist" );
 			siprttt( "tabborder", "lllp{.5\\textwidth}", "Installed Packages: $mydist" );
@@ -2566,6 +2575,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.55  2005/01/18 17:48:03  mge
+#  xml: better entity handling
+#
 #  Revision 1.54  2005/01/18 17:33:53  mge
 #  xml: better articleinfo
 #
