@@ -26,6 +26,9 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.14  2002/03/18 16:21:16  mge
+#  added "BuildArch: noarch" to spec file
+#
 #  Revision 1.13  2002/03/18 16:18:19  mge
 #  release 0.7.0
 #
@@ -70,14 +73,15 @@ Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
 Version:	0.7.0
-Release:	5
+Release:	6
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
 Copyright:	GPL
 Group: 		Applications/System
 BuildRoot:	/tmp/root-%{name}/
+BuildArch: 	noarch
 
-%%description 
+%description 
 Prepare system information using perl and binary tools,
 reading the /proc filesystem, ...
 Output is in HTML and LaTeX (planned: XML, SQL), 
