@@ -28,6 +28,9 @@
 #		Andreas Rother
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.35  2002/12/16 10:45:25  mge
+#  minor changes
+#
 #  Revision 1.34  2002/12/10 09:36:57  mge
 #  Release 0.8.4:
 #  	- introduce "--version"
@@ -1932,6 +1935,7 @@ sub si_etc() {
 	  /etc/ha.d/ha.cf
 	  /etc/ha.d/haresources
 	  /etc/ha.d/authkeys
+	  /etc/init.d/boot.local
 	);
 	if ( -d $config_dir ) {
 		foreach ( `$LS -1 $config_dir/*.include` ) {
@@ -2003,6 +2007,7 @@ sub si_etc_united() {
 	  /etc/ha.d/ha.cf
 	  /etc/ha.d/haresources
 	  /etc/ha.d/authkeys
+	  /etc/init.d/boot.local
 	);
 	if ( -d $config_dir ) {
 		foreach ( `$LS -1 $config_dir/*.include` ) {

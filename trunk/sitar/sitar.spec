@@ -26,6 +26,9 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.23  2002/12/16 10:45:25  mge
+#  minor changes
+#
 #  Revision 1.22  2002/12/10 09:36:57  mge
 #  Release 0.8.4:
 #  	- introduce "--version"
@@ -108,7 +111,7 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.8.4
+Version:	0.8.5
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2

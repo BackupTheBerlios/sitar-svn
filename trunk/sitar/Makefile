@@ -25,6 +25,9 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.23  2002/12/16 10:45:25  mge
+#  minor changes
+#
 #  Revision 1.22  2002/12/10 09:36:57  mge
 #  Release 0.8.4:
 #  	- introduce "--version"
@@ -113,7 +116,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.4
+RELEASE=0.8.5
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
