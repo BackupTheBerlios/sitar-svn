@@ -24,12 +24,14 @@
 #		Waldemar Brodkorb
 #		Björn Jacke
 #		Bernhard Thoni
+#		Pascal Fuckerieder 
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.21  2002/03/18 16:11:45  mge
+#  cosmetic changes
+#
 #  Revision 1.20  2002/03/18 16:10:22  mge
-#  Added IPTables Patches by
-#  	Pascal Fuckerieder <pascal@fuckerieder.de>
-#  Thanks!
+#  Added IPTables patches by Pascal Fuckerieder
 #
 #  Revision 1.19  2002/01/14 15:37:39  mge
 #  Added sitar-0.6.8-sw-raid.v0.1.patch by Bernhard Thoni
@@ -732,7 +734,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.20 2002/03/18 16:10:22 mge Exp $
+	#       $Id: sitar.pl.in,v 1.21 2002/03/18 16:11:45 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();

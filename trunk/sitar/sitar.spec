@@ -23,8 +23,12 @@
 #               Waldemar Brodkorb
 #               Björn Jacke
 #		Bernhard Thoni
+#		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.12  2002/03/18 16:11:45  mge
+#  cosmetic changes
+#
 #  Revision 1.11  2002/01/14 15:37:39  mge
 #  Added sitar-0.6.8-sw-raid.v0.1.patch by Bernhard Thoni
 #
