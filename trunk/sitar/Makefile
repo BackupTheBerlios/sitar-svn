@@ -25,6 +25,9 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.20  2002/12/02 17:45:52  mge
+#  0.8.2 (according to new CodingStyle)
+#
 #  Revision 1.19  2002/11/29 08:51:06  mge
 #  correct naming of module parameters
 #
@@ -99,7 +102,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.1
+RELEASE=0.8.2
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps

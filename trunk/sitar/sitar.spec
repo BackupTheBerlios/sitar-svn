@@ -26,6 +26,9 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.20  2002/12/02 17:45:52  mge
+#  0.8.2 (according to new CodingStyle)
+#
 #  Revision 1.19  2002/11/29 08:51:06  mge
 #  correct naming of module parameters
 #
@@ -94,7 +97,7 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.8.1
+Version:	0.8.2
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.gz
