@@ -24,6 +24,12 @@
 #		Waldemar Brodkorb
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.15  2001/09/03 10:30:33  waldb
+#  fixed minor bugs,
+#   - moved $RPM and $DPKG into distribution test
+#   - removed $HWINFO in the code (we want no external
+#     application to get info's about the system
+#
 #  Revision 1.14  2001/08/20 22:26:34  mge
 #  make "support_all.pl" and "sitar.pl" work slightly different:
 #  "sitar.pl" will do everything, as the old "sitar.pl" did, "support_all.pl"
@@ -184,9 +190,11 @@ my $distribution = "";
 if ( -e $DEBIAN ) {
 	$release      = `/usr/bin/head -1 /etc/debian_version`;
 	$distribution = "debian";
+        my $DPKG   = "/usr/bin/dpkg";
 } elsif ( -e $SUSE ) {
 	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
 	$distribution = "suse";
+        my $RPM    = "/bin/rpm";
 } else {
 	$distribution = "unknown";
 	print "\n distribution not supported!!\n\n";
@@ -194,10 +202,7 @@ if ( -e $DEBIAN ) {
 #
 # global vars
 #
-my $RPM    = "/bin/rpm";
-my $DPKG   = "/usr/bin/dpkg";
 my $LS     = "/bin/ls";
-my $HWINFO = "/usr/sbin/hwinfo";
 my $STATUS = "/var/lib/dpkg/status";
 chomp( my $HOSTNAME = `/bin/hostname -f` );
 my $UNAME       = `/bin/uname -a`;
@@ -544,7 +549,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.14 2001/08/20 22:26:34 mge Exp $
+	#       $Id: sitar.pl.in,v 1.15 2001/09/03 10:30:33 waldb Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -654,12 +659,6 @@ sub si_ide() {
 							if ( m/^physical/g ) { s/^physical\s+(.*)$/$1/gs; $geop = $_; }
 						}
 						close( GEO );
-						# open(IDEINFO,"$HWINFO --disk | ");
-						# while(<IDEINFO>) {
-						#   if(m/FW_REV/g){s/FW_REV=\"(.*)\"$/$1/gs; $fw_rev=$_;}
-						#   if(m/SERIAL_NO/g){s/SERIAL_NO=\"(.*)\"$/$1/gs; $serial=$_;}
-						# }
-						# close(IDEINFO);
 						siprtt( "cell", $geop );
 						siprtt( "cell", $geol );
 						siprtt( "cell", $capa );
