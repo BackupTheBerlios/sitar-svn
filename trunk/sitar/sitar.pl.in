@@ -234,7 +234,7 @@ chomp $UNAMER;
 my $now_string  = localtime();
 my %proc_h      = ();
 my $machinetype = `/bin/uname -m`;
-my $config_dir  = "/var/lib/support/";
+my $config_dir  = "/var/lib/support";
 #
 # $html_header
 #
@@ -2065,13 +2065,6 @@ sub si_etc() {
 	}
 	# some more services/programs
 	my %myfiles = ();
-	# if ( -d $config_dir ) {
-	#	foreach ( `$LS -1 $config_dir/*.include` ) {
-	#		chomp( $_ );
-	#		do "$_";
-	#		push @allconfigfiless, @files;
-	#	}
-	# }
 	foreach ( @allconfigfiless ) {
 		$myfiles{ $_ } = 0;
 	}
@@ -2101,14 +2094,18 @@ sub si_etc() {
 	# some more services/programs
 	#
 	if ( -d $config_dir ) {
-		foreach ( `$LS -1 $config_dir/*.include` ) {
+		for $NN ( `/usr/bin/find $config_dir -iname "*.include" -type f` ) {
+			chomp $NN;
 			%myfiles = ();
-			chomp( $_ );
-			do "$_";
+			do "$NN";
 			foreach ( @files ) {
 				$myfiles{ $_ } = 0;
 			}
-			siprtt( "h2", $_ );
+			$OO = $NN;
+			$OO =~ s+$config_dir++g;
+			$OO =~ s+^/++g;
+			$OO = substr( $OO, 0, rindex( $OO, ".include" ) );
+			siprtt( "h2", ucfirst( $OO ) );
 			foreach $mm ( sort keys %myfiles ) {
 				if ( $mm !~ /proc/ ) {
 					if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
@@ -2598,6 +2595,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.57  2005/01/18 18:35:23  mge
+#  further enhance handling of .include files
+#
 #  Revision 1.56  2005/01/18 18:10:37  mge
 #  enhance handling of .include files
 #
