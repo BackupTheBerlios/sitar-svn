@@ -27,7 +27,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.8.12
+Version:	0.9.x
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -37,6 +37,7 @@ BuildRoot:	/tmp/root-%{name}/
 BuildArch: 	noarch
 
 Packager:	Matthias G. Eckermann <mge@suse.de>
+Distribution:	SuSE SLES-9 (i586) Addon
 
 %description 
 Sitar prepares system information using perl and binary tools, and by
@@ -90,6 +91,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.34  2005/01/18 14:13:43  mge
+#  added first XML support (simplified docbook)
+#
 #  Revision 1.33  2005/01/18 11:31:41  mge
 #  *** empty log message ***
 #

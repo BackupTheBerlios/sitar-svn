@@ -238,6 +238,20 @@ my $config_dir  = "/var/lib/support/";
 #
 # $html_header
 #
+my $sdocbook_header ="<!DOCTYPE article PUBLIC \"-//OASIS//DTD DocBook XML V4.1.2//EN\"
+          \"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd\">
+<article>
+<articleinfo>
+  <corpauthor>SITAR</corpauthor>
+  <copyright>
+    <year>1999</year>
+    <year>2005</year>
+    <holder>$COPYRIGHT</holder>
+  </copyright>
+  <title>$HOSTNAME, $now_string</title>
+  <subtitle>$UNAME, $release</subtitle>
+</articleinfo>";
+my $sdocbook_footer="</article>";
 my $html_header = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"
   \"http://www.w3.org/TR/REC-html40/loose.dtd\">
 <html>
@@ -350,7 +364,6 @@ sub addtoc($$$) {
 		$TOCBuffer = join "", $TOCBuffer, "<ul class=\"toc\">\n";
 	} elsif ( $level < $lastTOClevel ) {
 		for ( $ll = $lastTOClevel; $ll > $level; $ll--) {
-			# $TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n</li>\n";
 			$TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n\n";
 		}
 	} elsif ( $lastTOClevel != 0 ) {
@@ -358,6 +371,22 @@ sub addtoc($$$) {
 	} else {
 	}
 	$TOCBuffer = join "", $TOCBuffer, "<li><a href=\"#", $ancor, "\">", $value, "</a>\n";
+	$lastTOClevel = $level;
+}
+
+sub addtoc_sdocbook($$) {
+	my ( $level, $ancor ) = @_;
+	if ( $level > $lastTOClevel ) {
+		$TOCBuffer = join "", $TOCBuffer, "<itemizedlist>\n";
+	} elsif ( $level < $lastTOClevel ) {
+		for ( $ll = $lastTOClevel; $ll > $level; $ll--) {
+			$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n</itemizedlist>\n\n";
+		}
+	} elsif ( $lastTOClevel != 0 ) {
+		$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n";
+	} else {
+	}
+	$TOCBuffer = join "", $TOCBuffer, "<listitem><para><xref linkend=\"", $ancor, "\">\n";
 	$lastTOClevel = $level;
 }
 
@@ -407,9 +436,6 @@ sub siprint($$$) {
 			mysprint "<th bgcolor=\"", $attr, "\" \nnowrap>", $value, "</th>";
 		}
 		if ( $m eq "tabhead" ) { mysprint "<th \nnowrap>", $value, "</th>"; }
-		if ( $m eq "headcols" ) {
-			mysprint "<th \nnowrap colspan=\"", $attr, "\">", $value, "</th>";
-		}
 		if ( $m eq "verb" )   { mysprint $value; }
 		if ( $m eq "header" ) { print $html_header; }
 		if ( $m eq "toc" )    {
@@ -461,10 +487,58 @@ sub siprint($$$) {
 		if ( $m eq "cellcolor" ) { print $value, "\&"; }
 		if ( $m eq "headcolor" ) { print $value, "\&"; }
 		if ( $m eq "tabhead" )   { print $value, "\&"; }
-		if ( $m eq "headcols" )  { print $value, "\&"; }
 		if ( $m eq "verb" )   { print $value; }
 		if ( $m eq "header" ) { print $tex_header; }
 		if ( $m eq "footer" ) { print $tex_footer; }
+	} elsif ( $siprt_mode eq "sdocbook" ) {
+		$value =~ s/\&/\&amp;/g;
+		$value =~ s/</\&lt;/g;
+		$value =~ s/>/\&gt;/g;
+		if ( $m eq "h1" ) {
+			$seccnt++;
+			mysprint "<Sect1 id=\"", $seccnt, "\"\n><title>", $value, "</title></Sect1>";
+			addtoc_sdocbook( 1, "$seccnt" );
+			$subseccnt = 0;
+		}
+		if ( $m eq "h2" ) {
+			$subseccnt++;
+			mysprint "<Sect2 id=\"", $seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title></Sect2>";
+			addtoc_sdocbook( 2, "$seccnt.$subseccnt" );
+			$subsubseccnt = 0;
+		}
+		if ( $m eq "h3" ) {
+			$subsubseccnt++;
+			mysprint "<Sect3 id=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n><title>", $value, "</title></Sect3>";
+			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt" );
+		}
+		if ( $m eq "tabborder" ) {
+			mysprint "<table frame=\"all\"><title>", $attr, "</title>";
+		}
+		if ( $m eq "tab" )         	{ mysprint "<table frame=\"none\"><title></title>"; }
+		if ( $m eq "endtab" )      	{ mysprint "</table>\n"; }
+		if ( $m eq "tabrow" )      	{ mysprint "<row\n>"; }
+		if ( $m eq "endrow" )      	{ mysprint "</row>\n"; }
+		if ( $m eq "cell" )     	{ mysprint "<entry>",       $value, "</entry>"; }
+		if ( $m eq "cellwrap" )		{ mysprint "<entry><para>", $value, "</para></entry>"; }
+		if ( $m eq "cellspan" )    	{ mysprint "<entry namest=\"c1\" nameend=\"c",$attr, "\">", $value, "</entry>"; }
+		if ( $m eq "cellcolor" )     	{ mysprint "<entry>",       $value, "</entry>"; }
+		if ( $m eq "headcolor" )     	{ mysprint "<entry>",       $value, "</entry>"; }
+		if ( $m eq "tabhead" ) 		{ mysprint "<entry>",       $value, "</entry>"; }
+		if ( $m eq "pre" )         	{ mysprint "<screen>"; $IsVerbatim = 1; }
+		if ( $m eq "endpre" )      	{ mysprint "</screen>\n"; $IsVerbatim = 0; }
+		if ( $m eq "multipre" )    	{ mysprint "<screen>"; $IsVerbatim = 1; }
+		if ( $m eq "endmultipre" ) 	{ mysprint "</screen>\n"; $IsVerbatim = 0; }
+		if ( $m eq "verb" )   		{ mysprint $value; }
+		if ( $m eq "header" ) 		{ print $sdocbook_header; }
+		if ( $m eq "body" )   		{ print $OutputBuffer; }
+		if ( $m eq "footer" ) 		{ print $sdocbook_footer; }
+		if ( $m eq "toc" )    {
+			for ( $ii = $lastTOClevel ; $ii > 0 ; $ii-- ) {
+				$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n</itemizedlist>\n";
+			}
+			print "<Sect1 label=\"TOC\"><title>Table of Contents</title></Sect1>\n", $TOCBuffer;
+			print "\n<hr />\n";
+		}
 	} elsif ( $siprt_mode eq "sql" ) {
 	}
 }
@@ -2341,7 +2415,7 @@ sub si_print_help () {
 }
 
 sub si_run_sitar() {
-	if ( $siprt_mode eq "html" || $siprt_mode eq "tex" ) {
+	if ( $siprt_mode eq "html" || $siprt_mode eq "tex" || $siprt_mode eq "sdocbook" ) {
 		open( SAVEOUT, ">&STDOUT" );
 		if ( $outfile ne "" ) {
 			open( STDOUT, ">$outfile" );
@@ -2429,7 +2503,7 @@ sub si_run_sitar() {
 		exit;
 	}
 	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$printhelp ) && ( !$siprt_mode ) && ( !$outfile ) && ( !$printversion ) ) {
-		@siprt_modes = ( "html", "tex", "yast1", "yast2" );
+		@siprt_modes = ( "html", "tex", "sdocbook", "yast1", "yast2" );
 		($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 		$outdir=join "", 
 			"/tmp/sitar-", 
@@ -2442,11 +2516,21 @@ sub si_run_sitar() {
 		mkdir $outdir;
 		for $mm ( @siprt_modes ) {
 			$siprt_mode = $mm;
+			$OutputBuffer = "";
+			$TOCBuffer    = "";
+			$lastTOClevel = 0;
 			if ( $siprt_mode eq "yast1" ) {
 				$outfile = join "", $outdir, "/sitar-$HOSTNAME-yast1.sel";
 			} elsif ( $siprt_mode eq "yast2" ) {
 			} else {
-				$outfile = join "", $outdir, "/sitar-$HOSTNAME.$mm";
+				if ( $siprt_mode eq "latex" ) {
+					$siprt_mode = "tex";
+					$outfile = join "", $outdir, "/sitar-$HOSTNAME.tex";
+				} elsif ( $siprt_mode eq "sdocbook" ) {
+					$outfile = join "", $outdir, "/sitar-$HOSTNAME.sdocbook.xml";
+				} else {
+					$outfile = join "", $outdir, "/sitar-$HOSTNAME.$mm";
+				}
 			}
 			si_run_sitar();
 		}
@@ -2461,6 +2545,9 @@ sub si_run_sitar() {
 
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.49  2005/01/18 14:13:43  mge
+#  added first XML support (simplified docbook)
+#
 #  Revision 1.48  2005/01/18 11:46:35  mge
 #  added information about /var/lib/support/*.include
 #

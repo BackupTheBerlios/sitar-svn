@@ -28,7 +28,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.8.12
+RELEASE=0.9.x
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -44,6 +44,11 @@ clean:
 rpm:	clean
 	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
 	- (pushd /tmp/ ; rpmbuild -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
+	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
+
+signed:	clean
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+	- (pushd /tmp/ ; rpmbuild -ta --sign sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
 	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
 sitar.pl:	sitar.pl.in Makefile
@@ -85,6 +90,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.34  2005/01/18 14:13:43  mge
+#  added first XML support (simplified docbook)
+#
 #  Revision 1.33  2005/01/18 11:23:42  mge
 #  removed suse.png suse.xpm
 #
