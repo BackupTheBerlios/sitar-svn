@@ -26,6 +26,11 @@
 #		Bernhard Thoni
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.20  2002/03/18 16:10:22  mge
+#  Added IPTables Patches by
+#  	Pascal Fuckerieder <pascal@fuckerieder.de>
+#  Thanks!
+#
 #  Revision 1.19  2002/01/14 15:37:39  mge
 #  Added sitar-0.6.8-sw-raid.v0.1.patch by Bernhard Thoni
 #
@@ -441,7 +446,7 @@ sub siprtt($$) { my ( $t1, $t2 ) = @_; siprint( $t1, $t2, "" ); }
 sub siprttt($$$) { my ( $t1, $t2, $t3 ) = @_; siprint( $t1, $t2, $t3 ); }
 
 sub si_cpu_and_memory() {
-	siprtt( "h1",        "cpu and memory" );
+	siprtt( "h1",        "CPU and Memory" );
 	siprtt( "tabborder", "ll" );
 	open( IN, "/proc/cpuinfo" );
 	chomp( $machinetype );
@@ -727,7 +732,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.19 2002/01/14 15:37:39 mge Exp $
+	#       $Id: sitar.pl.in,v 1.20 2002/03/18 16:10:22 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -1130,7 +1135,7 @@ sub si_df() {
 	my %rule    = ();
 	my $isbegin = 1;
 	open( DF, "/bin/df |" );
-	siprtt( "h1",        "Filesystem disk space usage" );
+	siprtt( "h1",        "Filesystem Disk Space Usage" );
 	siprtt( "tabborder", "llllllll" );
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Filesystem" );
@@ -1377,7 +1382,7 @@ sub si_route() {
 	my %rule    = ();
 	my $isbegin = 1;
 	open( ROUTE, "/sbin/route -n |" );
-	siprtt( "h1",        "routing" );
+	siprtt( "h1",        "Routing" );
 	siprtt( "tabborder", "llllllll" );
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Destination" );
@@ -1409,21 +1414,15 @@ sub si_route() {
 	close( ROUTE );
 }
 
-sub si_iptables () {
-
-}
-
 sub si_ipvs () {
 
 }
 
+sub si_ipfwadm() {
+	siprtt( "verb", "ipfwadm is not supported." );
+}
+
 sub si_ipchains () {
-	if ( $UNAMER gt "2.3.1" ) {	
-		si_iptables();
-		si_ipvs();
-	} elsif ( $UNAMER lt "2.1.0" ) {
-		siprtt( "h1", "IPCHAINS: Kernel-Release $UNAMER (ipfwadm) not supported, sorry :-(\n" );
-	} else {
 		my @protocols = ();
 		open( PROTO, "/etc/protocols" );
 
@@ -1434,7 +1433,6 @@ sub si_ipchains () {
 			}
 		}
 		close( PROTO );
-		siprtt( "h1", "Packet Filter" );
 		open( CHAIN, "/proc/net/ip_fwchains" );
 		$no_header = 1;
 
@@ -1526,6 +1524,40 @@ sub si_ipchains () {
 			siprt( "endtab" );
 		}
 		close( NAMES );
+}
+
+sub si_iptables () {
+	push @lines, $_;
+	open( TABLES, "/proc/net/ip_tables_names" );
+	while ( <TABLES> ) {
+		chomp();
+		siprtt( "h2", "Table $_" );
+
+		siprt( "pre" );
+		open( CONFIG, "/usr/sbin/iptables -v -L -n -t $_ |" );
+		while ( <CONFIG> ) {
+			chomp();
+			siprtt( "verb", "$_\n" );
+		}
+		close( CONFIG );
+		siprt( "endpre" );
+	}
+	close( TABLES );
+}
+
+sub si_packetfilter() {
+	if ( -r "/proc/net/ip_input" ) {
+		siprtt( "h1", "Packet Filter (ipfwadm)" );
+		si_ipfwadm();
+	} elsif ( -r "/proc/net/ip_fwnames" ) {
+		siprtt( "h1", "Packet Filter (ipchains)" );
+		si_ipchains();
+	} elsif ( -r "/proc/net/ip_tables_names" ) {
+		siprtt( "h1", "Packet Filter (iptables)" );
+		si_iptables();
+	} else {
+		siprtt( "h1", "Packet Filter" );
+		siprtt( "verb", "No packet filter installed." );
 	}
 }
 
@@ -1676,15 +1708,15 @@ sub si_proc_sys () {
 }
 
 sub si_etc() {
-	siprtt( "h1", "configuration" );
+	siprtt( "h1", "Configuration" );
 }
 
 sub si_etc_debian() {
-	siprtt( "h1", "configuration" );
+	siprtt( "h1", "Configuration" );
 }
 
 sub si_etc_suse() {
-	siprtt( "h1", "configuration" );
+	siprtt( "h1", "Configuration" );
 	my @lines = ();
 	open( RCCONFIG, "</etc/rc.config" );
 	while ( <RCCONFIG> ) {
@@ -1693,7 +1725,7 @@ sub si_etc_suse() {
 
 		if ( m/START_POSTFIX=yes/i ) {
 			push @lines, $_;
-			siprtt( "h2", "postfix (postconf -n)" );
+			siprtt( "h2", "Postfix (postconf -n)" );
 			siprt( "pre" );
 			open( CONFIG, "/usr/sbin/postconf -n |" );
 			while ( <CONFIG> ) {
@@ -1748,6 +1780,7 @@ sub si_etc_suse() {
 	  /etc/raid1.conf
 	  /etc/raid5.conf
 	  /etc/rc.firewall
+	  /etc/rinetd.conf
 	  /var/spool/fax/etc/config
 	  /var/spool/fax/etc/config.modem
 	);
@@ -1844,7 +1877,7 @@ sub si_proc_config() {
 }
 
 sub si_installed_deb() {
-	siprtt( "h1",        "Installed packages" );
+	siprtt( "h1",        "Installed Packages" );
 	siprtt( "tabborder", "lllp{.5\\textwidth}" );
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Name" );
@@ -1893,7 +1926,7 @@ sub si_installed_deb() {
 }
 
 sub si_installed_rpm() {
-	siprtt( "h1",        "Installed packages" );
+	siprtt( "h1",        "Installed Packages" );
 	siprtt( "tabborder", "lllp{.5\\textwidth}" );
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Name" );
@@ -2009,7 +2042,7 @@ sub si_run_sitar() {
 			print "\n\n\\newpage\n\n";
 			print "\\begin\{sidewaystable\}\\begingroup\\footnotesize\\par\n";
 		}
-		si_ipchains ();
+		si_packetfilter ();
 
 		if ( $mm eq "tex" ) {
 			print "\\par\\endgroup\\end\{sidewaystable\}";
@@ -2050,6 +2083,12 @@ sub si_run_sitar() {
 
 {
 	my @myname = split /\//, $0;
+
+	if ( $ENV{USER} ne "root" ) {
+		print ( "Please run sitar as user root.\n" );
+		exit;	
+	}
+
 	if ( 	( ( $myname[-1] eq "sitar.pl" ) || ( $myname[-1] eq "sitar" ) ) 
 		&& ( ! $printhelp ) ) {
 		@siprt_modes= ("html", "tex", "yast1" );
@@ -2066,4 +2105,5 @@ sub si_run_sitar() {
 		si_run_sitar();
 	}
 }
+
 
