@@ -16,15 +16,25 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-#  Authors:
-#               Matthias G. Eckermann
-#               Stephan Müller
-#               Janto Trappe
-#               Waldemar Brodkorb
+#  Authors/Contributors:
+#		Matthias G. Eckermann
+#		Stephan Müller
+#		Janto Trappe
+#		Waldemar Brodkorb
+#		Björn Jacke
 #		Bernhard Thoni
-#		Pascal Fuckerieder 
+#		Pascal Fuckerieder
+#		Andreas Rother
+#		Uwe Hering
+#		Jan Jensen
+#		Falko Trojahn
 #
 #  $Log: Makefile,v $
+#  Revision 1.26  2003/08/08 08:05:52  mge
+#  - fixed BUG #561 /tmp/mdstat (but not perfect, still uses tmp-file:-(
+#  - better yast2 selections
+#  - minor corrections
+#
 #  Revision 1.25  2003/03/24 09:55:03  mge
 #  Additions for SLOX, thanks to Uwe Hering (SuSE)
 #
@@ -124,7 +134,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.7
+RELEASE=0.8.8
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -135,7 +145,7 @@ clean:
 	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps pod2htm* *-selections
 
 /tmp/sitar-${RELEASE}.tar.bz2:	clean
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
 
 rpm:	clean
 	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)

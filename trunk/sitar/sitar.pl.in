@@ -27,8 +27,15 @@
 #		Pascal Fuckerieder
 #		Andreas Rother
 #		Uwe Hering
+#		Jan Jensen
+#		Falko Trojahn
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.39  2003/08/08 08:05:52  mge
+#  - fixed BUG #561 /tmp/mdstat (but not perfect, still uses tmp-file:-(
+#  - better yast2 selections
+#  - minor corrections
+#
 #  Revision 1.38  2003/03/24 09:55:03  mge
 #  Additions for SLOX, thanks to Uwe Hering (SuSE)
 #
@@ -271,6 +278,7 @@ selected to be played upon. The sitar is also called as satar and sundari.
 
 use Getopt::Long;
 use Fcntl;
+my $COPYRIGHT  = "1999-2003 SuSE Linux AG";
 my $RELEASE    = "%%RELEASE%%";
 my $PREFIX     = "%%PREFIX%%";
 my $siprt_mode = "";
@@ -323,17 +331,17 @@ if ( -e $DEBIAN ) {
 	print "\n distribution not supported!!\n\n";
 }
 #
-my $ULPACK_RAW_NAME 	= "http://www.unitedlinux.com/feedback";
-my $ULPACK_NICE_NAME	= "United Linux";
-my $SUSEPACK_RAW_NAME	= "http://www.suse.de/feedback";
-my $SUSEPACK_NICE_NAME	= "SuSE Linux";
+my $ULPACK_RAW_NAME    = "http://www.unitedlinux.com/feedback";
+my $ULPACK_NICE_NAME   = "United Linux";
+my $SUSEPACK_RAW_NAME  = "http://www.suse.de/feedback";
+my $SUSEPACK_NICE_NAME = "SuSE Linux";
 #
 # global vars
 #
-my $LS     	= "/bin/ls";
-my $SORTPRG	= "/usr/bin/sort";
-my $UNIQPRG	= "/usr/bin/uniq";
-my $STATUS 	= "/var/lib/dpkg/status";
+my $LS      = "/bin/ls";
+my $SORTPRG = "/usr/bin/sort";
+my $UNIQPRG = "/usr/bin/uniq";
+my $STATUS  = "/var/lib/dpkg/status";
 chomp( my $HOSTNAME = `/bin/hostname -f` );
 my $UNAME       = `/bin/uname -a`;
 my $UNAMER      = `/bin/uname -r`;
@@ -388,7 +396,7 @@ my $html_header = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN
   </table>
   <hr>";
 my $html_footer = "<hr>
-<address>SITAR is &copy; 1999-2002 SuSE Linux AG</address>
+<address>SITAR is &copy; $COPYRIGHT</address>
 </html>\n";
 #
 # $tex_header
@@ -418,7 +426,7 @@ my $tex_header = "\\documentclass[headinclude,a4paper,DIV20]\{scrartcl\}
 my $tex_footer     = "\n\\end\{document\}\n";
 my $old_tex_footer = "\n
 \\par\\noindent
-\\textsf{SITAR is \\textcopyright{} 1999-2002 SuSE Linux AG}\\par
+\\textsf{SITAR is \\textcopyright{} $COPYRIGHT}\\par
 \\end\{document\}\n";
 #
 # Table of contents
@@ -649,7 +657,7 @@ sub si_software_raid() {
 					my @partitions = split ( ' ', $3 );
 					$md{ level }      = $level;
 					$md{ partitions } = "@partitions";
-					open( IN2, "</tmp/mdstat" ) || return ();
+					open( IN2, "</tmp/mdstat" ) || last;
 					while ( <IN2> ) {
 						$counter2++;
 						my $counter1plus1 = 0;
@@ -727,9 +735,6 @@ sub si_software_raid() {
 		siprt( "endtab" );
 		unlink "/tmp/mdstat";
 		close( IN1 );
-	} else {
-		siprtt( "h1",   "Software-Raids" );
-		siprtt( "verb", "No Software RAID." );
 	}
 }
 
@@ -2244,9 +2249,9 @@ sub si_installed_sles() {
 	my $total = 0;
 	my $num   = 0;
 	my @packagers;
-        open( PACKS, "$RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $SORTPRG | $UNIQPRG |" );
-        while ( <PACKS> ) { push @packagers, $_; }
-        close( PACKS );
+	open( PACKS, "$RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $SORTPRG | $UNIQPRG |" );
+	while ( <PACKS> ) { push @packagers, $_; }
+	close( PACKS );
 	my @rpms;
 	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::a\n' |" );
 	while ( <RPMS> ) { push @rpms, $_; }
@@ -2276,8 +2281,8 @@ sub si_installed_sles() {
 		my $packnum   = 0;
 		for $rpm ( sort @rpms ) {
 			my ( $name, $ver, $size, $summary, $distrib, $packager, $aa ) = split /::/, $rpm;
-#	print STDERR "|$rpm|\n\t\t"."|$pack|"."\n\t\t\t".$distrib."::".$packager."\n"; 
-			if ( ($pack) eq ($distrib."::".$packager) ) {
+			#	print STDERR "|$rpm|\n\t\t"."|$pack|"."\n\t\t\t".$distrib."::".$packager."\n";
+			if ( ( $pack ) eq ( $distrib . "::" . $packager ) ) {
 				$total += $size;
 				$num++;
 				$packtotal += $size;
@@ -2298,7 +2303,7 @@ sub si_installed_sles() {
 		siprt( "endrow" );
 		siprt( "endtab" );
 	}
-	siprtt( "h2", "Summary" );
+	siprtt( "h2",        "Summary" );
 	siprtt( "tabborder", "lllp{.5\\textwidth}" );
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Total" );
@@ -2373,42 +2378,74 @@ sub si_selection_rpm() {
 	print "Llatsniot:\n";
 }
 
-sub si_selection_yast2() {
-	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{SIZE}\n' |" );
-	my $total = 0;
-	my $num   = 0;
-	my @rpms  = ();
+sub si_selection_yast2( ) {
+	my %total = ( ul=>0,  sles=>0,  addon=>0,  suse=>0  );
+	my %num   = ( ul=>0,  sles=>0,  addon=>0,  suse=>0  );
+	my %rpms  = ( ul=>(), sles=>(), addon=>(), suse=>() );
+	my %ords  = ( ul=>1,  sles=>2,  addon=>4,  suse=>3  );
+	my @alltypes = qw ( addon sles suse ul );
+	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{SIZE}::%{PACKAGER}::%{DISTRIBUTION}\n' |" );
 	while ( <RPMS> ) {
-		my ( $name, $size ) = split /::/;
-		push @rpms, $name;
-		$total += $size;
-		$num++;
+		my ( $name, $size, $mypack, $distri ) = split /::/;
+		chomp $mypack;
+		chomp $distri;
+                if ( $mypack eq $ULPACK_RAW_NAME ) {
+			push @{ $rpms{'ul'} }, $name;
+			$total{'ul'} += $size;
+			$num{'ul'}++;
+                } elsif ( $mypack eq $SUSEPACK_RAW_NAME ) {
+			if ( $distri =~ "SLES" ) {
+				push @{ $rpms{'sles'} }, $name;
+				$total{'sles'}+=$size;
+				$num{'sles'}++;
+	                } else {
+				push @{ $rpms{'suse'} }, $name;
+				$total{'suse'}+=$size;
+				$num{'suse'}++;
+			}
+		} else {
+			push @{ $rpms{'addon'} }, $name;
+			$total{'addon'}+=$size;
+			$num{'addon'}++;
+		}
 	}
 	close( RPMS );
+	foreach $mytype ( @alltypes ) {
+		if ( $num{$mytype} > 0 ) {
+			$outfile = "/tmp/sitar-$mytype-$HOSTNAME-yast2.sel";
+			if ( $outfile ne "" ) {
+				open( STDOUT, ">$outfile" );
+			}
 	print "\# SuSE Linux Package Selection 3.0 (c) 2002 SuSE Linux AG\n";
 	print "\# generated on ", $now_string, " by SITAR ", $RELEASE, "\n\n";
 	print "=Ver: 3.0\n\n";
-	print "=Sel: sitar-",                    $HOSTNAME, "\n\n";
-	print "=Siz: ",                          $total,    " ", $total, "\n\n";
-	print "=Sum: Package Selection of '",    $HOSTNAME, "' generated by SITAR on ", $now_string, "\n";
-	print "=Sum.de: Software-Auswahl für '", $HOSTNAME, "' erstellt von SITAR am ", $now_string, "\n";
+			print "=Sel: ",$mytype, "-sitar-",$HOSTNAME, " ", $RELEASE, "\n\n";
+			print "=Siz: ",$total{$mytype},    " ", $total{$mytype}, "\n\n";
+			print "=Sum: ",$mytype," selection of '",$HOSTNAME, "'; by SITAR on ",$now_string, "\n";
+			print "=Sum.de: ", $mytype," Auswahl für '", $HOSTNAME, "'; SITAR am ",$now_string, "\n";
 	my @alllanguages = qw ( cs el_GR en es fr gl hu it ja lt nl pt pt_BR sl_SI sv tr);
 	foreach $ll ( sort @alllanguages ) {
 		print "=Sum.", $ll, ": SITAR '", $HOSTNAME, "', ", $now_string, "\n";
 	}
+			if ( $mytype eq "ul" ) {
 	print "\n=Cat: baseconf\n\n";
+			} else {
+				print "\n=Cat: addon\n\n";
+			}
+			print "=Ord: 01",$ords{$mytype},"\n\n";
 	print "=Vis: true\n\n";
-	print "=Ord: 001\n\n";
 	print "+Ins:\n";
-	for $rr ( sort @rpms ) { print $rr, "\n"; }
+			for $rr ( sort @{ $rpms{$mytype} } ) { print $rr, "\n"; }
 	print "-Ins:\n\n";
+		}
+	}
 }
 
 sub si_getopts($) {
 }
 
 sub si_print_version () {
-	print "SITAR - System InformaTion At Runtime - Release ", $RELEASE, "\nCopyright (C) 1999-2003 SuSE Linux AG\n";
+	print "SITAR - System InformaTion At Runtime - Release ", $RELEASE, "\nCopyright (C) ", $COPYRIGHT, "\n";
 }
 
 sub si_print_help () {
@@ -2478,9 +2515,6 @@ sub si_run_sitar() {
 		open( STDOUT, ">&SAVEOUT" );
 	} elsif ( $siprt_mode eq "yast2" ) {
 		open( SAVEOUT, ">&STDOUT" );
-		if ( $outfile ne "" ) {
-			open( STDOUT, ">$outfile" );
-		}
 		si_selection_yast2();
 		open( STDOUT, ">&SAVEOUT" );
 	} elsif ( $siprt_mode eq "pci" ) {
@@ -2494,8 +2528,8 @@ sub si_run_sitar() {
 {
 	my @myname = split /\//, $0;
 	# if ( `/usr/bin/id -u`  != 0 ) {
-	if ( ( $ENV{ USER } && $ENV{ USER } ne "root" ) 
-		|| ( `/usr/bin/id -u ` != 0) ){
+	if (       ( $ENV{ USER } && $ENV{ USER } ne "root" )
+		|| ( `/usr/bin/id -u ` != 0 ) ) {
 		print( "Please run sitar as user root.\n" );
 		exit;
 	}
@@ -2506,7 +2540,6 @@ sub si_run_sitar() {
 			if ( $siprt_mode eq "yast1" ) {
 				$outfile = "/tmp/sitar-$HOSTNAME-yast1.sel";
 			} elsif ( $siprt_mode eq "yast2" ) {
-				$outfile = "/tmp/sitar-$HOSTNAME-yast2.sel";
 			} else {
 				$outfile = "/tmp/sitar-$HOSTNAME.$mm";
 			}
