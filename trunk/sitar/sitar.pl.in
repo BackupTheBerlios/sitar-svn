@@ -1,4 +1,28 @@
 #!/usr/bin/perl 
+#
+#  SITAR - System InformaTion At Runtime
+#  Copyright (C) 1999-2001 SuSE Linux AG
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#  Authors:
+#		Matthias G. Eckermann
+#		Stephan Müller
+#		Janto Trappe
+#		Waldemar Brodkorb
+#
 
 use Getopt::Long;
 
@@ -75,7 +99,7 @@ my $html_header    = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional/
   </table>
   <hr>";
 my  $html_footer ="<hr>
-<address>&copy; 2001 SuSE Linux AG</address>
+<address>SITAR is &copy; 1999-2001 SuSE Linux AG</address>
 </html>\n";
 
 #
@@ -83,8 +107,9 @@ my  $html_footer ="<hr>
 #
 $UNAME	  =~ s/\_/\\_/g;
 $UNAME	  =~ s/\#/\\\#/g;
-my $tex_header = "\\documentclass[a4paper,11pt,headinclude,a4paper]\{scrartcl\} 
+my $tex_header = "\\documentclass[a4paper,headinclude,a4paper]\{scrartcl\} 
 \\usepackage[latin1]\{inputenc\} 
+\\usepackage\{hyperref\} 
 % \\usepackage[headinclude,a4paper]\{typearea\} 
 \\areaset\{40em\}\{50\\baselineskip\} 
 \\usepackage\{epsfig,longtable,verbatim,rotating,multicol\} 
@@ -97,7 +122,7 @@ my $tex_header = "\\documentclass[a4paper,11pt,headinclude,a4paper]\{scrartcl\}
 \\begin\{document\} 
 \\title\{$HOSTNAME, $now_string \\\\
 \{\\normalsize $UNAME\\ $SuSE_release\} \}
-\\author\{$RELEASE \\textcopyright{} 2001 by SuSE Linux AG\}
+\\author\{$RELEASE\}
 \\maketitle
 \\tableofcontents 
 \\newpage
@@ -105,7 +130,7 @@ my $tex_header = "\\documentclass[a4paper,11pt,headinclude,a4paper]\{scrartcl\}
 my $tex_footer="\n\\end\{document\}\n";
 my $old_tex_footer = "\n
 \\par\\noindent
-\\textsf{\\textcopyright{} 2001 SuSE Linux AG}\\par
+\\textsf{SITAR is \\textcopyright{} 1999-2001 SuSE Linux AG}\\par
 \\end\{document\}\n";
 
 
@@ -203,12 +228,12 @@ sub siprint($$$) {
     if($m eq "h2")       {print "\\subsection\{",$value,"\}\n";}
     if($m eq "h3")       {print "\\subsubsection\{",$value,"\}\n";}
     if($m eq "tabborder"){print
-			    "\\begingroup\\footnotesize\\par",  
+			    "\\begingroup\\tiny\\par",  
 			    "\\noindent\\begin\{longtable\}[l]\{\@\{\}",
 			    $value,"l\@\{\}\}\n";
     }
     if($m eq "tab")      {print
-			    "\\begingroup\\footnotesize\\par",  
+			    "\\begingroup\\tiny\\par",  
 			    "\\noindent\\begin\{longtable\}[l]\{\@\{\}",
 			    $value,"l\@\{\}\}\n";
     }
@@ -218,7 +243,7 @@ sub siprint($$$) {
     if($m eq "pre")      {print "\\begin\{verbatim\}";$IsVerbatim=1;}
     if($m eq "endpre")   {print "\\end\{verbatim\}\n";$IsVerbatim=0;}
     if($m eq "multipre") {
-      print "\n\\par\\begingroup\\scriptsize\\par\n";
+      print "\n\\par\\begingroup\\tiny\\par\n";
       print "\\begin\{multicols\}\{2\}\n\\begin\{verbatim\}\n";
       $IsVerbatim=1;
     }
@@ -342,7 +367,7 @@ sub si_lsdev() {
   #	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
   #	Date:        1996-01-22 19:06:22
   #	Last Change: 1998-05-31 15:26:58
-  #       $Id: sitar.pl.in,v 1.2 2001/08/14 03:10:53 mge Exp $
+  #       $Id: sitar.pl.in,v 1.3 2001/08/14 03:40:20 mge Exp $
   my %device_h = ();
   use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
   my %dma      = ();

@@ -16,7 +16,7 @@ Distribution: SuSE Linux 7.1a (i386)
 Name:         sitar
 Packager:     feedback@suse.de
 
-Version:      0.6.4
+Version:      0.6.5
 Release:      0
 Summary:      SuSE System InformaTion at Runtime
 Source: sitar-%{version}.tar.gz
