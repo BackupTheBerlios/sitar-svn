@@ -21,9 +21,12 @@
 #               Stephan Müller
 #               Janto Trappe
 #               Waldemar Brodkorb
-#		Björn Jacke
+#               Björn Jacke
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.10  2001/09/07 01:13:54  mge
+#  - cosmetic changes
+#
 #  Revision 1.9  2001/09/07 00:59:13  mge
 #  - added Björn Jacke to list of authors
 #
@@ -56,7 +59,7 @@ Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
 Version:	0.6.8
-Release:	3
+Release:	4
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
 Copyright:	GPL

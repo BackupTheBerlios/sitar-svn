@@ -22,8 +22,12 @@
 #		Stephan Müller
 #		Janto Trappe
 #		Waldemar Brodkorb
+#		Björn Jacke
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.17  2001/09/07 01:13:54  mge
+#  - cosmetic changes
+#
 #  Revision 1.16  2001/09/06 23:48:25  mge
 #  - make $RPM and $DPKG global variables
 #  - make Passwords in /etc/lilo.conf and /etc/pppoed.conf invisible
@@ -555,7 +559,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.16 2001/09/06 23:48:25 mge Exp $
+	#       $Id: sitar.pl.in,v 1.17 2001/09/07 01:13:54 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -1864,7 +1868,7 @@ sub si_run_sitar() {
 
 {
 	my @myname = split /\//, $0;
-	if ( 	( ( $myname[-1] eq "sitar.pl" ) || ( $myname[-1] eq "sitar.pl" ) ) 
+	if ( 	( ( $myname[-1] eq "sitar.pl" ) || ( $myname[-1] eq "sitar" ) ) 
 		&& ( ! $printhelp ) ) {
 		@siprt_modes= ("html", "tex", "yast1" );
 		for $mm (@siprt_modes) {
@@ -1879,7 +1883,5 @@ sub si_run_sitar() {
 	} else {
 		si_run_sitar();
 	}
-	
-
 }
 
