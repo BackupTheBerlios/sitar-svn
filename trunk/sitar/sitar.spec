@@ -1,6 +1,6 @@
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2001 SuSE Linux AG
+#  Copyright (C) 1999-2002 SuSE Linux AG
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,10 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.15  2002/04/11 14:43:32  mge
+#  added check for /etc/sysconfig
+#  release 0.7.1
+#
 #  Revision 1.14  2002/03/18 16:21:16  mge
 #  added "BuildArch: noarch" to spec file
 #
@@ -72,7 +76,7 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.7.0
+Version:	0.7.1
 Release:	6
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
