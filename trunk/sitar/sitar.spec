@@ -96,6 +96,10 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Mon Mar 21 2005 - mge@suse.de
+- more fixes for Novell #73833:
+        * lvm scanning, if /etc/lvm/backup does not exist
+        * simple output of /proc/mdstat for kernel 2.4/2.6
 * Fri Mar 18 2005 - mge@suse.de
 - update to 0.9.0, fixes Novell #73833,
 	SITAR is missing some required output fields:
