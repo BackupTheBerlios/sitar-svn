@@ -23,6 +23,10 @@
 #               Waldemar Brodkorb
 #
 #  $Log: Makefile,v $
+#  Revision 1.7  2001/08/20 04:16:39  mge
+#  - manpage cleanups
+#  - changed release num to 0.6.6
+#
 #  Revision 1.6  2001/08/15 04:27:40  mge
 #  improved semi-automated rpm-generation
 #
@@ -34,7 +38,7 @@
 
 PREFIX=usr
 PERL=/usr/bin/perl
-RELEASE=0.6.5
+RELEASE=0.6.6
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps

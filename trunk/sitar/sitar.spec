@@ -23,6 +23,10 @@
 #               Waldemar Brodkorb
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.5  2001/08/20 04:16:39  mge
+#  - manpage cleanups
+#  - changed release num to 0.6.6
+#
 #  Revision 1.4  2001/08/15 04:27:40  mge
 #  improved semi-automated rpm-generation
 #
@@ -33,11 +37,11 @@
 #
 
 Vendor:		SuSE, Germany
-Distribution:	SuSE Linux 7.3
+Distribution:	SuSE Linux
 Name:		sitar
-Packager:	feedback@suse.de
-Version:	0.6.5
-Release:	0
+Packager:	mge@suse.de
+Version:	0.6.6
+Release:	1
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
 Copyright:	GPL

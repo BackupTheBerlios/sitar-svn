@@ -24,6 +24,10 @@
 #		Waldemar Brodkorb
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.13  2001/08/20 04:16:39  mge
+#  - manpage cleanups
+#  - changed release num to 0.6.6
+#
 #  Revision 1.12  2001/08/17 11:15:57  mge
 #  more lines for manpage
 #
@@ -90,21 +94,21 @@ While running, stdout is redirected to the designated C<outfile> file. So one wi
 
 =head1 EXAMPLES
 
-=head1 ENVIRONMENT
+For generating a HTML documentation type as user C<root>:
+	
+C<sitar.pl --format=html --outfile=/tmp/$HOSTNAME.html>
 
-=head1 FILES
+For PDF type as user C<root>:
 
-=head1 CAVEATS
+C<sitar.pl --format=tex --outfile=/tmp/$HOSTNAME.tex>
 
-=head1 BUGS
+and twice (as an ordinary user): 
+
+C<pdflatex /tmp/$HOSTNAME.tex>
 
 =head1 RESTRICTIONS
 
 Up to now SITAR does not support C<iptables> or other stuff proprietary to Linux Kernel 2.4. We are working on some of these issues.
-
-=head1 NOTES
-
-=head1 SEE ALSO
 
 =head1 AUTHOR
 
@@ -531,7 +535,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.12 2001/08/17 11:15:57 mge Exp $
+	#       $Id: sitar.pl.in,v 1.13 2001/08/20 04:16:39 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
