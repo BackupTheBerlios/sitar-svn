@@ -502,9 +502,9 @@ sub siprint($$$) {
 		$value =~ s/\&/\&amp;/g;
 		$value =~ s/</\&lt;/g;
 		$value =~ s/>/\&gt;/g;
-		$attr =~ s/\&/\&amp;/g;
-		$attr =~ s/</\&lt;/g;
-		$attr =~ s/>/\&gt;/g;
+		$attr  =~ s/\&/\&amp;/g;
+		$attr  =~ s/</\&lt;/g;
+		$attr  =~ s/>/\&gt;/g;
 		if ( $m eq "h1" ) {
 			$seccnt++;
 			mysprint "<Sect1 id=\"", $seccnt, "\"\n><title>", $value, "</title></Sect1>";
@@ -543,7 +543,7 @@ sub siprint($$$) {
 			mysprint "\n]]>\n</programlisting>\n";
 			$IsVerbatim = 0;
 		}
-		if ( $m eq "multipre" )    {
+		if ( $m eq "multipre" ) {
 			mysprint "<programlisting>\n<![CDATA[\n";
 			$IsVerbatim = 1;
 		}
@@ -551,7 +551,7 @@ sub siprint($$$) {
 			mysprint "\n]]>\n</programlisting>\n";
 			$IsVerbatim = 0;
 		}
-		if ( $m eq "verb" )        { mysprint $value; }
+		if ( $m eq "verb" )   { mysprint $value; }
 		if ( $m eq "header" ) { print $sdocbook_header; }
 		if ( $m eq "body" )   { print $OutputBuffer; }
 		if ( $m eq "footer" ) { print $sdocbook_footer; }
@@ -2065,13 +2065,13 @@ sub si_etc() {
 	}
 	# some more services/programs
 	my %myfiles = ();
-	if ( -d $config_dir ) {
-		foreach ( `$LS -1 $config_dir/*.include` ) {
-			chomp( $_ );
-			do "$_";
-			push @allconfigfiless, @files;
-		}
-	}
+	# if ( -d $config_dir ) {
+	#	foreach ( `$LS -1 $config_dir/*.include` ) {
+	#		chomp( $_ );
+	#		do "$_";
+	#		push @allconfigfiless, @files;
+	#	}
+	# }
 	foreach ( @allconfigfiless ) {
 		$myfiles{ $_ } = 0;
 	}
@@ -2096,6 +2096,29 @@ sub si_etc() {
 		close( CONFIG );
 		siprt( "endpre" );
 		if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "/etc/aliases", "\#" ); }
+	}
+	#
+	# some more services/programs
+	#
+	if ( -d $config_dir ) {
+		foreach ( `$LS -1 $config_dir/*.include` ) {
+			%myfiles = ();
+			chomp( $_ );
+			do "$_";
+			foreach ( @files ) {
+				$myfiles{ $_ } = 0;
+			}
+			siprtt( "h2", $_ );
+			foreach $mm ( sort keys %myfiles ) {
+				if ( $mm !~ /proc/ ) {
+					if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
+						if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
+					} else {
+						if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -2575,6 +2598,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.56  2005/01/18 18:10:37  mge
+#  enhance handling of .include files
+#
 #  Revision 1.55  2005/01/18 17:48:03  mge
 #  xml: better entity handling
 #
