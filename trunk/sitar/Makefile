@@ -25,6 +25,14 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.16  2002/11/27 13:58:26  mge
+#  Added patch for RedHat Linux from Andreas Rother <Andreas.Rother@eplus.de>
+#  Changes:
+#  	- don't use "si_lsdev" on RedHat
+#  	- parse alle crontabs (we should make that an option later)
+#  Thanks to him!
+#  Release 0.7.4
+#
 #  Revision 1.15  2002/06/01 21:14:24  waldb
 #  fixed tex output on debian systems
 #  removed restrictions from pod (iptables support is now included)
@@ -76,7 +84,7 @@
 PREFIX=usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.7.3
+RELEASE=0.7.4
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
