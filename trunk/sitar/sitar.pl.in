@@ -644,7 +644,7 @@ sub si_cpuinfo() {
 		}
 	} else {
 		while ( <IN> ) {
-			if ( m/processor/gi ) {
+			if ( m/^(processor)/gi ) {
 				# m/(\d+)/gs;
 				my ( $proc, $value ) = split /:/;
 				siprt( "tabrow" );
@@ -2655,6 +2655,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.66  2005/02/09 13:02:04  mge
+#  small patch regarding /proc/cpuinfo
+#
 #  Revision 1.65  2005/01/28 16:18:07  mge
 #  exit with error, if target directory of output-file does not exist
 #

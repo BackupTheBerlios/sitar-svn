@@ -28,7 +28,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.pre4
+Version:	0.9.pre5
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -91,6 +91,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.41  2005/02/09 13:02:04  mge
+#  small patch regarding /proc/cpuinfo
+#
 #  Revision 1.40  2005/01/28 16:18:07  mge
 #  exit with error, if target directory of output-file does not exist
 #
