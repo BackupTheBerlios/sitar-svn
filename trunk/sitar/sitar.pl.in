@@ -31,6 +31,9 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.41  2003/08/08 10:54:28  mge
+#  reorganized and simplified /etc/-parsing / config-file management
+#
 #  Revision 1.40  2003/08/08 08:08:30  mge
 #  Make sitar run from cron (thank to Jan Jensen)
 #
@@ -398,7 +401,7 @@ my $html_header = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN
     </tr>
   </table>
   <hr>";
-my $html_footer = "<hr>
+my $html_footer = "<hr />
 <address>SITAR is &copy; $COPYRIGHT</address>
 </html>\n";
 #
@@ -406,25 +409,39 @@ my $html_footer = "<hr>
 #
 $UNAME =~ s/\_/\\_/g;
 $UNAME =~ s/\#/\\\#/g;
-my $tex_header = "\\documentclass[headinclude,a4paper,DIV20]\{scrartcl\} 
+my $tex_header = "%
+% produced by SITAR (C) $COPYRIGHT
+%
+% for standalone documents use:
+%
+\\documentclass[headinclude,a4paper,DIV20]\{scrartcl\} 
 \\usepackage[latin1]\{inputenc\} 
 \\usepackage\{hyperref\} 
 \\usepackage\{longtable,verbatim,multicol\} 
 \\pagestyle\{plain\} 
-% \\usepackage[headinclude,a4paper]\{typearea\} 
-% \\areaset\{40em\}\{50\\baselineskip\} 
-% \\usepackage\{german\} 
-% \\selectlanguage\{english\} 
-% 
 \\newcommand\{\\tm\}\{\\texttrademark\} 
 % 
 \\begin\{document\} 
+%
 \\title\{$HOSTNAME, $now_string \\\\
 \{\\normalsize $UNAME\\ $release\} \}
 \\author\{$RELEASE\}
 \\maketitle
 \\tableofcontents 
 \\newpage
+%
+% for embedded documents you should use:
+%
+% \\usepackage[headinclude,a4paper]\{typearea\} 
+% \\areaset\{40em\}\{50\\baselineskip\} 
+% \\usepackage\{german\} 
+% \\selectlanguage\{english\} 
+% 
+% \\section{$HOSTNAME, 
+% 	$now_string \\\\ 
+%	\{\\normalsize $UNAME\\ $release\} \}}
+% ( by $RELEASE ) 
+%
 ";
 my $tex_footer     = "\n\\end\{document\}\n";
 my $old_tex_footer = "\n
@@ -451,7 +468,9 @@ sub addtoc($$$) {
 	if ( $level > $lastTOClevel ) {
 		$TOCBuffer = join "", $TOCBuffer, "<ul class=\"toc\">\n";
 	} elsif ( $level < $lastTOClevel ) {
-		$TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n</li>\n";
+		for ( $ll = $lastTOClevel; $ll > $level; $ll--) {
+			$TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n</li>\n";
+		}
 	} elsif ( $lastTOClevel != 0 ) {
 		$TOCBuffer = join "", $TOCBuffer, "</li>\n";
 	} else {
@@ -481,6 +500,7 @@ sub siprint($$$) {
 		if ( $m eq "h3" ) {
 			$subsubseccnt++;
 			mysprint "<h3><a name=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n>", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "&nbsp;", $value, "</a></h3>";
+			addtoc( 3, "$seccnt.$subseccnt.$subsubseccnt", "$seccnt.$subseccnt.$subsubseccnt&nbsp;$value" );
 		}
 		if ( $m eq "tabborder" ) {
 			mysprint "<table summary=\"\"\n border=\"1\">";
@@ -515,6 +535,7 @@ sub siprint($$$) {
 				$TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n";
 			}
 			print "<h1>Table of Contents</h1>\n", $TOCBuffer;
+			print "\n<hr />\n";
 		}
 		if ( $m eq "body" )   { print $OutputBuffer; }
 		if ( $m eq "footer" ) { print $html_footer; }
@@ -1710,7 +1731,7 @@ sub si_packetfilter() {
 
 sub si_conf_secure($$$) {
 	my ( $filename, $comment, $blankout ) = @_;
-	siprtt( "h2", $filename );
+	siprtt( "h3", $filename );
 	# print STDERR $filename, ": ", $comment, "\n";
 	siprt( "pre" );
 	if ( $comment eq "/**/" ) {
@@ -1743,9 +1764,9 @@ sub si_conf_secure($$$) {
 sub si_conf($$$) {
 	my ( $title, $filename, $comment ) = @_;
 	if ( $title eq $filename ) {
-		siprtt( "h2", "$filename" );
+		siprtt( "h3", "$filename" );
 	} else {
-		siprtt( "h2", "$title - $filename" );
+		siprtt( "h3", "$title - $filename" );
 	}
 	# print STDERR $filename, ": ", $comment, "\n";
 	siprt( "pre" );
@@ -1831,70 +1852,48 @@ sub si_proc_sys_net () {
 	}
 }
 
-sub si_etc_redhat() {
-	si_usercrontab();
-	siprtt( "h1", "Sysconfig" );
-	# Sysconfig
-	if ( -r "/etc/sysconfig" ) {
-		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
-			chomp $NN;
-			if ( `/usr/bin/file -b $NN | /bin/grep -i -e text` ) {
-				si_conf( $NN, $NN, "\#" );
-			}
-		}
-	}
-	siprtt( "h1", "Configuration" );
-	# SSH/OpenSSH
-	if ( -r "/etc/ssh/sshd_config" ) {
-		si_conf( "sshd_config", "/etc/ssh/sshd_config", "\#" );
-	} elsif ( "/etc/sshd_config" ) {
-		si_conf( "sshd_config", "/etc/sshd_config", "\#" );
-	}
-	my %myfiles  = ();
-	my @allfiles = qw (
-	  /etc/grub.conf
-	  /boot/grub/menu.lst
-	  /etc/squid.conf
-	  /etc/syslog.conf
-	  /etc/dhcpd.conf
-	  /etc/httpd/httpd.conf
-	  /etc/openldap/slapd.conf
-	  /etc/openldap/ldap.conf
-	  /etc/inetd.conf
-	  /etc/xinetd.conf
-	  /etc/printcap
-	  /etc/hosts
-	  /etc/hosts.allow
-	  /etc/hosts.deny
-	  /etc/ppp/options
-	  /etc/ppp/pppoe-server-options
-	  /etc/lilo.conf
-	  /etc/grub.conf
-	  /etc/fstab
-	  /etc/inittab
-	  /etc/passwd
-	  /etc/group
-	  /etc/raidtab
-	  /etc/raid0.conf
-	  /etc/raid1.conf
-	  /etc/raid5.conf
-	  /etc/resolv.conf
-	  /etc/rinetd.conf
-	  /etc/snmp/snmpd.conf
-	);
-	foreach ( @allfiles ) {
-		$myfiles{ $_ } = 0;
-	}
-	foreach $mm ( sort keys %myfiles ) {
-		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
-				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
-			} else {
-				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
-			}
-		}
-	}
-}
+my @allconfigfiless = qw (
+  /boot/grub/menu.lst
+  /etc/apache/httpd.conf
+  /etc/crontab
+  /etc/dhcpd.conf
+  /etc/fstab
+  /etc/group
+  /etc/grub.conf
+  /etc/ha.d/authkeys
+  /etc/ha.d/ha.cf
+  /etc/ha.d/haresources
+  /etc/hosts
+  /etc/hosts.allow
+  /etc/hosts.deny
+  /etc/httpd/httpd.conf
+  /etc/inetd.conf
+  /etc/init.d/boot.local
+  /etc/inittab
+  /etc/lilo.conf
+  /etc/openldap/ldap.conf
+  /etc/openldap/slapd.conf
+  /etc/passwd
+  /etc/ppp/options
+  /etc/ppp/pppoe-server-options
+  /etc/pppoed.conf
+  /etc/printcap
+  /etc/raid0.conf
+  /etc/raid1.conf
+  /etc/raid5.conf
+  /etc/raidtab
+  /etc/rc.firewall
+  /etc/resolv.conf
+  /etc/rinetd.conf
+  /etc/route.conf
+  /etc/snmp/snmpd.conf
+  /etc/snort/snort.conf
+  /etc/squid.conf
+  /etc/syslog.conf
+  /etc/xinetd.conf
+  /var/spool/fax/etc/config
+  /var/spool/fax/etc/config.modem
+);
 
 sub si_proc () {
 	si_build_proc_description();
@@ -1905,6 +1904,7 @@ sub si_proc () {
 
 sub si_etc() {
 	siprtt( "h1", "Configuration" );
+	siprtt( "h2", "Common" );
 	# SSH/OpenSSH
 	my @sshconf = qw ( /etc/ssh/sshd_config /etc/sshd_config );
 	foreach $file ( @sshconf ) {
@@ -1917,7 +1917,11 @@ sub si_etc() {
 			si_conf( "DNS/Bind", $file, "/**/" );
 			open( FILE, $file );
 			while ( <FILE> ) {
-				if ( $_ =~ m/.*file "(.*)".*/ ) { si_conf( "Zones/DB", $1, "\#|;" ); }
+				if ( $_ =~ m/.*file\s*"(.*)".*/ ) {
+					if ( -r "/var/named/".$1 ) {
+						si_conf( "Zones/DB", "/var/named/".$1, "\#|;" );
+					}
+				}
 			}
 			close FILE;
 		}
@@ -1938,51 +1942,14 @@ sub si_etc() {
 	}
 	# some more services/programs
 	my %myfiles  = ();
-	my @allfiles = qw (
-	  /etc/grub.conf
-	  /boot/grub/menu.lst
-	  /etc/squid.conf
-	  /etc/syslog.conf
-	  /etc/dhcpd.conf
-	  /etc/httpd/httpd.conf
-	  /etc/apache/httpd.conf
-	  /etc/inetd.conf
-	  /etc/xinetd.conf
-	  /etc/printcap
-	  /etc/crontab
-	  /etc/hosts
-	  /etc/hosts.allow
-	  /etc/hosts.deny
-	  /etc/pppoed.conf
-	  /etc/lilo.conf
-	  /etc/fstab
-	  /etc/inittab
-	  /etc/passwd
-	  /etc/group
-	  /etc/raidtab
-	  /etc/raid0.conf
-	  /etc/raid1.conf
-	  /etc/raid5.conf
-	  /etc/route.conf
-	  /etc/resolv.conf
-	  /etc/rc.firewall
-	  /etc/rinetd.conf
-	  /etc/snort/snort.conf
-	  /var/spool/fax/etc/config
-	  /var/spool/fax/etc/config.modem
-	  /etc/ha.d/ha.cf
-	  /etc/ha.d/haresources
-	  /etc/ha.d/authkeys
-	  /etc/init.d/boot.local
-	);
 	if ( -d $config_dir ) {
 		foreach ( `$LS -1 $config_dir/*.include` ) {
 			chomp( $_ );
 			do "$_";
-			push @allfiles, @files;
+			push @allconfigfiless, @files;
 		}
 	}
-	foreach ( @allfiles ) {
+	foreach ( @allconfigfiless ) {
 		$myfiles{ $_ } = 0;
 	}
 	foreach $mm ( sort keys %myfiles ) {
@@ -1993,98 +1960,6 @@ sub si_etc() {
 				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
 			}
 		}
-	}
-}
-
-sub si_etc_debian() {
-	# special function for debian specific configuration
-	#siprtt( "h1", "Configuration" );
-}
-
-sub si_etc_united() {
-	siprtt( "h1", "Configuration" );
-	if ( -r "/etc/sysconfig" ) {
-		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
-			chomp $NN;
-			si_conf( $NN, $NN, "\#" );
-		}
-	}
-	my %myfiles  = ();
-	my @allfiles = qw (
-	  /etc/grub.conf
-	  /boot/grub/menu.lst
-	  /etc/squid.conf
-	  /etc/syslog.conf
-	  /etc/dhcpd.conf
-	  /etc/httpd/httpd.conf
-	  /etc/openldap/slapd.conf
-	  /etc/inetd.conf
-	  /etc/xinetd.conf
-	  /etc/printcap
-	  /etc/crontab
-	  /etc/hosts
-	  /etc/hosts.allow
-	  /etc/hosts.deny
-	  /etc/pppoed.conf
-	  /etc/lilo.conf
-	  /etc/fstab
-	  /etc/inittab
-	  /etc/passwd
-	  /etc/group
-	  /etc/raidtab
-	  /etc/raid0.conf
-	  /etc/raid1.conf
-	  /etc/raid5.conf
-	  /etc/route.conf
-	  /etc/resolv.conf
-	  /etc/rc.firewall
-	  /etc/rinetd.conf
-	  /etc/snort/snort.conf
-	  /var/spool/fax/etc/config
-	  /var/spool/fax/etc/config.modem
-	  /etc/ha.d/ha.cf
-	  /etc/ha.d/haresources
-	  /etc/ha.d/authkeys
-	  /etc/init.d/boot.local
-	);
-	if ( -d $config_dir ) {
-		foreach ( `$LS -1 $config_dir/*.include` ) {
-			chomp( $_ );
-			do "$_";
-			push @allfiles, @files;
-		}
-	}
-	foreach ( @allfiles ) {
-		$myfiles{ $_ } = 0;
-	}
-	foreach $mm ( sort keys %myfiles ) {
-		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
-				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
-			} else {
-				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
-			}
-		}
-	}
-	# Samba
-	if ( -r "/etc/smb.conf" ) { si_conf( "/etc/smb.conf", "/etc/smb.conf", ";" ); }
-	# named
-	if ( -r "/etc/named.conf" ) {
-		si_conf( "/etc/named.conf", "/etc/named.conf", "/**/" );
-		for $NN ( `/usr/bin/find /var/named -name "*.zone"` ) {
-			chomp $NN;
-			si_conf( $NN, $NN, ";" );
-		}
-		for $NN ( `/usr/bin/find /var/named -name "*.db"` ) {
-			chomp $NN;
-			si_conf( $NN, $NN, ";" );
-		}
-	}
-	# SSH/OpenSSH
-	if ( -r "/etc/ssh/sshd_config" ) {
-		si_conf( "sshd_config", "/etc/ssh/sshd_config", "\#" );
-	} elsif ( "/etc/sshd_config" ) {
-		si_conf( "sshd_config", "/etc/sshd_config", "\#" );
 	}
 	# Postfix
 	if ( -d "/etc/postfix/" ) {
@@ -2097,10 +1972,40 @@ sub si_etc_united() {
 		}
 		close( CONFIG );
 		siprt( "endpre" );
+		if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "/etc/aliases", "\#" ); }
 	}
-	if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "/etc/aliases", "\#" ); }
+}
+
+sub si_etc_debian() {
+	# special function for debian specific configuration
+	#siprtt( "h1", "Configuration" );
+}
+
+sub si_etc_redhat() {
+	si_usercrontab();
+	# Sysconfig
+	if ( -r "/etc/sysconfig" ) {
+		siprtt( "h2", "Sysconfig" );
+		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
+			chomp $NN;
+			if ( `/usr/bin/file -b $NN | /bin/grep -i -e text` ) {
+				si_conf( $NN, $NN, "\#" );
+			}
+		}
+	}
+}
+
+sub si_etc_united() {
+	if ( -r "/etc/sysconfig" ) {
+		siprtt( "h2", "Sysconfig" );
+		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
+			chomp $NN;
+			si_conf( $NN, $NN, "\#" );
+		}
+	}
 	# SuSE proxy suite
 	if ( -r "/etc/proxy-suite" ) {
+		siprtt( "h2", "SuSE Proxy Suite" );
 		for $NN ( `/usr/bin/find /etc/proxy-suite -name "*.conf"` ) {
 			chomp $NN;
 			si_conf( $NN, $NN, "\#" );
@@ -2110,53 +2015,14 @@ sub si_etc_united() {
 
 sub si_etc_suse() {
 	# special function for suse specific configuration
-	# siprtt( "h1", "Configuration" );
-	my @lines = ();
-	open( RCCONFIG, "</etc/rc.config" );
-	while ( <RCCONFIG> ) {
-		s/="no"/=no/i;
-		s/="yes"/=yes/i;
-		if ( m/START_POSTFIX=yes/i ) {
-			push @lines, $_;
-			siprtt( "h2", "Postfix (postconf -n)" );
-			siprt( "pre" );
-			open( CONFIG, "/usr/sbin/postconf -n |" );
-			while ( <CONFIG> ) {
-				chomp();
-				siprtt( "verb", "$_\n" );
+	if ( -d "/etc/rc.config.d" || -r "/etc/rc.config" ) {
+		siprtt( "h2", "/etc/rc.config*" );
+		si_conf( "/etc/rc.config", "/etc/rc.config", "\#" );
+		if ( -r "/etc/rc.config.d" ) {
+			for $NN ( `/usr/bin/find /etc/rc.config.d -name "*.config"` ) {
+				chomp $NN;
+				si_conf( $NN, $NN, "\#" );
 			}
-			close( CONFIG );
-			siprt( "endpre" );
-			if ( -r "/etc/aliases" ) { si_conf( "Aliases", "/etc/aliases", "\#" ); }
-		}
-		if ( !m/^#|^$|""/ ) {
-			push @lines, $_;
-		}
-	}
-	close( RCCONFIG );
-	siprtt( "h2", "/etc/rc.config" );
-	siprt( "pre" );
-	for $ll ( @lines ) {
-		siprtt( "verb", $ll );
-	}
-	siprt( "endpre" );
-	if ( -r "/etc/sysconfig" ) {
-		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
-			chomp $NN;
-			si_conf( $NN, $NN, "\#" );
-		}
-	}
-	if ( -r "/etc/rc.config.d" ) {
-		for $NN ( `/usr/bin/find /etc/rc.config.d -name "*.config"` ) {
-			chomp $NN;
-			si_conf( $NN, $NN, "\#" );
-		}
-	}
-	# SuSE proxy suite
-	if ( -r "/etc/proxy-suite" ) {
-		for $NN ( `/usr/bin/find /etc/proxy-suite -name "*.conf"` ) {
-			chomp $NN;
-			si_conf( "SuSE-FTP-Proxysuite", $NN, "\#" );
 		}
 	}
 }
@@ -2486,18 +2352,22 @@ sub si_run_sitar() {
 		}
 		si_proc();
 		if ( $distribution eq "unitedlinux" ) {
+			si_etc();
 			si_etc_united();
 			si_installed_sles();
 			si_proc_config();
 		} elsif ( $distribution eq "suse" || $distribution eq "sles" ) {
 			si_etc();
+			si_etc_united();
 			si_etc_suse();
 			si_installed_sles();
 			si_proc_config();
 		} elsif ( $distribution eq "redhat" ) {
+			si_etc();
 			si_etc_redhat();
 			si_installed_rpm();
 		} elsif ( $distribution eq "debian" ) {
+			si_etc();
 			si_etc_debian();
 			si_installed_deb();
 			si_kernel_config();
