@@ -25,6 +25,9 @@
 #		Björn Jacke
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.18  2001/09/10 21:05:45  mge
+#  - iptables, begin of work
+#
 #  Revision 1.17  2001/09/07 01:13:54  mge
 #  - cosmetic changes
 #
@@ -559,7 +562,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.17 2001/09/07 01:13:54 mge Exp $
+	#       $Id: sitar.pl.in,v 1.18 2001/09/10 21:05:45 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -1241,9 +1244,18 @@ sub si_route() {
 	close( ROUTE );
 }
 
+sub si_iptables () {
+
+}
+
+sub si_ipvs () {
+
+}
+
 sub si_ipchains () {
-	if ( $UNAMER gt "2.3.1" ) {
-		siprtt( "h1", "IPCHAINS: Kernel-Release $UNAMER not supported, sorry :-(\n" );
+	if ( $UNAMER gt "2.3.1" ) {	
+		si_iptables();
+		si_ipvs();
 	} elsif ( $UNAMER lt "2.1.0" ) {
 		siprtt( "h1", "IPCHAINS: Kernel-Release $UNAMER (ipfwadm) not supported, sorry :-(\n" );
 	} else {
