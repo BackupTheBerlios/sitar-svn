@@ -40,7 +40,15 @@ Prepare system information using perl, reading the /proc filesystem. Output is i
 
 =head1 OPTIONS
 
-=head1 RETURN VALUE
+=over
+
+=item B<--help>
+
+=item B<--format>=I<format>
+
+=item B<--outfile>=I<file> 
+
+=back
 
 =head1 ERRORS
 
@@ -64,9 +72,40 @@ Prepare system information using perl, reading the /proc filesystem. Output is i
 
 =head1 AUTHOR
 
+The SITAR project was created by Matthias G. Eckermann <mge@suse.de>; Stephan
+Müller helped with Firewalling and Security issues; Janto Trappe and Waldemar
+Brodkorb created the Debian port; an adaption to RedHat Linux was done by.
+
+For more information on SITAR, see: http://sitar.berlios.de/
+
+=head1 LICENSE
+
+Copyright (C) 1999-2001 SuSE Linux AG
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 675 Mass
+Ave, Cambridge, MA 02139, USA. 
+
 =head1 HISTORY
 
-The sitar is the invention of Amir Shusru, the famous poet and singer attached to the Court of Sultan Alauddin Khilju of Delhi (1295-1315). This is the most popular instrument in Northern India. The sitar is a lute-like instrument with a long fretted neck and a resonating gourd. It is plucked by the index finger of the left hand fitted with a plectrum made of wire. Sitars generally have 6 or 7 main playing strings which run above the frets, and an additional 12 or more sympathetic strings which give the instrument a shimmering echo when played. The frets herein are movable and can be adjusted according to the scale selected to be played upon. The sitar is also called as satar and sundari.
+The sitar is the invention of Amir Shusru, the famous poet and singer attached
+to the Court of Sultan Alauddin Khilju of Delhi (1295-1315). This is the most
+popular instrument in Northern India. The sitar is a lute-like instrument with
+a long fretted neck and a resonating gourd. It is plucked by the index finger
+of the left hand fitted with a plectrum made of wire. Sitars generally have 6
+or 7 main playing strings which run above the frets, and an additional 12 or
+more sympathetic strings which give the instrument a shimmering echo when
+played. The frets herein are movable and can be adjusted according to the scale
+selected to be played upon. The sitar is also called as satar and sundari.
 
 =head1 CODE DOCUMENTATION
 
@@ -456,7 +495,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.8 2001/08/15 02:50:39 mge Exp $
+	#       $Id: sitar.pl.in,v 1.9 2001/08/15 03:44:48 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
