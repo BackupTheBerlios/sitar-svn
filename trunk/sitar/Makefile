@@ -30,6 +30,10 @@
 #		Falko Trojahn
 #
 #  $Log: Makefile,v $
+#  Revision 1.30  2004/03/22 14:38:46  mge
+#  - Update LICENSE to 2004
+#  - fix typo in Makefile ( cvzSpf -> tvSjpf )
+#
 #  Revision 1.29  2004/03/22 14:24:02  mge
 #  - fixed off by one in directory name
 #  - cleanups
@@ -160,7 +164,7 @@ clean:
 	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
 
 rpm:	clean
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
 	- (pushd /tmp/ ; rpm -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
 	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
