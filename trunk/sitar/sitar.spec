@@ -21,8 +21,12 @@
 #               Stephan Müller
 #               Janto Trappe
 #               Waldemar Brodkorb
+#		Björn Jacke
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.9  2001/09/07 00:59:13  mge
+#  - added Björn Jacke to list of authors
+#
 #  Revision 1.8  2001/09/07 00:09:09  mge
 #  - released 0.6.8
 #
@@ -45,7 +49,6 @@
 #  Revision 1.3  2001/08/15 03:57:30  mge
 #  Makefile cleanups, introduced CVS-log into
 #  	CodingStyle Makefile sitar.pl.in sitar.spec
-#
 #
 
 Vendor:		SuSE, Germany
@@ -70,7 +73,7 @@ Comment: Sitar is an ancient Indian instrument as well.
 Authors:
 --------
 	Matthias Eckermann <mge@suse.de>,
-	Stephan Mueller, Janto Trappe, Waldemar Brodkorb 
+	Stephan Mueller, Janto Trappe, Waldemar Brodkorb, Bjoern Jacke
 
 %prep
 %setup
