@@ -23,6 +23,9 @@
 #               Waldemar Brodkorb
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.8  2001/09/07 00:09:09  mge
+#  - released 0.6.8
+#
 #  Revision 1.7  2001/08/21 19:00:28  waldb
 #  added variable DOCDIR to install documentation in a correct way for
 #  all distributions, modified sitar.spec to use macro %doc for docfiles
@@ -49,8 +52,8 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.6.7
-Release:	2
+Version:	0.6.8
+Release:	3
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
 Copyright:	GPL

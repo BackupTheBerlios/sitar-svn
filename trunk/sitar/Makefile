@@ -23,6 +23,9 @@
 #               Waldemar Brodkorb
 #
 #  $Log: Makefile,v $
+#  Revision 1.11  2001/09/07 00:09:09  mge
+#  - released 0.6.8
+#
 #  Revision 1.10  2001/09/03 10:28:27  waldb
 #  added removing of deb-selections
 #  creation of symlink support_all.pl
@@ -52,7 +55,7 @@
 PREFIX=usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.6.7
+RELEASE=0.6.8
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
