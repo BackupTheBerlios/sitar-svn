@@ -260,15 +260,15 @@ my $UNAME = `/bin/uname -a`;
 chomp $UNAME;
 my $UNAMER = `/bin/uname -r`;
 chomp $UNAMER;
-my $now_string            = localtime();
-my %proc_h                = ();
-my $machinetype           = `/bin/uname -m`;
-my $config_dir            = "/var/lib/support";
-my $apparmor_verbose_name = "AppArmor (by Immunix)";
-my $apparmor_kernel_path  = "/subdomain";
-my $apparmor_config_path  = "/etc/logprof.conf";
-my $apparmor_config_directory  = "/etc/immunix/";
-my $apparmor_profiles_path  = "/etc/subdomain.d";
+my $now_string                = localtime();
+my %proc_h                    = ();
+my $machinetype               = `/bin/uname -m`;
+my $config_dir                = "/var/lib/support";
+my $apparmor_verbose_name     = "AppArmor (by Immunix)";
+my $apparmor_kernel_path      = "/subdomain";
+my $apparmor_config_path      = "/etc/logprof.conf";
+my $apparmor_config_directory = "/etc/immunix/";
+my $apparmor_profiles_path    = "/etc/subdomain.d";
 #
 # HEADER
 #
@@ -282,7 +282,7 @@ my $sdocbook_header = "<?xml version=\"1.0\"?>
 ]>
 <article class=\"techreport\">
 <articleinfo>
-  <corpauthor>SITAR</corpauthor>
+  <corpauthor>SITAR $RELEASE</corpauthor>
   <copyright>
     <year>1999</year>
     <year>2005</year>
@@ -338,7 +338,7 @@ my $html_header     = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional
   </table>
   <hr>";
 my $html_footer = "<hr />
-<address>SITAR is &copy; $COPYRIGHT</address>
+<address>SITAR $RELEASE is &copy; $COPYRIGHT</address>
 </html>\n";
 #
 # $tex_header
@@ -766,9 +766,14 @@ sub si_proc_kernel() {
 sub si_software_raid() {
 	my $MDSTAT  = "/proc/mdstat";
 	my $RAIDTAB = "/etc/raidtab";
-	if ( ( -r $MDSTAT ) && ( !-e $RAIDTAB ) ) {
-	} elsif ( -r $MDSTAT ) {
+	if ( -r $MDSTAT ) {
 		siprtt( "h1", "Software RAID" );
+		siprtt( "h2", "Configuration" );
+		si_conf( $MDSTAT, $MDSTAT, "" );
+		if ( -r $RAIDTAB ) {
+			si_conf( $RAIDTAB, $RAIDTAB, "" );
+		}
+		siprtt( "h2", "Details" );
 		siprtttt( "tabborder", "llllll", "Software RAID", 6 );
 		siprt( "tabrow" );
 		siprtt( "tabhead", "Raid-Device" );
@@ -829,7 +834,7 @@ sub si_software_raid() {
 					siprtt( "cell", $md{ algorithm } );
 					siprt( "endrow" );
 					unless ( -e ( ( $RAIDTAB ) || ( "/etc/raid0.conf" ) || ( "/etc/raid1.conf" ) || ( "/etc/raid5.conf" ) ) ) {
-						siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
+						siprtt( "h4", "There seems to be no /etc/raidtab or similar.\n" );
 					}
 				}
 			}
@@ -864,7 +869,7 @@ sub si_software_raid() {
 					siprtt( "cell", $md{ algorithm } );
 					siprt( "endrow" );
 					unless ( -e ( ( $RAIDTAB ) || ( "/etc/raid0.conf" ) || ( "/etc/raid1.conf" ) || ( "/etc/raid5.conf" ) ) ) {
-						siprtt( "h4", "There seems to be no /etc/raidtab or similar, ATTENTION!!! :-(\n" );
+						siprtt( "h4", "There seems to be no /etc/raidtab or similar.\n" );
 					}
 				}
 			}

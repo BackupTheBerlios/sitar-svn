@@ -29,7 +29,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.pre10
+Version:	0.9.0
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -37,6 +37,8 @@ Copyright:	GPL
 Group: 		Applications/System
 BuildRoot:	/tmp/root-%{name}/
 BuildArch: 	noarch
+
+#Requires:	coreutils util-linux gzip grep rpm net-tools
 
 Packager:	Matthias G. Eckermann <mge@suse.de>
 
@@ -94,6 +96,10 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Fri Mar 18 2005 - mge@suse.de
+- update to 0.9.0, fixes Novell #73833,
+	SITAR is missing some required output fields:
+	md-devices, sitar version
 * Fri Mar 11 2005 - mge@suse.de
 - 0.9.pre10
 - improved Immunix/AppArmor integration; thanks to Seth Arnold
