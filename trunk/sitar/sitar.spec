@@ -26,6 +26,11 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.21  2002/12/04 23:30:37  mge
+#  Release 0.8.3:
+#  	- fixed si_etc / si_etc_suse function calls
+#  	- minor corrections
+#
 #  Revision 1.20  2002/12/02 17:45:52  mge
 #  0.8.2 (according to new CodingStyle)
 #
@@ -97,7 +102,7 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.8.2
+Version:	0.8.3
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.gz

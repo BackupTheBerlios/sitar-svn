@@ -25,6 +25,11 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.21  2002/12/04 23:30:37  mge
+#  Release 0.8.3:
+#  	- fixed si_etc / si_etc_suse function calls
+#  	- minor corrections
+#
 #  Revision 1.20  2002/12/02 17:45:52  mge
 #  0.8.2 (according to new CodingStyle)
 #
@@ -102,7 +107,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.2
+RELEASE=0.8.3
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps

@@ -28,6 +28,11 @@
 #		Andreas Rother
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.33  2002/12/04 23:30:37  mge
+#  Release 0.8.3:
+#  	- fixed si_etc / si_etc_suse function calls
+#  	- minor corrections
+#
 #  Revision 1.32  2002/12/02 17:45:52  mge
 #  0.8.2 (according to new CodingStyle)
 #
@@ -1796,6 +1801,7 @@ sub si_etc_redhat() {
 	my %myfiles  = ();
 	my @allfiles = qw (
 	  /etc/grub.conf
+	  /boot/grub/menu.lst
 	  /etc/squid.conf
 	  /etc/syslog.conf
 	  /etc/dhcpd.conf
@@ -1829,7 +1835,7 @@ sub si_etc_redhat() {
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/etc/lilo.conf" ) ) {
+			if ( ( $mm eq "/etc/grub.conf" ) || ($mm eq "/boot/grub/menu.lst") || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
 				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
@@ -1882,6 +1888,7 @@ sub si_etc() {
 	my %myfiles  = ();
 	my @allfiles = qw (
 	  /etc/grub.conf
+	  /boot/grub/menu.lst
 	  /etc/squid.conf
 	  /etc/syslog.conf
 	  /etc/dhcpd.conf
@@ -1911,6 +1918,9 @@ sub si_etc() {
 	  /etc/snort/snort.conf
 	  /var/spool/fax/etc/config
 	  /var/spool/fax/etc/config.modem
+	  /etc/ha.d/ha.cf
+	  /etc/ha.d/haresources
+	  /etc/ha.d/authkeys
 	);
 	if ( -d $config_dir ) {
 		foreach ( `$LS -1 $config_dir/*.include` ) {
@@ -1924,7 +1934,7 @@ sub si_etc() {
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/lilo.conf" ) ) {
+			if ( ( $mm eq "/etc/pppoed.conf" ) || ($mm eq "/etc/grub.conf")  || ($mm eq "/boot/grub/menu.lst") || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
 				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
@@ -1949,6 +1959,7 @@ sub si_etc_united() {
 	my %myfiles  = ();
 	my @allfiles = qw (
 	  /etc/grub.conf
+	  /boot/grub/menu.lst
 	  /etc/squid.conf
 	  /etc/syslog.conf
 	  /etc/dhcpd.conf
@@ -1978,6 +1989,9 @@ sub si_etc_united() {
 	  /etc/snort/snort.conf
 	  /var/spool/fax/etc/config
 	  /var/spool/fax/etc/config.modem
+	  /etc/ha.d/ha.cf
+	  /etc/ha.d/haresources
+	  /etc/ha.d/authkeys
 	);
 	if ( -d $config_dir ) {
 		foreach ( `$LS -1 $config_dir/*.include` ) {
@@ -1991,7 +2005,7 @@ sub si_etc_united() {
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/lilo.conf" ) ) {
+			if ( ( $mm eq "/etc/pppoed.conf" )  || ($mm eq "/etc/grub.conf")  || ($mm eq "/boot/grub/menu.lst") || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
 				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
@@ -2311,12 +2325,12 @@ sub si_run_sitar() {
 			print "\n\\par\\endgroup\\par\n";
 		}
 		si_proc();
-		si_etc();
 		if ( $distribution eq "unitedlinux" ) {
 			si_etc_united();
 			si_installed_rpm();
 			si_proc_config();
 		} elsif ( $distribution eq "suse" ) {
+			si_etc();
 			si_etc_suse();
 			si_installed_rpm();
 			si_proc_config();
@@ -2328,6 +2342,8 @@ sub si_run_sitar() {
 			si_installed_deb();
 			si_kernel_config();
 			#si_selection_deb ();
+		} else {
+			si_etc();
 		}
 		siprt( "toc" );
 		siprt( "body" );
