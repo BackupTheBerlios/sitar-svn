@@ -25,6 +25,12 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: Makefile,v $
+#  Revision 1.22  2002/12/10 09:36:57  mge
+#  Release 0.8.4:
+#  	- introduce "--version"
+#  	- use ".tar.bz2" instead of ".tar.gz"
+#  	- make new release on website
+#
 #  Revision 1.21  2002/12/04 23:30:37  mge
 #  Release 0.8.3:
 #  	- fixed si_etc / si_etc_suse function calls
@@ -107,23 +113,23 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.3
+RELEASE=0.8.4
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
 
-tar:		/tmp/sitar-${RELEASE}.tar.gz
+tar:		/tmp/sitar-${RELEASE}.tar.bz2
 
 clean:
 	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps pod2htm* *-selections
 
-/tmp/sitar-${RELEASE}.tar.gz:	clean
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.gz sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+/tmp/sitar-${RELEASE}.tar.bz2:	clean
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
 
 rpm:	clean
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.gz sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
-	- (pushd /tmp/ ; rpm -ta sitar-${RELEASE}.tar.gz ; chmod 777 /tmp/sitar-${RELEASE}.tar.gz ; popd)
-	- rm -f /tmp/sitar-${RELEASE}.tar.gz
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+	- (pushd /tmp/ ; rpm -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
+	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
 sitar.pl:	sitar.pl.in Makefile
 	${PERL} -p 	-e '$$pre="${PREFIX}";' \

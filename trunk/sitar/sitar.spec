@@ -26,6 +26,12 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.22  2002/12/10 09:36:57  mge
+#  Release 0.8.4:
+#  	- introduce "--version"
+#  	- use ".tar.bz2" instead of ".tar.gz"
+#  	- make new release on website
+#
 #  Revision 1.21  2002/12/04 23:30:37  mge
 #  Release 0.8.3:
 #  	- fixed si_etc / si_etc_suse function calls
@@ -102,10 +108,10 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.8.3
+Version:	0.8.4
 Release:	0
 Summary:	System InformaTion At Runtime
-Source0:	sitar-%{version}.tar.gz
+Source0:	sitar-%{version}.tar.bz2
 Copyright:	GPL
 Group: 		Applications/System
 BuildRoot:	/tmp/root-%{name}/

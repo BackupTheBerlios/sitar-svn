@@ -28,6 +28,12 @@
 #		Andreas Rother
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.34  2002/12/10 09:36:57  mge
+#  Release 0.8.4:
+#  	- introduce "--version"
+#  	- use ".tar.bz2" instead of ".tar.gz"
+#  	- make new release on website
+#
 #  Revision 1.33  2002/12/04 23:30:37  mge
 #  Release 0.8.3:
 #  	- fixed si_etc / si_etc_suse function calls
@@ -139,7 +145,7 @@ SITAR - System InformaTion At Runtime
 
 =head1 SYNOPSIS
 
-sitar|sitar.pl  B<--format>=I<format> B<--outfile>=I<file> B<--help>
+sitar|sitar.pl  B<--format>=I<format> B<--outfile>=I<file> B<--help> B<--version>
 
 Available I<format>s: html, tex, yast1, yast2
 
@@ -154,6 +160,10 @@ Prepare system information using perl, reading the /proc filesystem. Output is i
 =item B<--help>
 
 Prints a short summary of options.
+
+=item B<--version>
+
+Prints the sitar version
 
 =item B<--format>=I<format>
 
@@ -250,11 +260,12 @@ my $RELEASE    = "%%RELEASE%%";
 my $PREFIX     = "%%PREFIX%%";
 my $siprt_mode = "";
 my $outfile    = "";
-my $printhelp;
+my ( $printhelp, $printversion );
 GetOptions(
 	'f|format=s'  => \$siprt_mode,
 	'o|outfile=s' => \$outfile,
-	'h|help'      => \$printhelp
+	'h|help'      => \$printhelp,
+	'v|version'   => \$printversion
 );
 #
 # distribution test
@@ -1835,7 +1846,7 @@ sub si_etc_redhat() {
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/grub.conf" ) || ($mm eq "/boot/grub/menu.lst") || ( $mm eq "/etc/lilo.conf" ) ) {
+			if ( ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
 				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
@@ -1934,7 +1945,7 @@ sub si_etc() {
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/pppoed.conf" ) || ($mm eq "/etc/grub.conf")  || ($mm eq "/boot/grub/menu.lst") || ( $mm eq "/etc/lilo.conf" ) ) {
+			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
 				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
@@ -2005,7 +2016,7 @@ sub si_etc_united() {
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/pppoed.conf" )  || ($mm eq "/etc/grub.conf")  || ($mm eq "/boot/grub/menu.lst") || ( $mm eq "/etc/lilo.conf" ) ) {
+			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
 				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
 			} else {
 				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
@@ -2291,8 +2302,12 @@ sub si_selection_yast2() {
 sub si_getopts($) {
 }
 
+sub si_print_version () {
+	print "SITAR - System InformaTion At Runtime - Release ", $RELEASE, "\nCopyright (C) 1999-2002 SuSE Linux AG\n";
+}
+
 sub si_print_help () {
-	print "Options available:\n\t--format=<format>\tFormats: html, tex, yast1,yast2 (planned: plain, xml, alice)\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
+	print "Options available:\n\t--format=<format>\tFormats: html, tex, yast1,yast2 (planned: plain, xml, alice)\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
 }
 
 sub si_run_sitar() {
@@ -2377,7 +2392,7 @@ sub si_run_sitar() {
 		print( "Please run sitar as user root.\n" );
 		exit;
 	}
-	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$printhelp ) && ( !$siprt_mode ) && ( !$outfile ) ) {
+	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$printhelp ) && ( !$siprt_mode ) && ( !$outfile ) && ( !$printversion ) ) {
 		@siprt_modes = ( "html", "tex", "yast1", "yast2" );
 		for $mm ( @siprt_modes ) {
 			$siprt_mode = $mm;
@@ -2390,8 +2405,10 @@ sub si_run_sitar() {
 			}
 			si_run_sitar();
 		}
-	} elsif ( $siprt_mode && $outfile && ( !$printhelp ) ) {
+	} elsif ( $siprt_mode && $outfile && ( !$printhelp ) && ( !$printversion ) ) {
 		si_run_sitar();
+	} elsif ( $printversion ) {
+		si_print_version();
 	} elsif ( ( $siprt_mode && ( !$outfile ) ) || ( ( !$siprt_mode ) && $outfile ) || $printhelp ) {
 		si_print_help();
 	}
