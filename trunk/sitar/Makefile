@@ -1,6 +1,6 @@
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2003 SuSE Linux AG
+#  Copyright (C) 1999-2004 SUSE LINUX AG
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,11 @@
 #		Falko Trojahn
 #
 #  $Log: Makefile,v $
+#  Revision 1.29  2004/03/22 14:24:02  mge
+#  - fixed off by one in directory name
+#  - cleanups
+#  - data from /etc/lvm/ (LVM2)
+#
 #  Revision 1.28  2003/10/22 22:24:33  mge
 #  - sitar-files are now in /tmp/sitar-HOSTNAME-DATE/
 #  - minor fixes
@@ -141,7 +146,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.8.10
+RELEASE=0.8.11
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps

@@ -1,6 +1,6 @@
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2003 SuSE Linux AG
+#  Copyright (C) 1999-2004 SUSE LINUX AG
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,11 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.29  2004/03/22 14:24:02  mge
+#  - fixed off by one in directory name
+#  - cleanups
+#  - data from /etc/lvm/ (LVM2)
+#
 #  Revision 1.28  2003/10/22 22:24:33  mge
 #  - sitar-files are now in /tmp/sitar-HOSTNAME-DATE/
 #  - minor fixes
@@ -131,11 +136,11 @@
 #  	CodingStyle Makefile sitar.pl.in sitar.spec
 #
 
-Vendor:		SuSE Linux AG, Germany
+Vendor:		SUSE LINUX AG, Germany
 #Distribution:	United Linux / SuSE Linux
 Name:		sitar
 Packager:	Matthias G. Eckermann <mge@suse.de>
-Version:	0.8.10
+Version:	0.8.11
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
