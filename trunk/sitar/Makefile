@@ -21,8 +21,12 @@
 #               Stephan Müller
 #               Janto Trappe
 #               Waldemar Brodkorb
+#		Bernhard Thoni
 #
 #  $Log: Makefile,v $
+#  Revision 1.12  2002/01/14 15:39:49  mge
+#  added Bernhard Thoni to contributors
+#
 #  Revision 1.11  2001/09/07 00:09:09  mge
 #  - released 0.6.8
 #
@@ -55,7 +59,7 @@
 PREFIX=usr
 DOCDIR=${PREFIX}/share/doc
 PERL=/usr/bin/perl
-RELEASE=0.6.8
+RELEASE=0.6.9
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
