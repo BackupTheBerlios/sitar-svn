@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+
+package=sitar
+
+build:
+	dh_testdir
+	$(MAKE) 
+	touch build
+
+clean:
+	dh_testdir
+	-rm -f build
+	-$(MAKE) clean
+	-rm -f `find . -name "*~"`
+	-rm -rf debian/tmp debian/files* core debian/substvars
+
+binary-indep: checkroot build
+	dh_testdir
+
+binary-arch: checkroot build
+	dh_testdir
+	-rm -rf debian/tmp
+	install -d debian/tmp
+	cd debian/tmp && install -d `cat ../dirs`
+	$(MAKE) install DESTDIR=`pwd`/debian/tmp
+	rm -f `pwd`/debian/tmp/usr/share/man/man1/sitar.1
+	dh_installdocs
+	dh_installmanpages
+	dh_shlibdeps
+	dh_gencontrol 
+	dh_builddeb
+
+binary: binary-indep binary-arch
+
+checkroot:
+	dh_testdir
+	dh_testroot
+
+.PHONY: binary binary-arch binary-indep clean checkroot
