@@ -31,6 +31,10 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.43  2003/10/22 22:24:33  mge
+#  - sitar-files are now in /tmp/sitar-HOSTNAME-DATE/
+#  - minor fixes
+#
 #  Revision 1.42  2003/08/29 11:42:16  mge
 #  fixes SuSE bug #29632
 #
@@ -310,6 +314,7 @@ my $DEBIAN       = "/etc/debian_version";
 my $REDHAT       = "/etc/redhat-release";
 my $release      = "";
 my $distribution = "";
+my $outdir	 = "";
 my ( $DPKG, $RPM );
 if ( -e $DEBIAN ) {
 	$release      = `/usr/bin/head -n 1 /etc/debian_version`;
@@ -320,7 +325,10 @@ if ( -e $DEBIAN ) {
 	$distribution = "redhat";
 	$RPM          = "/bin/rpm";
 } elsif ( ( -e $UNITED ) && ( -e $SUSE ) ) {
-	$release      = `/usr/bin/head -n 1 /etc/UnitedLinux-release` . `/usr/bin/head -n 1 /etc/SuSE-release`;
+	$release      = `/usr/bin/head -n 1 /etc/UnitedLinux-release`;
+	chomp $release;
+	$release      = join "", $release, ", ", `/usr/bin/head -n 1 /etc/SuSE-release`;
+	chomp $release;
 	$distribution = "sles";
 	$RPM          = "/bin/rpm";
 } elsif ( -e $UNITED ) {
@@ -353,7 +361,9 @@ my $UNIQPRG = "/usr/bin/uniq";
 my $STATUS  = "/var/lib/dpkg/status";
 chomp( my $HOSTNAME = `/bin/hostname -f` );
 my $UNAME       = `/bin/uname -a`;
+chomp $UNAME;
 my $UNAMER      = `/bin/uname -r`;
+chomp $UNAMER;
 my $now_string  = localtime();
 my %proc_h      = ();
 my $machinetype = `/bin/uname -m`;
@@ -542,7 +552,7 @@ sub siprint($$$) {
 		}
 		if ( $m eq "body" )   { print $OutputBuffer; }
 		if ( $m eq "footer" ) { print $html_footer; }
-	} elsif ( $siprt_mode eq "tex" || $siprt_mode eq "tex" ) {
+	} elsif ( $siprt_mode eq "tex" || $siprt_mode eq "latex" ) {
 		if ( $IsVerbatim == 0 ) {
 			$value =~ s/\_/\\_/g;
 			$value =~ s/\#/\\\#/g;
@@ -2284,7 +2294,7 @@ sub si_selection_yast2( ) {
 	close( RPMS );
 	foreach $mytype ( @alltypes ) {
 		if ( $num{$mytype} > 0 ) {
-			$outfile = "/tmp/sitar-$mytype-$HOSTNAME-yast2.sel";
+			$outfile = join "", $outdir, "/sitar-$mytype-$HOSTNAME-yast2.sel";
 			if ( $outfile ne "" ) {
 				open( STDOUT, ">$outfile" );
 			}
@@ -2409,13 +2419,23 @@ sub si_run_sitar() {
 	}
 	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$printhelp ) && ( !$siprt_mode ) && ( !$outfile ) && ( !$printversion ) ) {
 		@siprt_modes = ( "html", "tex", "yast1", "yast2" );
+		($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+		$outdir=join "", 
+			"/tmp/sitar-", 
+			$HOSTNAME,
+			"-",
+			$year+1900, 
+			sprintf("%02d", $mon+1),
+			sprintf("%02d", $mday+1),
+			sprintf("%02d", $hour);
+		mkdir $outdir;
 		for $mm ( @siprt_modes ) {
 			$siprt_mode = $mm;
 			if ( $siprt_mode eq "yast1" ) {
-				$outfile = "/tmp/sitar-$HOSTNAME-yast1.sel";
+				$outfile = join "", $outdir, "/sitar-$HOSTNAME-yast1.sel";
 			} elsif ( $siprt_mode eq "yast2" ) {
 			} else {
-				$outfile = "/tmp/sitar-$HOSTNAME.$mm";
+				$outfile = join "", $outdir, "/sitar-$HOSTNAME.$mm";
 			}
 			si_run_sitar();
 		}

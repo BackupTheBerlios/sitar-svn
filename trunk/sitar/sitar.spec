@@ -30,6 +30,10 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.28  2003/10/22 22:24:33  mge
+#  - sitar-files are now in /tmp/sitar-HOSTNAME-DATE/
+#  - minor fixes
+#
 #  Revision 1.27  2003/08/29 11:42:16  mge
 #  fixes SuSE bug #29632
 #
@@ -131,7 +135,7 @@ Vendor:		SuSE Linux AG, Germany
 #Distribution:	United Linux / SuSE Linux
 Name:		sitar
 Packager:	Matthias G. Eckermann <mge@suse.de>
-Version:	0.8.9
+Version:	0.8.10
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
