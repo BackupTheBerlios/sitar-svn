@@ -766,13 +766,22 @@ sub si_proc_kernel() {
 sub si_software_raid() {
 	my $MDSTAT  = "/proc/mdstat";
 	my $RAIDTAB = "/etc/raidtab";
-	if ( -r $MDSTAT ) {
+	chomp( $UNAMER );
+	if (       ( -r $MDSTAT ) && ( $UNAMER =~ m/^2\.4.*/ )
+		|| ( -r $MDSTAT ) && ( $UNAMER =~ m/^2\.6.*/ ) ) {
 		siprtt( "h1", "Software RAID" );
 		siprtt( "h2", "Configuration" );
 		si_conf( $MDSTAT, $MDSTAT, "" );
 		if ( -r $RAIDTAB ) {
 			si_conf( $RAIDTAB, $RAIDTAB, "" );
 		}
+	}
+}
+
+sub si_software_raid_details() {
+	my $MDSTAT  = "/proc/mdstat";
+	my $RAIDTAB = "/etc/raidtab";
+	if ( -r $MDSTAT ) {
 		siprtt( "h2", "Details" );
 		siprtttt( "tabborder", "llllll", "Software RAID", 6 );
 		siprt( "tabrow" );
@@ -838,7 +847,7 @@ sub si_software_raid() {
 					}
 				}
 			}
-			} elsif ( ( -r $MDSTAT ) && ( $UNAMER =~ m/^2\..*/ ) ) {
+		} elsif ( ( -r $MDSTAT ) && ( $UNAMER =~ m/^2\..*/ ) ) {
 			#CODE for kernel-2.2 software-raid
 			while ( <IN1> ) {
 				$counter1++;
@@ -1609,9 +1618,11 @@ sub si_mount() {
 	si_conf( "/etc/fstab",        "/etc/fstab",        "\#" );
 	si_conf( "/etc/lvm/lvm.conf", "/etc/lvm/lvm.conf", "\#" );
 	si_conf( "/etc/lvm/.cache",   "/etc/lvm/.cache",   "\#" );
-	for $NN ( sort `/usr/bin/find /etc/lvm/backup/ -type f` ) {
-		chomp $NN;
-		si_conf( $NN, $NN, "\#" );
+	if( -d "/etc/lvm/backup" ) {
+		for $NN ( sort `/usr/bin/find /etc/lvm/backup/ -type f` ) {
+			chomp $NN;
+			si_conf( $NN, $NN, "\#" );
+		}
 	}
 }
 
