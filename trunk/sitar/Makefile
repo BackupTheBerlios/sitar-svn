@@ -9,10 +9,10 @@ HOSTNAME=$(shell /bin/hostname -f)
 RELEASE=0.6.5
 RELDATE=$(shell date +"%Y%m%d")
 
-default	:	sitar.pl
+default	:	sitar.pl sitar.1
 
 clean:
-	-rm *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl
+	-rm *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl sitar.1
 
 tar:		clean
 		- (pushd ..; tar cvzSpf sitar-${RELEASE}.tar.gz sitar-${RELEASE}/ ; popd)
@@ -23,6 +23,9 @@ sitar.pl:	sitar.pl.in Makefile
 			-e 's/%%RELEASE%%/${RELEASE}/;'\
 			sitar.pl.in > sitar.pl
 	chmod 755 sitar.pl
+
+sitar.1:	sitar.pl
+	pod2man --center=" " sitar.pl > sitar.1
 
 dvi:	tex
 	${LATEX} sitar-${HOSTNAME}.tex; ${LATEX} sitar-${HOSTNAME}.tex

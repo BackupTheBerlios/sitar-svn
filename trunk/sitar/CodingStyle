@@ -46,8 +46,13 @@ the code of sitar and associated tools:
 	8. Use perltidy
 		http://perltidy.sourceforge.net/
 	   with the following options:
-		-i=8 -t -l=128 -nbbc -bbs -bbb -mbl=1 -nbl -bar -ce -sbt=0 -bt=0 -pt=0
-		
+		-i=8 -t -l=0 -nbbc -bbs -mbl=1 -nbl -bar -sob -ce -sbt=2 -bt=2 -pt=0
+	
+	9. Documentation: we use perldoc at the moment. For more information see:
+		man perlpod
+		man pod2man
+		man perlsyn  /PODs
+	
 more to come ...
 		MgE
 

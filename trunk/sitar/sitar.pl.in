@@ -1,4 +1,4 @@
-#!/usr/bin/perl -Tw
+#!/usr/bin/perl
 #
 #  SITAR - System InformaTion At Runtime
 #  Copyright (C) 1999-2001 SuSE Linux AG
@@ -24,12 +24,50 @@
 #		Waldemar Brodkorb
 #
 
+=head1 NAME
+
+	SITAR - System InformaTion At Runtime
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 OPTIONS
+
+=head1 RETURN VALUE
+
+=head1 ERRORS
+
+=head1 DIAGNOSTICS
+
+=head1 EXAMPLES
+
+=head1 ENVIRONMENT
+
+=head1 FILES
+
+=head1 CAVEATS
+
+=head1 BUGS
+
+=head1 RESTRICTIONS
+
+=head1 NOTES
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+=head1 HISTORY
+
+=head1 CODE DOCUMENTATION
+
+=cut
+
 use Getopt::Long;
 use Fcntl;
-
-my $RELEASE = "%%RELEASE%%";
-my $PREFIX  = "%%PREFIX%%";
-
+my $RELEASE    = "%%RELEASE%%";
+my $PREFIX     = "%%PREFIX%%";
 my $siprt_mode = "";
 my $outfile    = "";
 my $printhelp;
@@ -38,11 +76,10 @@ GetOptions(
 	'file=s'   => \$outfile,
 	'help'     => \$printhelp
 );
-
 #
 # distribution test
 #
-$ENV{ PATH } = "";
+$ENV{PATH} = "";
 my $SUSE         = "/etc/SuSE-release";
 my $DEBIAN       = "/etc/debian_version";
 my $release      = "";
@@ -58,26 +95,21 @@ if ( -e $DEBIAN ) {
 	$distribution = "unknown";
 	print "\n distribution not supported!!\n\n";
 }
-
 #
 # global vars
 #
-
 my $RPM    = "/bin/rpm";
 my $DPKG   = "/usr/bin/dpkg";
 my $LS     = "/bin/ls";
 my $HWINFO = "/usr/sbin/hwinfo";
 my $STATUS = "/var/lib/dpkg/status";
 chomp( my $HOSTNAME = `/bin/hostname -f` );
-
-my $UNAME  = `/bin/uname -a`;
-my $UNAMER = `/bin/uname -r`;
-
+my $UNAME       = `/bin/uname -a`;
+my $UNAMER      = `/bin/uname -r`;
 my $now_string  = localtime();
 my %proc_h      = ();
 my $machinetype = `/bin/uname -m`;
 my $config_dir  = "/var/lib/support/";
-
 #
 # $html_header
 #
@@ -127,7 +159,6 @@ my $html_header = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN
 my $html_footer = "<hr>
 <address>SITAR is &copy; 1999-2001 SuSE Linux AG</address>
 </html>\n";
-
 #
 # $tex_header
 #
@@ -158,7 +189,6 @@ my $old_tex_footer = "\n
 \\par\\noindent
 \\textsf{SITAR is \\textcopyright{} 1999-2001 SuSE Linux AG}\\par
 \\end\{document\}\n";
-
 #
 # Table of contents
 #
@@ -203,16 +233,14 @@ sub siprint($$$) {
 
 		if ( $m eq "h2" ) {
 			$subseccnt++;
-			mysprint "<h2><a name=\"", $seccnt, ".", $subseccnt, "\"\n>", $seccnt, ".", $subseccnt,
-			  "&nbsp;", $value, "</a></h2>";
+			mysprint "<h2><a name=\"", $seccnt, ".", $subseccnt, "\"\n>", $seccnt, ".", $subseccnt, "&nbsp;", $value, "</a></h2>";
 			addtoc( 2, "$seccnt.$subseccnt", "$seccnt.$subseccnt&nbsp;$value" );
 			$subsubseccnt = 0;
 		}
 
 		if ( $m eq "h3" ) {
 			$subsubseccnt++;
-			mysprint "<h3><a name=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n>", $seccnt, ".",
-			  $subseccnt, ".", $subsubseccnt, "&nbsp;", $value, "</a></h3>";
+			mysprint "<h3><a name=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n>", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "&nbsp;", $value, "</a></h3>";
 		}
 		if ( $m eq "tabborder" )   { mysprint "<table summary=\"\"\n border=\"1\">"; }
 		if ( $m eq "tab" )         { mysprint "<table summary=\"\"\n border=\"0\">"; }
@@ -224,12 +252,12 @@ sub siprint($$$) {
 		if ( $m eq "multipre" )    { mysprint "<pre>"; $IsVerbatim = 1; }
 		if ( $m eq "endmultipre" ) { mysprint "</pre>\n"; $IsVerbatim = 0; }
 		if ( $m eq "cellspan" )    { mysprint "<td \nnowrap colspan=\"", $attr, "\">", $value, "</td>"; }
-		if ( $m eq "cell" )      { mysprint "<td \nnowrap>",  $value, "</td>"; }
-		if ( $m eq "cellwrap" )  { mysprint "<td>",           $value, "</td>"; }
-		if ( $m eq "cellcolor" ) { mysprint "<td bgcolor=\"", $attr,  "\" \nnowrap>", $value, "</td>"; }
-		if ( $m eq "headcolor" ) { mysprint "<th bgcolor=\"", $attr,  "\" \nnowrap>", $value, "</th>"; }
-		if ( $m eq "tabhead" )   { mysprint "<th \nnowrap>",  $value, "</th>"; }
-		if ( $m eq "headcols" ) { mysprint "<th \nnowrap colspan=\"", $attr, "\">", $value, "</th>"; }
+		if ( $m eq "cell" )      { mysprint "<td \nnowrap>",           $value, "</td>"; }
+		if ( $m eq "cellwrap" )  { mysprint "<td>",                    $value, "</td>"; }
+		if ( $m eq "cellcolor" ) { mysprint "<td bgcolor=\"",          $attr,  "\" \nnowrap>", $value, "</td>"; }
+		if ( $m eq "headcolor" ) { mysprint "<th bgcolor=\"",          $attr,  "\" \nnowrap>", $value, "</th>"; }
+		if ( $m eq "tabhead" )   { mysprint "<th \nnowrap>",           $value, "</th>"; }
+		if ( $m eq "headcols" )  { mysprint "<th \nnowrap colspan=\"", $attr,  "\">", $value, "</th>"; }
 		if ( $m eq "verb" )   { mysprint $value; }
 		if ( $m eq "header" ) { print $html_header; }
 
@@ -255,12 +283,10 @@ sub siprint($$$) {
 		if ( $m eq "h3" ) { print "\\subsubsection\{", $value, "\}\n"; }
 
 		if ( $m eq "tabborder" ) {
-			print "\\begingroup\\tiny\\par", "\\noindent\\begin\{longtable\}[l]\{\@\{\}", $value,
-			  "l\@\{\}\}\n";
+			print "\\begingroup\\tiny\\par", "\\noindent\\begin\{longtable\}[l]\{\@\{\}", $value, "l\@\{\}\}\n";
 		}
 		if ( $m eq "tab" ) {
-			print "\\begingroup\\tiny\\par", "\\noindent\\begin\{longtable\}[l]\{\@\{\}", $value,
-			  "l\@\{\}\}\n";
+			print "\\begingroup\\tiny\\par", "\\noindent\\begin\{longtable\}[l]\{\@\{\}", $value, "l\@\{\}\}\n";
 		}
 		if ( $m eq "endtab" ) { print "\\end\{longtable\}\\par\\endgroup\n"; }
 		if ( $m eq "tabrow" ) { }
@@ -332,8 +358,7 @@ sub si_cpu_and_memory() {
 				siprt( "endrow" );
 			}
 
-			if ( m/^(cpu MHz)|^(model name)|^(vendor_id)|^(cache size)|^(stepping)|^(cpu family)|^(model)/i
-			  ) {
+			if ( m/^(cpu MHz)|^(model name)|^(vendor_id)|^(cache size)|^(stepping)|^(cpu family)|^(model)/i ) {
 				m/^(.*):(.*)$/gsi;
 				my $tt1 = $1;
 				chop( my $tt2 = $2 );
@@ -375,9 +400,9 @@ sub si_pnp() {
 		while ( <IN> ) {
 			@attr = split /\s+/, $_, 3;
 			siprt( "tabrow" );
-			siprtt( "cell", $attr[ 0 ] );
-			siprtt( "cell", $attr[ 1 ] );
-			siprtt( "cell", $attr[ 2 ] );
+			siprtt( "cell", $attr[0] );
+			siprtt( "cell", $attr[1] );
+			siprtt( "cell", $attr[2] );
 			siprt( "endrow" );
 		}
 		siprt( "endtab" );
@@ -408,9 +433,9 @@ sub si_pci() {
 			siprt( "tabrow" );
 			siprtt( "cell", $1 );
 			siprtt( "cell", $2 );
-			siprtt( "cell", $attr[ 0 ] );
-			siprtt( "cell", $attr[ 1 ] );
-			siprtt( "cell", $attr[ 2 ] );
+			siprtt( "cell", $attr[0] );
+			siprtt( "cell", $attr[1] );
+			siprtt( "cell", $attr[2] );
 			siprt( "endrow" );
 		}
 	}
@@ -423,7 +448,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.6 2001/08/14 20:37:31 mge Exp $
+	#       $Id: sitar.pl.in,v 1.7 2001/08/15 02:31:46 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -439,11 +464,11 @@ sub si_lsdev() {
 		} else {
 			$n = ( @line = split ( ' [ +] ' ) );
 		}
-		my $name = $line[ $n - 1 ];
-		$device_h{ $name } = $name;
-		@tmp = split ( ':', $line[ 0 ] );
-		$tmp0 = int( $tmp[ 0 ] );
-		$irq{ $name } = "$irq{$name} $tmp0";
+		my $name = $line[$n - 1];
+		$device_h{$name} = $name;
+		@tmp = split ( ':', $line[0] );
+		$tmp0 = int( $tmp[0] );
+		$irq{$name} = "$irq{$name} $tmp0";
 	}
 	close( IRQ );
 	open( DMA, "/proc/dma" ) || return ();
@@ -451,10 +476,10 @@ sub si_lsdev() {
 	while ( <DMA> ) {
 		chop;
 		@line = split ( ': ' );
-		@tmp = split ( /[ \(]/, $line[ 1 ] );
-		$name = $tmp[ 0 ];
-		$device_h{ $name } = $name;
-		$dma{ $name }      = "$dma{$name}$line[0]";
+		@tmp = split ( /[ \(]/, $line[1] );
+		$name = $tmp[0];
+		$device_h{$name} = $name;
+		$dma{$name}      = "$dma{$name}$line[0]";
 	}
 	close( DMA );
 	open( IOPORTS, "</proc/ioports" ) || return ();
@@ -462,10 +487,10 @@ sub si_lsdev() {
 	while ( <IOPORTS> ) {
 		chop;
 		@line = split ( ' : ' );
-		@tmp = split ( /[ \(]/, $line[ 1 ] );
-		$name = $tmp[ 0 ];
-		$device_h{ $name } = $name;
-		$port{ $name }     = "$port{$name} $line[0]";
+		@tmp = split ( /[ \(]/, $line[1] );
+		$name = $tmp[0];
+		$device_h{$name} = $name;
+		$port{$name}     = "$port{$name} $line[0]";
 	}
 	close( IOPORTS );
 	siprtt( "h1",        "Devices" );
@@ -480,9 +505,9 @@ sub si_lsdev() {
 	foreach $name ( sort { uc( $a ) cmp uc( $b ) } keys %device_h ) {
 		siprt( "tabrow" );
 		siprtt( "cell", $name );
-		siprtt( "cell", $dma{ $name } );
-		siprtt( "cell", $irq{ $name } );
-		siprtt( "cell", $port{ $name } );
+		siprtt( "cell", $dma{$name} );
+		siprtt( "cell", $irq{$name} );
+		siprtt( "cell", $port{$name} );
 		siprt( "endrow" );
 	}
 	siprt( "endtab" );
@@ -603,24 +628,24 @@ sub si_dac960() {
 					} elsif ( $status eq "config" && m/^\s\s\w/ ) {
 						chomp( @fs = split /:|,/ );
 
-						if ( $fs[ 1 ] ne "" ) {
+						if ( $fs[1] ne "" ) {
 							siprt( "tabrow" );
-							siprtt( "tabhead", $fs[ 0 ] );
-							siprtt( "cell",    $fs[ 1 ] );
+							siprtt( "tabhead", $fs[0] );
+							siprtt( "cell",    $fs[1] );
 							siprt( "endrow" );
 						}
 
-						if ( $fs[ 3 ] ne "" ) {
+						if ( $fs[3] ne "" ) {
 							siprt( "tabrow" );
-							siprtt( "tabhead", $fs[ 2 ] );
-							siprtt( "cell",    $fs[ 3 ] );
+							siprtt( "tabhead", $fs[2] );
+							siprtt( "cell",    $fs[3] );
 							siprt( "endrow" );
 						}
 
-						if ( $fs[ 5 ] ne "" ) {
+						if ( $fs[5] ne "" ) {
 							siprt( "tabrow" );
-							siprtt( "tabhead", $fs[ 4 ] );
-							siprtt( "cell",    $fs[ 5 ] );
+							siprtt( "tabhead", $fs[4] );
+							siprtt( "cell",    $fs[5] );
 							siprt( "endrow" );
 						}
 					} elsif ( $status eq "physical" && m/Vendor/ ) {
@@ -674,26 +699,26 @@ sub si_compaq_smart() {
 						@ff = split /:/;
 						siprt( "tabrow" );
 						siprtt( "cell", "Typ ($ff[0])" );
-						siprtt( "cell", $ff[ 1 ] );
+						siprtt( "cell", $ff[1] );
 						siprt( "endrow" );
 					} elsif ( m/:/i && !m/^Logical Drive Info:/i && $cpa_mode == 1 ) {
 						@ff = split /:/;
 						siprt( "tabrow" );
-						siprtt( "cell", $ff[ 0 ] );
-						siprtt( "cell", $ff[ 1 ] );
+						siprtt( "cell", $ff[0] );
+						siprtt( "cell", $ff[1] );
 						siprt( "endrow" );
 					} elsif ( m/^ida\// && $cpa_mode == 2 ) {
 						@ff = split / |=|:/;
 						siprt( "tabrow" );
-						siprtt( "cell", $ff[ 0 ] );
-						siprtt( "cell", $ff[ 3 ] );
-						siprtt( "cell", $ff[ 5 ] );
+						siprtt( "cell", $ff[0] );
+						siprtt( "cell", $ff[3] );
+						siprtt( "cell", $ff[5] );
 						siprt( "endrow" );
 					} elsif ( m/^nr_/ && $cpa_mode == 2 ) {
 						@ff = split /=/;
 						siprt( "tabrow" );
-						siprtt( "cell", $ff[ 0 ] );
-						siprttt( "cellspan", $ff[ 1 ], 2 );
+						siprtt( "cell", $ff[0] );
+						siprttt( "cellspan", $ff[1], 2 );
 						siprt( "endrow" );
 					} elsif ( m/^Logical Drive Info:/ ) {
 						siprt( "endtab" );
@@ -732,10 +757,10 @@ sub si_gdth() {
 					} else {
 						@ff = split /\t/, $_, 4;
 						siprt( "tabrow" );
-						siprtt( "cell", $ff[ 0 ] );
-						siprtt( "cell", $ff[ 1 ] );
-						siprtt( "cell", $ff[ 2 ] );
-						siprtt( "cell", $ff[ 3 ] );
+						siprtt( "cell", $ff[0] );
+						siprtt( "cell", $ff[1] );
+						siprtt( "cell", $ff[2] );
+						siprtt( "cell", $ff[3] );
 						siprt( "endrow" );
 					}
 				}
@@ -876,9 +901,9 @@ sub si_mount() {
 	while ( <MOUNT> ) {
 		if ( m/^\/dev/g ) {
 			@params = split /\s+/;
-			$fsystem{ $params[ 0 ] }   = $params[ 4 ];
-			$mountp{ $params[ 0 ] }    = $params[ 2 ];
-			$mountopts{ $params[ 0 ] } = $params[ 5 ];
+			$fsystem{$params[0]}   = $params[4];
+			$mountp{$params[0]}    = $params[2];
+			$mountopts{$params[0]} = $params[5];
 		}
 	}
 	close( MOUNT );
@@ -888,13 +913,13 @@ sub si_mount() {
 		s/\*//gs;
 		if ( m/^\/dev/g ) {
 			@fparams = split /\s+/, $_, 6;
-			$blocks{ $fparams[ 0 ] } = $fparams[ 3 ];
-			chomp( $ftype{ $fparams[ 0 ] } = $fparams[ 5 ] );
-			$fbegin{ $fparams[ 0 ] }   = $fparams[ 1 ];
-			$fend{ $fparams[ 0 ] }     = $fparams[ 2 ];
-			$ftypenum{ $fparams[ 0 ] } = $fparams[ 4 ];
-			if ( $ftypenum{ $fparams[ 0 ] } eq "8e" ) { $ftype{ $fparams[ 0 ] } = "LVM-PV" }
-			if ( $ftypenum{ $fparams[ 0 ] } eq "fe" ) { $ftype{ $fparams[ 0 ] } = "old LVM" }
+			$blocks{$fparams[0]} = $fparams[3];
+			chomp( $ftype{$fparams[0]} = $fparams[5] );
+			$fbegin{$fparams[0]}   = $fparams[1];
+			$fend{$fparams[0]}     = $fparams[2];
+			$ftypenum{$fparams[0]} = $fparams[4];
+			if ( $ftypenum{$fparams[0]} eq "8e" ) { $ftype{$fparams[0]} = "LVM-PV" }
+			if ( $ftypenum{$fparams[0]} eq "fe" ) { $ftype{$fparams[0]} = "old LVM" }
 		}
 	}
 	close( FDISK );
@@ -904,11 +929,11 @@ sub si_mount() {
 		if ( m/^\/dev/g ) {
 			@dfkparams = split /\s+/, $_, 6;
 			# $blocks{$dfkparams[0]} = $dfkparams[3];
-			$dfkblocks{ $dfkparams[ 0 ] }  = $dfkparams[ 1 ];
-			$dfkused{ $dfkparams[ 0 ] }    = $dfkparams[ 2 ];
-			$dfkavail{ $dfkparams[ 0 ] }   = $dfkparams[ 3 ];
-			$dfkpercent{ $dfkparams[ 0 ] } = $dfkparams[ 4 ];
-			$dfkmountp{ $dfkparams[ 0 ] }  = $dfkmountp[ 4 ];
+			$dfkblocks{$dfkparams[0]}  = $dfkparams[1];
+			$dfkused{$dfkparams[0]}    = $dfkparams[2];
+			$dfkavail{$dfkparams[0]}   = $dfkparams[3];
+			$dfkpercent{$dfkparams[0]} = $dfkparams[4];
+			$dfkmountp{$dfkparams[0]}  = $dfkmountp[4];
 		}
 	}
 	close( DFK );
@@ -966,20 +991,18 @@ sub si_mount() {
 	for $tt ( sort @sarray ) {
 		open( TUNE, "/sbin/tune2fs -l $tt |" );
 		while ( <TUNE> ) {
-			if ( m/^Reserved block count:\s*(\w+)\s*$/g ) { $resblocks{ $tt }  = $1; }
-			if ( m/^Block size:\s*(\w+)\s*$/g )           { $blocksize{ $tt }  = $1; }
-			if ( m/^Inode count:\s*(\w+)\s*$/g )          { $inodecount{ $tt } = $1; }
-			if ( m/^Block count:\s*(\w+)\s*$/g )          { $blockcount{ $tt } = $1; }
-			if ( m/^Maximum mount count:\s*(\w+)\s*$/g )  { $maxmount{ $tt }   = $1; }
+			if ( m/^Reserved block count:\s*(\w+)\s*$/g ) { $resblocks{$tt}  = $1; }
+			if ( m/^Block size:\s*(\w+)\s*$/g )           { $blocksize{$tt}  = $1; }
+			if ( m/^Inode count:\s*(\w+)\s*$/g )          { $inodecount{$tt} = $1; }
+			if ( m/^Block count:\s*(\w+)\s*$/g )          { $blockcount{$tt} = $1; }
+			if ( m/^Maximum mount count:\s*(\w+)\s*$/g )  { $maxmount{$tt}   = $1; }
 		}
 		close( TUNE );
 
-		if ( ( $inodecount{ $tt } != 0 ) && ( $blockcount{ $tt } != 0 ) && ( $blocksize{ $tt } != 0 ) ) {
-			$inodedensity{ $tt } =
-			  ( 2**int( log( $blockcount{ $tt } / $inodecount{ $tt } ) / log( 2 ) + 0.5 ) ) *
-			  $blocksize{ $tt };
+		if ( ( $inodecount{$tt} != 0 ) && ( $blockcount{$tt} != 0 ) && ( $blocksize{$tt} != 0 ) ) {
+			$inodedensity{$tt} = ( 2**int( log( $blockcount{$tt} / $inodecount{$tt} ) / log( 2 ) + 0.5 ) ) * $blocksize{$tt};
 		} else {
-			$inodedensity{ $tt } = "-";
+			$inodedensity{$tt} = "-";
 		}
 	}
 	open( STDERR, ">&SAVEERR" );
@@ -987,21 +1010,21 @@ sub si_mount() {
 	for $tt ( sort @sarray ) {
 		siprt( "tabrow" );
 		siprtt( "cell", $tt );
-		siprtt( "cell", $ftype{ $tt } );
-		siprtt( "cell", $ftypenum{ $tt } );
-		siprtt( "cell", $fbegin{ $tt } );
-		siprtt( "cell", $fend{ $tt } );
-		siprtt( "cell", $blocks{ $tt } );
-		siprtt( "cell", $mountp{ $tt } );
-		siprtt( "cell", $fsystem{ $tt } );
-		siprtt( "cell", $resblocks{ $tt } );
-		siprtt( "cell", $blocksize{ $tt } );
-		siprtt( "cell", $inodedensity{ $tt } );
-		siprtt( "cell", $maxmount{ $tt } );
-		siprtt( "cell", $dfkblocks{ $tt } );
-		siprtt( "cell", $dfkused{ $tt } );
-		siprtt( "cell", $dfkavail{ $tt } );
-		siprtt( "cell", $dfkpercent{ $tt } );
+		siprtt( "cell", $ftype{$tt} );
+		siprtt( "cell", $ftypenum{$tt} );
+		siprtt( "cell", $fbegin{$tt} );
+		siprtt( "cell", $fend{$tt} );
+		siprtt( "cell", $blocks{$tt} );
+		siprtt( "cell", $mountp{$tt} );
+		siprtt( "cell", $fsystem{$tt} );
+		siprtt( "cell", $resblocks{$tt} );
+		siprtt( "cell", $blocksize{$tt} );
+		siprtt( "cell", $inodedensity{$tt} );
+		siprtt( "cell", $maxmount{$tt} );
+		siprtt( "cell", $dfkblocks{$tt} );
+		siprtt( "cell", $dfkused{$tt} );
+		siprtt( "cell", $dfkavail{$tt} );
+		siprtt( "cell", $dfkpercent{$tt} );
 		siprt( "endrow" );
 	}
 	siprt( "endtab" );
@@ -1125,7 +1148,7 @@ sub si_ipchains () {
 		while ( <PROTO> ) {
 			if ( !m/^#/ ) {
 				m/^(\w+)\s+(\w+)\s+(\w+)\s*/g;
-				$protocols[ $2 ] = $1;
+				$protocols[$2] = $1;
 			}
 		}
 		close( PROTO );
@@ -1134,16 +1157,12 @@ sub si_ipchains () {
 		$no_header = 1;
 
 		while ( <CHAIN> ) {
-			( $empty, $chainname, $sourcedest, $ifname, $fw_flg, $fw_invflg, $proto, $packa, $packb, $bytea,
-			  $byteb, $portsrc, $portdest, $tos, $xor, $redir, $fw_mark, $outsize, $target ) = split /\s+/;
-			$sourcedest =~
-m/(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)->(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)/g;
-			$source = join "", hex( $1 ), ".", hex( $2 ), ".", hex( $3 ), ".", hex( $4 ), "/", hex( $5 ),
-			  ".", hex( $6 ), ".", hex( $7 ), ".", hex( $8 );
-			$dest = join "", hex( $9 ), ".", hex( $10 ), ".", hex( $11 ), ".", hex( $12 ), "/", hex( $13 ),
-			  ".", hex( $14 ), ".", hex( $15 ), ".", hex( $16 );
-
+			( $empty, $chainname, $sourcedest, $ifname, $fw_flg, $fw_invflg, $proto, $packa, $packb, $bytea, $byteb, $portsrc, $portdest, $tos, $xor, $redir, $fw_mark, $outsize, $target ) = split /\s+/;
+			$sourcedest =~ m/(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)->(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)/g;
+			$source = join "", hex( $1 ), ".", hex( $2 ),  ".", hex( $3 ),  ".", hex( $4 ),  "/", hex( $5 ),  ".", hex( $6 ),  ".", hex( $7 ),  ".", hex( $8 );
+			$dest   = join "", hex( $9 ), ".", hex( $10 ), ".", hex( $11 ), ".", hex( $12 ), "/", hex( $13 ), ".", hex( $14 ), ".", hex( $15 ), ".", hex( $16 );
 			if ( $no_header ) {
+
 				if ( $chainname ne "" ) {
 					siprtt( "h2",        "Filter Rules" );
 					siprtt( "tabborder", "lllllllllllllllll" );
@@ -1170,13 +1189,13 @@ m/(\w\w)(\w\w)(\w\w)(\w\w)\/(\w\w)(\w\w)(\w\w)(\w\w)->(\w\w)(\w\w)(\w\w)(\w\w)\/
 				}
 			}
 			@PORT = split '-', $portsrc;
-			if ( $PORT[ 0 ] == $PORT[ 1 ] ) { $portsrc = $PORT[ 0 ]; }
+			if ( $PORT[0] == $PORT[1] ) { $portsrc = $PORT[0]; }
 			@PORT = split '-', $portdest;
 			siprt( "tabrow" );
 			siprtt( "cell", $chainname );
 			siprtt( "cell", $target );
 			siprtt( "cell", $ifname );
-			siprtt( "cell", ( ( $proto eq "0" ) ? "-" : $protocols[ $proto ] ) );
+			siprtt( "cell", ( ( $proto eq "0" ) ? "-" : $protocols[$proto] ) );
 			siprtt( "cell", $source );
 			siprtt( "cell", $portsrc );
 			siprtt( "cell", $dest );
@@ -1276,18 +1295,35 @@ sub si_build_proc_description() {
 
 	for $NN ( @proc_a ) {
 		my @mypair = split /\n/, $NN, 2;
-		my $newkey = $mypair[ 0 ];
-		my $newval = $mypair[ 1 ];
-		$proc_h{ $newkey } = $newval;
+		my $newkey = $mypair[0];
+		my $newval = $mypair[1];
+		$proc_h{$newkey} = $newval;
 	}
 }
 
 sub si_proc_sys_net () {
+	my $value;
 	siprtt( "h2", "/proc/sys/net" );
-	for $NET (
-		qw(802 appletalk ax25 rose x25 bridge core decnet ethernet ipv4 ipv6 irda ipx net-rom token-ring unix) )
-	{
+	my @nettypes = qw(
+	  802
+	  appletalk
+	  ax25
+	  rose
+	  x25
+	  bridge
+	  core
+	  decnet
+	  ethernet
+	  ipv4
+	  ipv6
+	  irda
+	  ipx
+	  net-rom
+	  token-ring
+	  unix
+	);
 
+	for $NET ( $nettypes ) {
 		if ( ( -d "/proc/sys/net/$NET" ) ) {
 			opendir( DIR, "/proc/sys/net/$NET" );
 			@curr_dir = readdir( DIR );
@@ -1297,8 +1333,9 @@ sub si_proc_sys_net () {
 				open( SAVEERR, ">&STDERR" );
 				open( STDERR,  ">/dev/null" );
 
-				for $NN ( sort `/usr/bin/find /proc/sys/net/$NET/` ) {
-					chomp( my $value = `/bin/cat $NN` );
+				for $NN ( sort `/usr/bin/find /proc/sys/net/$NET/ -type f` ) {
+					chomp $NN;
+					$value = `/bin/cat $NN`;
 					if ( $value ne "" ) {
 						my $MM = $NN;
 						$MM =~ s/\/proc\/sys\/net\/$NET\///;
@@ -1308,7 +1345,7 @@ sub si_proc_sys_net () {
 						siprt( "tabrow" );
 						siprtt( "cell",     $MM );
 						siprtt( "cell",     $value );
-						siprtt( "cellwrap", $proc_h{ $OO } );
+						siprtt( "cellwrap", $proc_h{$OO} );
 						siprt( "endrow" );
 					}
 				}
@@ -1406,7 +1443,7 @@ sub si_etc_suse() {
 	}
 
 	foreach ( @allfiles ) {
-		$myfiles{ $_ } = 0;
+		$myfiles{$_} = 0;
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
@@ -1495,7 +1532,7 @@ sub si_proc_config() {
 
 sub si_installed_deb() {
 	siprtt( "h1",        "Installed packages" );
-	siprtt( "tabborder", "llll" );
+	siprtt( "tabborder", "lllp{.5\\textwidth}" );
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Name" );
 	siprtt( "tabhead", "Status" );
@@ -1507,22 +1544,20 @@ sub si_installed_deb() {
 	my $num   = 0;
 	my @debs;
 	my $mark = "--sitar-mark-$now_string--";
-
 	sysopen( STATUS, "$STATUS", O_RDONLY ) || die "can't open '$STATUS'";
-	$pos[ 0 ] = 0;
-	while ( <STATUS> ) { $pos[ $#pos + 1 ] = tell if /^$/; }
+	$pos[0] = 0;
+	while ( <STATUS> ) { $pos[$#pos + 1] = tell if /^$/; }
 
 	for ( $i = 0 ; $i < $#pos ; $i++ ) {
-		seek( STATUS, $pos[ $i ], seek_set ) || die "can't seek!";
-		while ( <STATUS> ) { last if /^$/; $debs[ $i ] .= $_; }
+		seek( STATUS, $pos[$i], seek_set ) || die "can't seek!";
+		while ( <STATUS> ) { last if /^$/; $debs[$i] .= $_; }
 	}
 	close STATUS;
 
 	for ( $i = 0 ; $i < $#debs + 1 ; $i++ ) {
-		if ( $debs[ $i ] =~ /^Status:.* installed$/im ) {
-			$debs[ $i ] =~
-s/^Package:(.*)$(\n.*)*^Status:(.*)$(\n.*)*^Installed-Size:(.*)$(\n.*)*^Version:(.*)$(\n.*)*^Description:(.*(\n.*)*)$/$1$mark$3$mark$5$mark$7$mark$9/m;
-			my ( $name, $status, $size, $version, $description ) = split ( /$mark/, $debs[ $i ] );
+		if ( $debs[$i] =~ /^Status:.* installed$/im ) {
+			$debs[$i] =~ s/^Package:(.*)$(\n.*)*^Status:(.*)$(\n.*)*^Installed-Size:(.*)$(\n.*)*^Version:(.*)$(\n.*)*^Description:(.*(\n.*)*)$/$1$mark$3$mark$5$mark$7$mark$9/m;
+			my ( $name, $status, $size, $version, $description ) = split ( /$mark/, $debs[$i] );
 			$total += $size;
 			$num++;
 			siprt( "tabrow" );
@@ -1534,7 +1569,6 @@ s/^Package:(.*)$(\n.*)*^Status:(.*)$(\n.*)*^Installed-Size:(.*)$(\n.*)*^Version:
 			siprt( "endrow" );
 		}
 	}
-
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Total" );
 	siprtt( "tabhead", "" );
@@ -1547,7 +1581,7 @@ s/^Package:(.*)$(\n.*)*^Status:(.*)$(\n.*)*^Installed-Size:(.*)$(\n.*)*^Version:
 
 sub si_installed_rpm() {
 	siprtt( "h1",        "Installed packages" );
-	siprtt( "tabborder", "llll" );
+	siprtt( "tabborder", "lllp{.5\\textwidth}" );
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Name" );
 	siprtt( "tabhead", "Version" );
@@ -1605,21 +1639,17 @@ sub si_selection_rpm() {
 		$num++;
 	}
 	close( RPMS );
-	print "\# SuSE-Linux Configuration : ", int( $total / 1024 ), " : ", $num, "\n",
-	  "Description: $HOSTNAME $now_string\n", "Info:\n", "Ofni:\n", "Toinstall:\n";
+	print "\# SuSE-Linux Configuration : ", int( $total / 1024 ), " : ", $num, "\n", "Description: $HOSTNAME $now_string\n", "Info:\n", "Ofni:\n", "Toinstall:\n";
 
 	for $rr ( sort @rpms ) { print $rr, "\n"; }
 	print "Llatsniot:\n";
 }
 
 sub si_getopts($) {
-
 }
-
 {
 	if ( $printhelp || $siprt_mode eq "" ) {
-		print
-"Options available:\n\t--output=<format>\tFormats: html, latex, (planned: plain, xml, alice)\n\t--file=<file>\t\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
+		print "Options available:\n\t--output=<format>\tFormats: html, latex, yast1, (planned: plain, xml, alice)\n\t--file=<file>\t\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
 	} elsif ( $siprt_mode eq "html" || $siprt_mode eq "latex" ) {
 		# @siprt_modes= ("html", "tex" );
 		# @siprt_modes= ("html" );
@@ -1670,7 +1700,8 @@ sub si_getopts($) {
 			print "\\par\\endgroup\\end\{sidewaystable\}";
 			print "\n\n\\newpage\n\n";
 		}
-		## si_proc_sys();
+		si_proc_sys ();
+
 		if ( $distribution eq "suse" ) {
 			si_etc_suse ();
 			si_installed_rpm ();
@@ -1687,18 +1718,17 @@ sub si_getopts($) {
 		siprt( "body" );
 		siprt( "footer" );
 		open( STDOUT, ">&SAVEOUT" );
+	} elsif ( $siprt_mode eq "yast1" ) {
+		open( SAVEOUT, ">&STDOUT" );
 
-		# print "\t/tmp/sitar-$HOSTNAME.$mm\n";
-		# }
-		# open (SAVEOUT, ">&STDOUT");
-		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.sel");
-		# si_selection();
-		# open (STDOUT,  ">&SAVEOUT");
-		# print "\t/tmp/sitar-$HOSTNAME.sel\n";
+		if ( $outfile ne "" ) {
+			open( STDOUT, ">$outfile" );
+		}
+		si_selection_rpm ();
+		open( STDOUT, ">&SAVEOUT" );
 		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.pci");
 		# si_lspci();
 		# open (STDOUT,  ">&SAVEOUT");
 		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
 	}
 }
-
