@@ -31,6 +31,9 @@
 #		Falko Trojahn
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.40  2003/08/08 08:08:30  mge
+#  Make sitar run from cron (thank to Jan Jensen)
+#
 #  Revision 1.39  2003/08/08 08:05:52  mge
 #  - fixed BUG #561 /tmp/mdstat (but not perfect, still uses tmp-file:-(
 #  - better yast2 selections
@@ -2527,9 +2530,7 @@ sub si_run_sitar() {
 # MAIN
 {
 	my @myname = split /\//, $0;
-	# if ( `/usr/bin/id -u`  != 0 ) {
-	if (       ( $ENV{ USER } && $ENV{ USER } ne "root" )
-		|| ( `/usr/bin/id -u ` != 0 ) ) {
+	if ( $< != 0 ) {
 		print( "Please run sitar as user root.\n" );
 		exit;
 	}
@@ -2553,3 +2554,4 @@ sub si_run_sitar() {
 		si_print_help();
 	}
 }
+
