@@ -1,18 +1,39 @@
 #
-# spec file for package sitar (Version 0.6.4)
-# 
-# Copyright  (c)  2001  SuSE GmbH  Nuernberg, Germany.
-# This file and all modifications and additions to the pristine
-# package are under the same license as the package itself.
-# 
-# please send bugfixes or comments to feedback@suse.de.
+#  SITAR - System InformaTion At Runtime
+#  Copyright (C) 1999-2001 SuSE Linux AG
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#  Authors:
+#               Matthias G. Eckermann
+#               Stephan Müller
+#               Janto Trappe
+#               Waldemar Brodkorb
+#
+#  $Log: sitar.spec,v $
+#  Revision 1.3  2001/08/15 03:57:30  mge
+#  Makefile cleanups, introduced CVS-log into
+#  	CodingStyle Makefile sitar.pl.in sitar.spec
+#
 #
 
 # neededforbuild  
 # usedforbuild    aaa_base aaa_dir autoconf automake base bash bindutil binutils bison bzip compress cpio cracklib db devs diffutils e2fsprogs file fileutils findutils flex gawk gcc gdbm gdbm-devel gettext glibc glibc-devel gpm gppshare groff gzip kbd less libtool libz lx_suse make mktemp modutils ncurses ncurses-devel net-tools netcfg nkitb pam pam-devel patch perl pgp ps rcs rpm sendmail sh-utils shadow strace syslogd sysvinit texinfo textutils timezone unzip util-linux vim xdevel xf86 xshared
 
 Vendor:       SuSE GmbH, Nuernberg, Germany
-Distribution: SuSE Linux 7.1a (i386)
+Distribution: SuSE Linux 7.3
 Name:         sitar
 Packager:     feedback@suse.de
 
@@ -54,6 +75,10 @@ chmod 744 /usr/sbin/sitar.pl
 
 %files
 /usr/sbin/sitar.pl
+/usr/share/man/man1/sitar.1.gz
+/usr/share/doc/packages/sitar/sitar.html
+/usr/share/doc/packages/sitar/sitar.ps
+/usr/share/doc/packages/sitar/LICENSE
 /usr/share/sitar/si_scsiinfo
 /usr/share/sitar/suse.png
 /usr/share/sitar/si_ide_info

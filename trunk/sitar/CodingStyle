@@ -56,3 +56,10 @@ the code of sitar and associated tools:
 more to come ...
 		MgE
 
+-- 
+$Log: CodingStyle,v $
+Revision 1.4  2001/08/15 03:57:30  mge
+Makefile cleanups, introduced CVS-log into
+	CodingStyle Makefile sitar.pl.in sitar.spec
+
+

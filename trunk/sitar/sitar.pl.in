@@ -23,6 +23,12 @@
 #		Janto Trappe
 #		Waldemar Brodkorb
 #
+#  $Log: sitar.pl.in,v $
+#  Revision 1.10  2001/08/15 03:57:30  mge
+#  Makefile cleanups, introduced CVS-log into
+#  	CodingStyle Makefile sitar.pl.in sitar.spec
+#
+#
 
 =head1 NAME
 
@@ -495,7 +501,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.9 2001/08/15 03:44:48 mge Exp $
+	#       $Id: sitar.pl.in,v 1.10 2001/08/15 03:57:30 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
