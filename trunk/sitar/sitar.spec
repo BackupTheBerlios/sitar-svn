@@ -28,7 +28,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.pre5
+Version:	0.9.pre7
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -71,6 +71,7 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 make DESTDIR=${RPM_BUILD_ROOT} install
 rm -rf $RPM_BUILD_ROOT/usr/share/doc/sitar
+./cvs2rpmlog.pl < sitar.pl.in  > sitar.changes
 %{?suse_check}
 
 %files
@@ -84,6 +85,8 @@ rm -rf $RPM_BUILD_ROOT/usr/share/doc/sitar
 %dir /usr/share/sitar
 /usr/share/sitar/proc.txt
 
+%changelog -n sitar.changes
+
 %clean
 if [ -n "$RPM_BUILD_ROOT" ] ; then
    [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
@@ -91,6 +94,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.42  2005/02/11 20:04:48  mge
+#  0.9.pre7: added cvs2rpmlog.pl for changelog in RPM
+#
 #  Revision 1.41  2005/02/09 13:02:04  mge
 #  small patch regarding /proc/cpuinfo
 #

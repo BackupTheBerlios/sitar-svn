@@ -29,7 +29,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.9.pre5
+RELEASE=0.9.pre7
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -91,6 +91,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 
 #
 #  $Log: Makefile,v $
+#  Revision 1.41  2005/02/11 20:04:48  mge
+#  0.9.pre7: added cvs2rpmlog.pl for changelog in RPM
+#
 #  Revision 1.40  2005/02/09 13:02:04  mge
 #  small patch regarding /proc/cpuinfo
 #
