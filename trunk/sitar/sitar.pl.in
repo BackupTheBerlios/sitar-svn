@@ -26,11 +26,17 @@
 
 =head1 NAME
 
-	SITAR - System InformaTion At Runtime
+SITAR - System InformaTion At Runtime
 
 =head1 SYNOPSIS
 
+sitar B<--format>=I<format> B<--outfile>=I<file> B<--help>
+
+Available I<format>s: html, latex, yast1
+
 =head1 DESCRIPTION
+
+Prepare system information using perl, reading the /proc filesystem. Output is in HTML and LaTeX (planned: XML, SQL) and can be converted to PostScript and PDF. Sitar is an ancient Indian instrument as well (see  L<"HISTORY"> below).
 
 =head1 OPTIONS
 
@@ -60,6 +66,8 @@
 
 =head1 HISTORY
 
+The sitar is the invention of Amir Shusru, the famous poet and singer attached to the Court of Sultan Alauddin Khilju of Delhi (1295-1315). This is the most popular instrument in Northern India. The sitar is a lute-like instrument with a long fretted neck and a resonating gourd. It is plucked by the index finger of the left hand fitted with a plectrum made of wire. Sitars generally have 6 or 7 main playing strings which run above the frets, and an additional 12 or more sympathetic strings which give the instrument a shimmering echo when played. The frets herein are movable and can be adjusted according to the scale selected to be played upon. The sitar is also called as satar and sundari.
+
 =head1 CODE DOCUMENTATION
 
 =cut
@@ -72,8 +80,8 @@ my $siprt_mode = "";
 my $outfile    = "";
 my $printhelp;
 GetOptions(
-	'output=s' => \$siprt_mode,
-	'file=s'   => \$outfile,
+	'format=s' => \$siprt_mode,
+	'outfile=s'=> \$outfile,
 	'help'     => \$printhelp
 );
 #
@@ -448,7 +456,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.7 2001/08/15 02:31:46 mge Exp $
+	#       $Id: sitar.pl.in,v 1.8 2001/08/15 02:50:39 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -1649,7 +1657,7 @@ sub si_getopts($) {
 }
 {
 	if ( $printhelp || $siprt_mode eq "" ) {
-		print "Options available:\n\t--output=<format>\tFormats: html, latex, yast1, (planned: plain, xml, alice)\n\t--file=<file>\t\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
+		print "Options available:\n\t--format=<format>\tFormats: html, latex, yast1, (planned: plain, xml, alice)\n\t--outfile=<file>\t\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
 	} elsif ( $siprt_mode eq "html" || $siprt_mode eq "latex" ) {
 		# @siprt_modes= ("html", "tex" );
 		# @siprt_modes= ("html" );
