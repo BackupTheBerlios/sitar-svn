@@ -24,6 +24,11 @@
 #		Waldemar Brodkorb
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.16  2001/09/06 23:48:25  mge
+#  - make $RPM and $DPKG global variables
+#  - make Passwords in /etc/lilo.conf and /etc/pppoed.conf invisible
+#    (Thanks to mlasar@suse.de)
+#
 #  Revision 1.15  2001/09/03 10:30:33  waldb
 #  fixed minor bugs,
 #   - moved $RPM and $DPKG into distribution test
@@ -186,15 +191,16 @@ my $SUSE         = "/etc/SuSE-release";
 my $DEBIAN       = "/etc/debian_version";
 my $release      = "";
 my $distribution = "";
+my ($DPKG, $RPM);
 
 if ( -e $DEBIAN ) {
-	$release      = `/usr/bin/head -1 /etc/debian_version`;
-	$distribution = "debian";
-        my $DPKG   = "/usr/bin/dpkg";
+	$release      	= `/usr/bin/head -1 /etc/debian_version`;
+	$distribution 	= "debian";
+        $DPKG		= "/usr/bin/dpkg";
 } elsif ( -e $SUSE ) {
-	$release      = `/usr/bin/head -1 /etc/SuSE-release`;
-	$distribution = "suse";
-        my $RPM    = "/bin/rpm";
+	$release      	= `/usr/bin/head -1 /etc/SuSE-release`;
+	$distribution 	= "suse";
+        $RPM		= "/bin/rpm";
 } else {
 	$distribution = "unknown";
 	print "\n distribution not supported!!\n\n";
@@ -549,7 +555,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.15 2001/09/03 10:30:33 waldb Exp $
+	#       $Id: sitar.pl.in,v 1.16 2001/09/06 23:48:25 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -1342,12 +1348,43 @@ sub si_ipchains () {
 	}
 }
 
+sub si_conf_secure($$$) {
+	my ( $filename, $comment, $blankout ) = @_;
+	siprtt( "h2", $filename );
+	# print STDERR $filename, ": ", $comment, "\n";
+	siprt( "pre" );
+	if ( $comment eq "/**/" ) {
+		open( CONFIG, $filename );
+		my $old_recsep = $/;
+		undef $/;
+		$ttt = <CONFIG>;
+		$ttt =~ s#/\*.*?\*/##gs;
+		$ttt =~ s#//.*##g;
+		$ttt =~ s/\n\s*\n/\n/gs;
+		close( CONFIG );
+		siprtt( "verb", $ttt );
+		$/ = $old_recsep;
+	} else {
+		open( CONFIG, "<$filename" );
+		while ( <CONFIG> ) {
+			chomp();
+			if ( !m/^($comment)|^$/ ) {
+				if ( m/$blankout/) {
+					s/($blankout.*=)(.*)/$1### sensitive data blanked out ###/;
+				}
+				siprtt( "verb", "$_\n" );
+			}
+		}
+		close( CONFIG );
+	}
+	siprt( "endpre" );
+}
+
 sub si_conf($$) {
 	my ( $filename, $comment ) = @_;
 	siprtt( "h2", $filename );
 	# print STDERR $filename, ": ", $comment, "\n";
 	siprt( "pre" );
-
 	if ( $comment eq "/**/" ) {
 		open( CONFIG, $filename );
 		my $old_recsep = $/;
@@ -1519,6 +1556,7 @@ sub si_etc_suse() {
 	  /etc/xinetd.conf
 	  /etc/printcap
 	  /etc/hosts
+	  /etc/pppoed.conf
 	  /etc/lilo.conf
 	  /etc/fstab
 	  /etc/inittab
@@ -1528,7 +1566,6 @@ sub si_etc_suse() {
 	  /var/spool/fax/etc/config
 	  /var/spool/fax/etc/config.modem
 	);
-
 	if ( -d $config_dir ) {
 		foreach ( `$LS -1 $config_dir/*.include` ) {
 			chomp( $_ );
@@ -1536,22 +1573,22 @@ sub si_etc_suse() {
 			push @allfiles, @files;
 		}
 	}
-
 	foreach ( @allfiles ) {
 		$myfiles{$_} = 0;
 	}
 	foreach $mm ( sort keys %myfiles ) {
 		if ( $mm !~ /proc/ ) {
-			if ( -r $mm ) { si_conf( $mm, "\#" ); }
+			if ( ( $mm eq "/etc/pppoed.conf" ) ||
+			     ( $mm eq "/etc/lilo.conf"   ) ) {
+				if ( -r $mm )	{ si_conf_secure( $mm, "\#", "[Pp]assword"); }
+			} else {
+				if ( -r $mm )	{ si_conf( $mm, "\#" ); }
+			}
 		}
 	}
-	#
 	# Samba
-	#  
 	if ( -r "/etc/smb.conf" ) { si_conf( "/etc/smb.conf", ";" ); }
-	#
 	# named
-	#  
 	if ( -r "/etc/named.conf" ) {
 		si_conf( "/etc/named.conf", "/**/" );
 
@@ -1564,17 +1601,13 @@ sub si_etc_suse() {
 			si_conf( $NN, ";" );
 		}
 	}
-	#
 	# SSH/OpenSSH
-	#
 	if ( -r "/etc/ssh/sshd_config" ) {
 		si_conf( "/etc/ssh/sshd_config", "\#" );
 	} elsif ( "/etc/sshd_config" ) {
 		si_conf( "/etc/sshd_config", "\#" );
 	}
-	#
 	# SuSE proxy suite
-	#
 	if ( -r "/etc/proxy-suite" ) {
 
 		for $NN ( `/usr/bin/find /etc/proxy-suite -name "*.conf"` ) {
