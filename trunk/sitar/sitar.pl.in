@@ -24,6 +24,9 @@
 #		Waldemar Brodkorb
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.11  2001/08/15 04:30:51  mge
+#  cosmetic change
+#
 #  Revision 1.10  2001/08/15 03:57:30  mge
 #  Makefile cleanups, introduced CVS-log into
 #  	CodingStyle Makefile sitar.pl.in sitar.spec
@@ -501,7 +504,7 @@ sub si_lsdev() {
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22
 	#	Last Change: 1998-05-31 15:26:58
-	#       $Id: sitar.pl.in,v 1.10 2001/08/15 03:57:30 mge Exp $
+	#       $Id: sitar.pl.in,v 1.11 2001/08/15 04:30:51 mge Exp $
 	my %device_h = ();
 	use vars qw($device_h @line $line @tmp $tmp0 $name %port $abc $hddev);
 	my %dma = ();
@@ -1702,7 +1705,7 @@ sub si_getopts($) {
 }
 {
 	if ( $printhelp || $siprt_mode eq "" ) {
-		print "Options available:\n\t--format=<format>\tFormats: html, latex, yast1, (planned: plain, xml, alice)\n\t--outfile=<file>\t\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
+		print "Options available:\n\t--format=<format>\tFormats: html, latex, yast1, (planned: plain, xml, alice)\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n";
 	} elsif ( $siprt_mode eq "html" || $siprt_mode eq "latex" ) {
 		# @siprt_modes= ("html", "tex" );
 		# @siprt_modes= ("html" );
