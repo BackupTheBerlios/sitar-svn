@@ -23,6 +23,9 @@
 #               Waldemar Brodkorb
 #
 #  $Log: Makefile,v $
+#  Revision 1.6  2001/08/15 04:27:40  mge
+#  improved semi-automated rpm-generation
+#
 #  Revision 1.5  2001/08/15 03:57:30  mge
 #  Makefile cleanups, introduced CVS-log into
 #  	CodingStyle Makefile sitar.pl.in sitar.spec
@@ -36,11 +39,18 @@ RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
 
-clean:
-	-rm *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl sitar.1 sitar.html sitar.ps pod2htm*
+tar:		/tmp/sitar-${RELEASE}.tar.gz
 
-tar:		clean
-		- (pushd ..; tar cvzSpf sitar-${RELEASE}.tar.gz sitar-${RELEASE}/ ; popd)
+clean:
+	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl sitar.1 sitar.html sitar.ps pod2htm*
+
+/tmp/sitar-${RELEASE}.tar.gz:	clean
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.gz sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+
+rpm:	clean
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvzSpf /tmp/sitar-${RELEASE}.tar.gz sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+	- (pushd /tmp/ ; rpm -ta sitar-${RELEASE}.tar.gz ; chmod 777 /tmp/sitar-${RELEASE}.tar.gz ; popd)
+	- rm -f /tmp/sitar-${RELEASE}.tar.gz
 
 sitar.pl:	sitar.pl.in Makefile
 	${PERL} -p 	-e '$$pre="${PREFIX}";' \
@@ -63,9 +73,13 @@ sitar.ps:	sitar.1
 	groff -man -Tps sitar.1 > sitar.ps
 
 install:	sitar.pl sitar.1 sitar.ps sitar.html
-	install -d 			${DESTDIR}/${PREFIX}/share/sitar
+	install	-d			${DESTDIR}/${PREFIX}/sbin\
+					${DESTDIR}/${PREFIX}/share/sitar\
+					${DESTDIR}/${PREFIX}/share/man/man1\
+					${DESTDIR}/${PREFIX}/share/doc/packages/sitar/
 	install	-d			${DESTDIR}/${PREFIX}/share/doc/packages/sitar/
 	install -m 700 	sitar.pl	${DESTDIR}/${PREFIX}/sbin/sitar.pl
+	ln -sf /${PREFIX}/sbin/sitar.pl	${DESTDIR}/${PREFIX}/sbin/sitar
 	install -m 644 	sitar.1		${DESTDIR}/${PREFIX}/share/man/man1/sitar.1
 	gzip				${DESTDIR}/${PREFIX}/share/man/man1/sitar.1
 	install	-m 644	sitar.html	${DESTDIR}/${PREFIX}/share/doc/packages/sitar/sitar.html
