@@ -389,7 +389,8 @@ sub addtoc_sdocbook($$$) {
 		$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n";
 	} else {
 	}
-	$TOCBuffer = join "", $TOCBuffer, "<listitem><para><xref linkend=\"", $ancor, "\"/>", $value, "\n";
+	$TOCBuffer = join "", $TOCBuffer, 
+		"<listitem><para><xref linkend=\"$ancor\"/>$ancor $value\n";
 	$lastTOClevel = $level;
 }
 
@@ -500,19 +501,19 @@ sub siprint($$$) {
 		if ( $m eq "h1" ) {
 			$seccnt++;
 			mysprint "<Sect1 id=\"", $seccnt, "\"\n><title>", $value, "</title></Sect1>";
-			addtoc_sdocbook( 1, "$seccnt", "$seccnt.&nbsp;$value" );
+			addtoc_sdocbook( 1, "$seccnt", $value );
 			$subseccnt = 0;
 		}
 		if ( $m eq "h2" ) {
 			$subseccnt++;
 			mysprint "<Sect2 id=\"", $seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title></Sect2>";
-			addtoc_sdocbook( 2, "$seccnt.$subseccnt", "$seccnt.$subseccnt&nbsp;$value" );
+			addtoc_sdocbook( 2, "$seccnt.$subseccnt", $value );
 			$subsubseccnt = 0;
 		}
 		if ( $m eq "h3" ) {
 			$subsubseccnt++;
 			mysprint "<Sect3 id=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n><title>", $value, "</title></Sect3>";
-			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt", "$seccnt.$subseccnt.$subsubseccnt&nbsp;$value" );
+			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt", $value );
 		}
 		if ( $m eq "tabborder" ) {
 			mysprint "<table frame=\"all\"><title>", $attr, "</title>";
@@ -2561,6 +2562,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.52  2005/01/18 15:53:48  mge
+#  removed nbsp in TOC
+#
 #  Revision 1.51  2005/01/18 15:47:45  mge
 #  valid xml; perltidy
 #
