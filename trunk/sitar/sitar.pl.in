@@ -34,7 +34,7 @@ SITAR - System InformaTion At Runtime
 
 sitar|sitar.pl  B<--format>=I<format> B<--outfile>=I<file> B<--help> B<--version>
 
-Available I<format>s: html, tex, yast1, yast2
+Available I<format>s: html, tex, sdocbook, yast1, yast2
 
 =head1 DESCRIPTION
 
@@ -61,6 +61,8 @@ Tell SITAR, which output format to use. At the moment four formats are supported
 =item tex 
 
 =item html
+
+=item sdocbook
 
 =item yast1
 
@@ -254,7 +256,7 @@ my $sdocbook_header = "<?xml version=\"1.0\"?>
     <year>2005</year>
     <holder>$COPYRIGHT</holder>
   </copyright>
-  <bibliomisc><ulink url=\"http://sitar.berlios.de/\"></ulink></bibliomisc>
+  <bibliomisc><ulink url=\"http://sitar.berlios.de/\">http://sitar.berlios.de/</ulink></bibliomisc>
   <title>$HOSTNAME</title>
   <date>$now_string</date>
   <subtitle>$release</subtitle>
@@ -389,14 +391,14 @@ sub addtoc_sdocbook($$$) {
 		$TOCBuffer = join "", $TOCBuffer, "<itemizedlist>\n";
 	} elsif ( $level < $lastTOClevel ) {
 		for ( $ll = $lastTOClevel ; $ll > $level ; $ll-- ) {
-			$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n</itemizedlist>\n\n";
+			$TOCBuffer = join "", $TOCBuffer, "</listitem>\n</itemizedlist>\n\n";
 		}
-		$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n";
+		$TOCBuffer = join "", $TOCBuffer, "</listitem>\n";
 	} elsif ( $lastTOClevel != 0 ) {
-		$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n";
+		$TOCBuffer = join "", $TOCBuffer, "</listitem>\n";
 	} else {
 	}
-	$TOCBuffer = join "", $TOCBuffer, "<listitem><para><xref linkend=\"$ancor\"/>$ancor $value\n";
+	$TOCBuffer = join "", $TOCBuffer, "<listitem><para><xref linkend=\"sec$ancor\"/>$value</para>\n";
 	$lastTOClevel = $level;
 }
 
@@ -509,19 +511,19 @@ sub siprint($$$) {
 		$attr  =~ s/>/\&gt;/g;
 		if ( $m eq "h1" ) {
 			$seccnt++;
-			mysprint "<Sect1 id=\"", $seccnt, "\"\n><title>", $value, "</title></Sect1>";
+			mysprint "<section label=\"sec",$seccnt, "\" id=\"sec",$seccnt, "\"\n><title>", $value, "</title><para /></section>";
 			addtoc_sdocbook( 1, "$seccnt", "$seccnt.$value" );
 			$subseccnt = 0;
 		}
 		if ( $m eq "h2" ) {
 			$subseccnt++;
-			mysprint "<Sect2 id=\"", $seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title></Sect2>";
+			mysprint "<section label=\"sec",$seccnt, ".", $subseccnt, "\" id=\"sec",$seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title><para /></section>";
 			addtoc_sdocbook( 2, "$seccnt.$subseccnt", "$seccnt.$subseccnt&nbsp;$value" );
 			$subsubseccnt = 0;
 		}
 		if ( $m eq "h3" ) {
 			$subsubseccnt++;
-			mysprint "<Sect3 id=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n><title>", $value, "</title></Sect3>";
+			mysprint "<section label=\"sec",$seccnt,".",$subseccnt,".", $subsubseccnt,"\" id=\"sec",$seccnt,".",$subseccnt,".", $subsubseccnt,"\"\n><title>", $value, "</title><para /></section>";
 			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt", "$seccnt.$subseccnt.$subsubseccnt&nbsp;$value" );
 		}
 		if ( $m eq "tabborder" ) {
@@ -553,16 +555,15 @@ sub siprint($$$) {
 			mysprint "\n]]>\n</programlisting>\n";
 			$IsVerbatim = 0;
 		}
-		if ( $m eq "verb" )   { mysprint $value; }
+		if ( $m eq "verb" ) { mysprint $value; }
 		if ( $m eq "header" ) { print $sdocbook_header; }
 		if ( $m eq "body" )   { print $OutputBuffer; }
 		if ( $m eq "footer" ) { print $sdocbook_footer; }
 		if ( $m eq "toc" )    {
 			for ( $ii = $lastTOClevel ; $ii > 0 ; $ii-- ) {
-				$TOCBuffer = join "", $TOCBuffer, "</para></listitem>\n</itemizedlist>\n";
+				$TOCBuffer = join "", $TOCBuffer, "</listitem>\n</itemizedlist>\n";
 			}
-			print "<Sect1 label=\"TOC\"><title>Table of Contents</title></Sect1>\n", $TOCBuffer;
-			print "\n<hr />\n";
+			print "<section id=\"TOC\" label=\"TOC\"><title>Table of Contents</title><para /></section>\n", $TOCBuffer;
 		}
 	} elsif ( $siprt_mode eq "sql" ) {
 	}
@@ -1557,7 +1558,9 @@ sub si_ifconfig() {
 	my $isbegin = 1;
 	open( IFCONFIG, "/sbin/ifconfig -v |" );
 	siprtt( "h1",   "Networking Interfaces" );
+	siprt( "pre" );
 	siprtt( "verb", "skipping IPv6 Options" );
+	siprt( "endpre" );
 	siprttt( "tabborder", "lllllllll", "Networking Interfaces" );
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Device" );
@@ -1706,7 +1709,9 @@ sub si_ipvs () {
 }
 
 sub si_ipfwadm() {
+	siprt( "pre" );
 	siprtt( "verb", "ipfwadm is not supported." );
+	siprt( "endpre" );
 }
 
 sub si_ipchains () {
@@ -1850,7 +1855,9 @@ sub si_packetfilter() {
 		si_iptables();
 	} else {
 		siprtt( "h1",   "Packet Filter" );
+		siprt( "pre" );
 		siprtt( "verb", "No packet filter installed." );
+		siprt( "endpre" );
 	}
 }
 
@@ -2597,6 +2604,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.59  2005/01/18 22:41:24  mge
+#  xml: is 'well-formed', improved valid XML, but not perfect: TABLES:-(
+#
 #  Revision 1.58  2005/01/18 18:37:48  mge
 #  reminder on how to include stylesheets into xml files
 #
