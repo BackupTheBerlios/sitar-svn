@@ -26,6 +26,9 @@
 #		Pascal Fuckerieder
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.16  2002/11/27 13:59:16  mge
+#  Release 0.7.4
+#
 #  Revision 1.15  2002/04/11 14:43:32  mge
 #  added check for /etc/sysconfig
 #  release 0.7.1
@@ -76,8 +79,8 @@ Vendor:		SuSE, Germany
 Distribution:	SuSE Linux
 Name:		sitar
 Packager:	mge@suse.de
-Version:	0.7.1
-Release:	6
+Version:	0.7.4
+Release:	7
 Summary:	System InformaTion At Runtime
 Source:		sitar-%{version}.tar.gz
 Copyright:	GPL
