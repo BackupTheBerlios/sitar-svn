@@ -37,7 +37,6 @@ BuildRoot:	/tmp/root-%{name}/
 BuildArch: 	noarch
 
 Packager:	Matthias G. Eckermann <mge@suse.de>
-Distribution:	SuSE SLES-9 (i586) Addon
 
 %description 
 Sitar prepares system information using perl and binary tools, and by
@@ -91,6 +90,9 @@ fi
 
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.37  2005/01/19 01:55:00  mge
+#  version: 0.9.pre2; added sdocbook to help
+#
 #  Revision 1.36  2005/01/19 01:49:56  mge
 #  xml: well-formed and valid (as tested so far:-)
 #

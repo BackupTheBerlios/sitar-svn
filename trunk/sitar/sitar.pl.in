@@ -160,7 +160,8 @@ selected to be played upon. The sitar is also called as satar and sundari.
 
 use Getopt::Long;
 use Fcntl;
-my $COPYRIGHT  = "1999-2005 SuSE Linux, a Novell Business";
+my $COPYHOLDER = "SuSE Linux, a Novell Business";
+my $COPYRIGHT  = "1999-2005 $COPYHOLDER";
 my $RELEASE    = "%%RELEASE%%";
 my $PREFIX     = "%%PREFIX%%";
 my $siprt_mode = "";
@@ -254,7 +255,7 @@ my $sdocbook_header = "<?xml version=\"1.0\"?>
   <copyright>
     <year>1999</year>
     <year>2005</year>
-    <holder>$COPYRIGHT</holder>
+    <holder>$COPYHOLDER</holder>
   </copyright>
   <bibliomisc><ulink url=\"http://sitar.berlios.de/\">http://sitar.berlios.de/</ulink></bibliomisc>
   <title>$HOSTNAME</title>
@@ -2500,7 +2501,7 @@ sub si_print_version () {
 }
 
 sub si_print_help () {
-	print "Options available:\n\t--format=<format>\tFormats: html, tex, yast1,yast2 (planned: plain, xml, alice)\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
+	print "Options available:\n\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
 }
 
 sub si_run_sitar() {
@@ -2626,6 +2627,9 @@ sub si_run_sitar() {
 }
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.61  2005/01/19 01:54:59  mge
+#  version: 0.9.pre2; added sdocbook to help
+#
 #  Revision 1.60  2005/01/19 01:49:56  mge
 #  xml: well-formed and valid (as tested so far:-)
 #
