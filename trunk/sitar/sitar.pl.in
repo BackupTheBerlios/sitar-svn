@@ -27,6 +27,9 @@
 #		Pascal Fuckerieder 
 #
 #  $Log: sitar.pl.in,v $
+#  Revision 1.27  2002/11/27 14:00:25  mge
+#  fixed small patch error / typo
+#
 #  Revision 1.26  2002/11/27 13:58:26  mge
 #  Added patch for RedHat Linux from Andreas Rother <Andreas.Rother@eplus.de>
 #  Changes:
@@ -223,7 +226,6 @@ my $printhelp;
 GetOptions(
 	'f|format=s'  => \$siprt_mode,
 	'o|outfile=s' => \$outfile,
-my $REDHAT       = "/etc/redhat-release";
 	'h|help'      => \$printhelp
 );
 #
@@ -232,6 +234,7 @@ my $REDHAT       = "/etc/redhat-release";
 $ENV{PATH} = "";
 my $SUSE         = "/etc/SuSE-release";
 my $DEBIAN       = "/etc/debian_version";
+my $REDHAT       = "/etc/redhat-release";
 my $release      = "";
 my $distribution = "";
 my ( $DPKG, $RPM );
