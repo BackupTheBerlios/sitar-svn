@@ -1,6 +1,6 @@
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2004 SUSE LINUX AG
+#  Copyright (C) 1999-2005 SuSE Linux, a Novell Business
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,18 +18,77 @@
 #
 #  Authors/Contributors:
 #		Matthias G. Eckermann
-#		Stephan Müller
-#		Janto Trappe
-#		Waldemar Brodkorb
-#		Björn Jacke
-#		Bernhard Thoni
-#		Pascal Fuckerieder
-#		Andreas Rother
-#		Uwe Hering
-#		Jan Jensen
-#		Falko Trojahn
+#		Stephan Müller 		Janto Trappe
+#		Waldemar Brodkorb 	Björn Jacke
+#		Bernhard Thoni 		Pascal Fuckerieder
+#		Andreas Rother 		Uwe Hering
+#		Jan Jensen 		Falko Trojahn
+#
+
+PREFIX=/usr
+DOCDIR=${PREFIX}/share/doc/packages
+PERL=/usr/bin/perl
+RELEASE=0.8.12
+RELDATE=$(shell date +"%Y%m%d")
+
+default	:	sitar.pl sitar.1 sitar.html sitar.ps
+
+tar:		/tmp/sitar-${RELEASE}.tar.bz2
+
+clean:
+	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps pod2htm* *-selections
+
+/tmp/sitar-${RELEASE}.tar.bz2:	clean
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+
+rpm:	clean
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+	- (pushd /tmp/ ; rpmbuild -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
+	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
+
+sitar.pl:	sitar.pl.in Makefile
+	${PERL} -p 	-e '$$pre="${PREFIX}";' \
+			-e 's/%%PREFIX%%/$$pre/; '\
+			-e 's/%%RELEASE%%/${RELEASE}/;'\
+			sitar.pl.in > sitar.pl
+	chmod 755 sitar.pl
+	ln -fs sitar.pl support_all.pl
+
+sitar.1:	sitar.pl
+	pod2man --center=" " sitar.pl > sitar.01
+	${PERL} -p	-e 's/.if n .na/.\\\".if n .na/;'\
+			sitar.01 > sitar.1
+	rm sitar.01
+
+sitar.html:	sitar.pl
+	pod2html --infile=sitar.pl --outfile=sitar.html\
+	--title "SITAR - System InformaTion At Runtime"
+
+sitar.ps:	sitar.1
+	groff -man -Tps sitar.1 > sitar.ps
+
+install:	sitar.pl sitar.1 sitar.ps sitar.html
+	install	-d					${DESTDIR}/${PREFIX}/sbin\
+							${DESTDIR}/${PREFIX}/share/sitar\
+							${DESTDIR}/${PREFIX}/share/man/man1\
+							${DESTDIR}/${DOCDIR}/sitar/
+	install -m 700 	sitar.pl			${DESTDIR}/${PREFIX}/sbin/sitar.pl
+	ln -sf /${PREFIX}/sbin/sitar.pl			${DESTDIR}/${PREFIX}/sbin/support_all.pl
+	ln -sf /${PREFIX}/sbin/sitar.pl			${DESTDIR}/${PREFIX}/sbin/sitar
+	install -m 644 	sitar.1				${DESTDIR}/${PREFIX}/share/man/man1/sitar.1
+	gzip						${DESTDIR}/${PREFIX}/share/man/man1/sitar.1
+	ln -sf /${PREFIX}/share/man/man1/sitar.1.gz 	${DESTDIR}/${PREFIX}/share/man/man1/support_all.1.gz
+	install	-m 644	sitar.html			${DESTDIR}/${DOCDIR}/sitar/sitar.html
+	install	-m 644	sitar.ps			${DESTDIR}/${DOCDIR}/sitar/sitar.ps
+	install	-m 644	LICENSE				${DESTDIR}/${DOCDIR}/sitar/LICENSE
+	install -m 644 	proc.txt			${DESTDIR}/${PREFIX}/share/sitar/proc.txt
+	install -m 755 	suse.png			${DESTDIR}/${PREFIX}/share/sitar/suse.png
+
 #
 #  $Log: Makefile,v $
+#  Revision 1.32  2005/01/18 11:21:36  mge
+#  SuSE Linux AG -> SuSE Linux, a Novell Business
+#
 #  Revision 1.31  2004/09/17 14:56:07  mge
 #  added lspci for kernel 2.6 without /proc/pci
 #
@@ -148,64 +207,4 @@
 #  Makefile cleanups, introduced CVS-log into
 #  	CodingStyle Makefile sitar.pl.in sitar.spec
 #
-#
-
-PREFIX=/usr
-DOCDIR=${PREFIX}/share/doc/packages
-PERL=/usr/bin/perl
-RELEASE=0.8.12
-RELDATE=$(shell date +"%Y%m%d")
-
-default	:	sitar.pl sitar.1 sitar.html sitar.ps
-
-tar:		/tmp/sitar-${RELEASE}.tar.bz2
-
-clean:
-	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps pod2htm* *-selections
-
-/tmp/sitar-${RELEASE}.tar.bz2:	clean
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
-
-rpm:	clean
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
-	- (pushd /tmp/ ; rpmbuild -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
-	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
-
-sitar.pl:	sitar.pl.in Makefile
-	${PERL} -p 	-e '$$pre="${PREFIX}";' \
-			-e 's/%%PREFIX%%/$$pre/; '\
-			-e 's/%%RELEASE%%/${RELEASE}/;'\
-			sitar.pl.in > sitar.pl
-	chmod 755 sitar.pl
-	ln -fs sitar.pl support_all.pl
-
-sitar.1:	sitar.pl
-	pod2man --center=" " sitar.pl > sitar.01
-	${PERL} -p	-e 's/.if n .na/.\\\".if n .na/;'\
-			sitar.01 > sitar.1
-	rm sitar.01
-
-sitar.html:	sitar.pl
-	pod2html --infile=sitar.pl --outfile=sitar.html\
-	--title "SITAR - System InformaTion At Runtime"
-
-sitar.ps:	sitar.1
-	groff -man -Tps sitar.1 > sitar.ps
-
-install:	sitar.pl sitar.1 sitar.ps sitar.html
-	install	-d					${DESTDIR}/${PREFIX}/sbin\
-							${DESTDIR}/${PREFIX}/share/sitar\
-							${DESTDIR}/${PREFIX}/share/man/man1\
-							${DESTDIR}/${DOCDIR}/sitar/
-	install -m 700 	sitar.pl			${DESTDIR}/${PREFIX}/sbin/sitar.pl
-	ln -sf /${PREFIX}/sbin/sitar.pl			${DESTDIR}/${PREFIX}/sbin/support_all.pl
-	ln -sf /${PREFIX}/sbin/sitar.pl			${DESTDIR}/${PREFIX}/sbin/sitar
-	install -m 644 	sitar.1				${DESTDIR}/${PREFIX}/share/man/man1/sitar.1
-	gzip						${DESTDIR}/${PREFIX}/share/man/man1/sitar.1
-	ln -sf /${PREFIX}/share/man/man1/sitar.1.gz 	${DESTDIR}/${PREFIX}/share/man/man1/support_all.1.gz
-	install	-m 644	sitar.html			${DESTDIR}/${DOCDIR}/sitar/sitar.html
-	install	-m 644	sitar.ps			${DESTDIR}/${DOCDIR}/sitar/sitar.ps
-	install	-m 644	LICENSE				${DESTDIR}/${DOCDIR}/sitar/LICENSE
-	install -m 644 	proc.txt			${DESTDIR}/${PREFIX}/share/sitar/proc.txt
-	install -m 755 	suse.png			${DESTDIR}/${PREFIX}/share/sitar/suse.png
 

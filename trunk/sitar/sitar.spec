@@ -1,6 +1,6 @@
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2004 SUSE LINUX AG
+#  Copyright (C) 1999-2005 SuSE Linux, a Novell Business
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,18 +18,68 @@
 #
 #  Authors/Contributors:
 #		Matthias G. Eckermann
-#		Stephan Müller
-#		Janto Trappe
-#		Waldemar Brodkorb
-#		Björn Jacke
-#		Bernhard Thoni
-#		Pascal Fuckerieder
-#		Andreas Rother
-#		Uwe Hering
-#		Jan Jensen
-#		Falko Trojahn
+#		Stephan Müller		Janto Trappe
+#		Waldemar Brodkorb	Björn Jacke
+#		Bernhard Thoni		Pascal Fuckerieder
+#		Andreas Rother		Uwe Hering
+#		Jan Jensen		Falko Trojahn
+#
+
+Vendor:		SuSE Linux, a Novell Business
+Name:		sitar
+Version:	0.8.12
+Release:	0
+Summary:	System InformaTion At Runtime
+Source0:	sitar-%{version}.tar.bz2
+Copyright:	GPL
+Group: 		Applications/System
+BuildRoot:	/tmp/root-%{name}/
+BuildArch: 	noarch
+
+Packager:	Matthias G. Eckermann <mge@suse.de>
+
+%description 
+Prepare system information using perl and binary tools,
+reading the /proc filesystem, ...
+Output is in HTML and LaTeX (planned: XML, SQL), 
+can be converted to PS and PDF.
+This program must run as "root".
+Comment: Sitar is an ancient Indian instrument as well.
+Authors:
+--------
+	Matthias Eckermann <mge@suse.de>
+	and contributors
+
+%prep
+%setup
+
+%build
+make
+
+%install
+make DESTDIR=${RPM_BUILD_ROOT} install
+%{?suse_check}
+
+%files
+%doc /usr/share/doc/packages/sitar
+%attr(700, root, root) /usr/sbin/sitar.pl
+%attr(700, root, root) /usr/sbin/sitar
+%attr(700, root, root) /usr/sbin/support_all.pl
+/usr/share/man/man1/sitar.1.gz
+/usr/share/man/man1/support_all.1.gz
+/usr/share/sitar/suse.png
+/usr/share/sitar/proc.txt
+
+%clean
+if [ -n "$RPM_BUILD_ROOT" ] ; then
+   [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+fi
+
 #
 #  $Log: sitar.spec,v $
+#  Revision 1.31  2005/01/18 11:21:36  mge
+#  SuSE Linux AG -> SuSE Linux, a Novell Business
+#
 #  Revision 1.30  2004/09/17 14:56:07  mge
 #  added lspci for kernel 2.6 without /proc/pci
 #
@@ -138,57 +188,4 @@
 #  Makefile cleanups, introduced CVS-log into
 #  	CodingStyle Makefile sitar.pl.in sitar.spec
 #
-
-Vendor:		SUSE LINUX AG, Germany
-#Distribution:	United Linux / SuSE Linux
-Name:		sitar
-Version:	0.8.12
-Release:	0
-Summary:	System InformaTion At Runtime
-Source0:	sitar-%{version}.tar.bz2
-Copyright:	GPL
-Group: 		Applications/System
-BuildRoot:	/tmp/root-%{name}/
-BuildArch: 	noarch
-
-Packager:	Matthias G. Eckermann <mge@suse.de>
-Distribution:   SuSE SLES-9 (i586) Addon
-
-%description 
-Prepare system information using perl and binary tools,
-reading the /proc filesystem, ...
-Output is in HTML and LaTeX (planned: XML, SQL), 
-can be converted to PS and PDF.
-This program must run as "root".
-Comment: Sitar is an ancient Indian instrument as well.
-Authors:
---------
-	Matthias Eckermann <mge@suse.de>,
-	Stephan Mueller, Janto Trappe, Waldemar Brodkorb, Bjoern Jacke,
-	Bernhard Thoni, Pascal Fuckerieder, Andreas Rother, Uwe Hering
-
-%prep
-%setup
-
-%build
-make
-
-%install
-make DESTDIR=${RPM_BUILD_ROOT} install
-%{?suse_check}
-
-%files
-%doc /usr/share/doc/packages/sitar
-%attr(700, root, root) /usr/sbin/sitar.pl
-%attr(700, root, root) /usr/sbin/sitar
-%attr(700, root, root) /usr/sbin/support_all.pl
-/usr/share/man/man1/sitar.1.gz
-/usr/share/man/man1/support_all.1.gz
-/usr/share/sitar/suse.png
-/usr/share/sitar/proc.txt
-
-%clean
-if [ -n "$RPM_BUILD_ROOT" ] ; then
-   [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-fi
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2004 SUSE LINUX AG
+#  Copyright (C) 1999-2005 SuSE Linux, a Novell Business
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,170 +19,11 @@
 #
 #  Authors/Contributors:
 #		Matthias G. Eckermann
-#		Stephan Müller
-#		Janto Trappe
-#		Waldemar Brodkorb
-#		Björn Jacke
-#		Bernhard Thoni
-#		Pascal Fuckerieder
-#		Andreas Rother
-#		Uwe Hering
-#		Jan Jensen
-#		Falko Trojahn
-#
-#  $Log: sitar.pl.in,v $
-#  Revision 1.46  2004/09/17 14:56:07  mge
-#  added lspci for kernel 2.6 without /proc/pci
-#
-#  Revision 1.45  2004/03/22 14:28:24  mge
-#  move fstab to mount & lvm overview
-#
-#  Revision 1.44  2004/03/22 14:24:02  mge
-#  - fixed off by one in directory name
-#  - cleanups
-#  - data from /etc/lvm/ (LVM2)
-#
-#  Revision 1.43  2003/10/22 22:24:33  mge
-#  - sitar-files are now in /tmp/sitar-HOSTNAME-DATE/
-#  - minor fixes
-#
-#  Revision 1.42  2003/08/29 11:42:16  mge
-#  fixes SuSE bug #29632
-#
-#  Revision 1.41  2003/08/08 10:54:28  mge
-#  reorganized and simplified /etc/-parsing / config-file management
-#
-#  Revision 1.40  2003/08/08 08:08:30  mge
-#  Make sitar run from cron (thank to Jan Jensen)
-#
-#  Revision 1.39  2003/08/08 08:05:52  mge
-#  - fixed BUG #561 /tmp/mdstat (but not perfect, still uses tmp-file:-(
-#  - better yast2 selections
-#  - minor corrections
-#
-#  Revision 1.38  2003/03/24 09:55:03  mge
-#  Additions for SLOX, thanks to Uwe Hering (SuSE)
-#
-#  Revision 1.37  2003/01/17 08:39:24  mge
-#  enhanced package list (sort by packager && || distribution)
-#
-#  Revision 1.36  2003/01/10 16:26:18  mge
-#  - (United Linux / SuSE Linux only): split packages by Packager
-#  - minor TeX improvements
-#  - release 0.8.6
-#
-#  Revision 1.35  2002/12/16 10:45:25  mge
-#  minor changes
-#
-#  Revision 1.34  2002/12/10 09:36:57  mge
-#  Release 0.8.4:
-#  	- introduce "--version"
-#  	- use ".tar.bz2" instead of ".tar.gz"
-#  	- make new release on website
-#
-#  Revision 1.33  2002/12/04 23:30:37  mge
-#  Release 0.8.3:
-#  	- fixed si_etc / si_etc_suse function calls
-#  	- minor corrections
-#
-#  Revision 1.32  2002/12/02 17:45:52  mge
-#  0.8.2 (according to new CodingStyle)
-#
-#  Revision 1.31  2002/11/29 08:51:06  mge
-#  correct naming of module parameters
-#
-#  Revision 1.30  2002/11/28 08:07:36  mge
-#  Release 0.8.0:
-#  	- yast2 output
-#  	- /proc/sys/net fixes
-#  	- better TeX output
-#
-#  Revision 1.29  2002/11/28 01:35:16  mge
-#  - Added UnitedLinux finally
-#  - Fixed TeX output
-#  - Make --outfile --format run (did not work properly)
-#  Release 0.7.5
-#
-#  Revision 1.28  2002/11/27 14:20:12  mge
-#  fixed TeX output and other issues.
-#  TeX output needs more work (sideways!)
-#
-#  Revision 1.27  2002/11/27 14:00:25  mge
-#  fixed small patch error / typo
-#
-#  Revision 1.26  2002/11/27 13:58:26  mge
-#  Added patch for RedHat Linux from Andreas Rother <Andreas.Rother@eplus.de>
-#  Changes:
-#  	- don't use "si_lsdev" on RedHat
-#  	- parse alle crontabs (we should make that an option later)
-#  Thanks to him!
-#  Release 0.7.4
-#
-#  Revision 1.25  2002/06/01 23:32:26  waldb
-#  added title to si_conf
-#  make configuration section more usable for debian
-#
-#  Revision 1.24  2002/06/01 21:14:24  waldb
-#  fixed tex output on debian systems
-#  removed restrictions from pod (iptables support is now included)
-#  only shortdescriptions for deb's
-#  commented out selection routine for debs
-#  software raid section only when /proc/mdstat exist
-#  new version in Makefile
-#
-#  Revision 1.23  2002/04/11 14:56:00  mge
-#  use perltidy with "-nbbb" now
-#  changed copyright to -2002
-#
-#  Revision 1.22  2002/04/11 14:43:32  mge
-#  added check for /etc/sysconfig
-#  release 0.7.1
-#
-#  Revision 1.21  2002/03/18 16:11:45  mge
-#  cosmetic changes
-#
-#  Revision 1.20  2002/03/18 16:10:22  mge
-#  Added IPTables patches by Pascal Fuckerieder
-#
-#  Revision 1.19  2002/01/14 15:37:39  mge
-#  Added sitar-0.6.8-sw-raid.v0.1.patch by Bernhard Thoni
-#
-#  Revision 1.18  2001/09/10 21:05:45  mge
-#  - iptables, begin of work
-#
-#  Revision 1.17  2001/09/07 01:13:54  mge
-#  - cosmetic changes
-#
-#  Revision 1.16  2001/09/06 23:48:25  mge
-#  - make $RPM and $DPKG global variables
-#  - make Passwords in /etc/lilo.conf and /etc/pppoed.conf invisible
-#    (Thanks to mlasar@suse.de)
-#
-#  Revision 1.15  2001/09/03 10:30:33  waldb
-#  fixed minor bugs,
-#   - moved $RPM and $DPKG into distribution test
-#   - removed $HWINFO in the code (we want no external
-#     application to get info's about the system
-#
-#  Revision 1.14  2001/08/20 22:26:34  mge
-#  make "support_all.pl" and "sitar.pl" work slightly different:
-#  "sitar.pl" will do everything, as the old "sitar.pl" did, "support_all.pl"
-#  uses the command line parameters.
-#
-#  Revision 1.13  2001/08/20 04:16:39  mge
-#  - manpage cleanups
-#  - changed release num to 0.6.6
-#
-#  Revision 1.12  2001/08/17 11:15:57  mge
-#  more lines for manpage
-#
-#  Revision 1.11  2001/08/15 04:30:51  mge
-#  cosmetic change
-#
-#  Revision 1.10  2001/08/15 03:57:30  mge
-#  Makefile cleanups, introduced CVS-log into
-#  	CodingStyle Makefile sitar.pl.in sitar.spec
-#
+#		Stephan Müller		Janto Trappe
+#		Waldemar Brodkorb	Björn Jacke
+#		Bernhard Thoni		Pascal Fuckerieder
+#		Andreas Rother		Uwe Hering
+#		Jan Jensen		Falko Trojahn
 #
 
 =head1 NAME
@@ -265,13 +106,13 @@ Brodkorb created the Debian port; Björn Jacke helped on several issues;
 Bernhard Thoni introduced the software raid support; Pascal Fuckerieder wrote
 the IPTables/Netfilter code and Andreas Rother submitted a patch for running
 sitar on RedHat Linux. So finally these Linux Systems are supported: SuSE
-Linux, United Linux, Debian, RedHat.
+Linux, Debian, RedHat.
 
 For more information on SITAR, see: http://sitar.berlios.de/
 
 =head1 LICENSE
 
-Copyright (C) 1999-2004 SUSE LINUX AG
+Copyright (C) 1999-2005 SuSE Linux, a Novell Business
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -302,7 +143,7 @@ selected to be played upon. The sitar is also called as satar and sundari.
 
 use Getopt::Long;
 use Fcntl;
-my $COPYRIGHT  = "1999-2004 SUSE LINUX AG";
+my $COPYRIGHT  = "1999-2005 SuSE Linux, a Novell Business";
 my $RELEASE    = "%%RELEASE%%";
 my $PREFIX     = "%%PREFIX%%";
 my $siprt_mode = "";
@@ -2602,4 +2443,163 @@ sub si_run_sitar() {
 		si_print_help();
 	}
 }
+
+#
+#  $Log: sitar.pl.in,v $
+#  Revision 1.47  2005/01/18 11:21:36  mge
+#  SuSE Linux AG -> SuSE Linux, a Novell Business
+#
+#  Revision 1.46  2004/09/17 14:56:07  mge
+#  added lspci for kernel 2.6 without /proc/pci
+#
+#  Revision 1.45  2004/03/22 14:28:24  mge
+#  move fstab to mount & lvm overview
+#
+#  Revision 1.44  2004/03/22 14:24:02  mge
+#  - fixed off by one in directory name
+#  - cleanups
+#  - data from /etc/lvm/ (LVM2)
+#
+#  Revision 1.43  2003/10/22 22:24:33  mge
+#  - sitar-files are now in /tmp/sitar-HOSTNAME-DATE/
+#  - minor fixes
+#
+#  Revision 1.42  2003/08/29 11:42:16  mge
+#  fixes SuSE bug #29632
+#
+#  Revision 1.41  2003/08/08 10:54:28  mge
+#  reorganized and simplified /etc/-parsing / config-file management
+#
+#  Revision 1.40  2003/08/08 08:08:30  mge
+#  Make sitar run from cron (thank to Jan Jensen)
+#
+#  Revision 1.39  2003/08/08 08:05:52  mge
+#  - fixed BUG #561 /tmp/mdstat (but not perfect, still uses tmp-file:-(
+#  - better yast2 selections
+#  - minor corrections
+#
+#  Revision 1.38  2003/03/24 09:55:03  mge
+#  Additions for SLOX, thanks to Uwe Hering (SuSE)
+#
+#  Revision 1.37  2003/01/17 08:39:24  mge
+#  enhanced package list (sort by packager && || distribution)
+#
+#  Revision 1.36  2003/01/10 16:26:18  mge
+#  - (United Linux / SuSE Linux only): split packages by Packager
+#  - minor TeX improvements
+#  - release 0.8.6
+#
+#  Revision 1.35  2002/12/16 10:45:25  mge
+#  minor changes
+#
+#  Revision 1.34  2002/12/10 09:36:57  mge
+#  Release 0.8.4:
+#  	- introduce "--version"
+#  	- use ".tar.bz2" instead of ".tar.gz"
+#  	- make new release on website
+#
+#  Revision 1.33  2002/12/04 23:30:37  mge
+#  Release 0.8.3:
+#  	- fixed si_etc / si_etc_suse function calls
+#  	- minor corrections
+#
+#  Revision 1.32  2002/12/02 17:45:52  mge
+#  0.8.2 (according to new CodingStyle)
+#
+#  Revision 1.31  2002/11/29 08:51:06  mge
+#  correct naming of module parameters
+#
+#  Revision 1.30  2002/11/28 08:07:36  mge
+#  Release 0.8.0:
+#  	- yast2 output
+#  	- /proc/sys/net fixes
+#  	- better TeX output
+#
+#  Revision 1.29  2002/11/28 01:35:16  mge
+#  - Added UnitedLinux finally
+#  - Fixed TeX output
+#  - Make --outfile --format run (did not work properly)
+#  Release 0.7.5
+#
+#  Revision 1.28  2002/11/27 14:20:12  mge
+#  fixed TeX output and other issues.
+#  TeX output needs more work (sideways!)
+#
+#  Revision 1.27  2002/11/27 14:00:25  mge
+#  fixed small patch error / typo
+#
+#  Revision 1.26  2002/11/27 13:58:26  mge
+#  Added patch for RedHat Linux from Andreas Rother <Andreas.Rother@eplus.de>
+#  Changes:
+#  	- don't use "si_lsdev" on RedHat
+#  	- parse alle crontabs (we should make that an option later)
+#  Thanks to him!
+#  Release 0.7.4
+#
+#  Revision 1.25  2002/06/01 23:32:26  waldb
+#  added title to si_conf
+#  make configuration section more usable for debian
+#
+#  Revision 1.24  2002/06/01 21:14:24  waldb
+#  fixed tex output on debian systems
+#  removed restrictions from pod (iptables support is now included)
+#  only shortdescriptions for deb's
+#  commented out selection routine for debs
+#  software raid section only when /proc/mdstat exist
+#  new version in Makefile
+#
+#  Revision 1.23  2002/04/11 14:56:00  mge
+#  use perltidy with "-nbbb" now
+#  changed copyright to -2002
+#
+#  Revision 1.22  2002/04/11 14:43:32  mge
+#  added check for /etc/sysconfig
+#  release 0.7.1
+#
+#  Revision 1.21  2002/03/18 16:11:45  mge
+#  cosmetic changes
+#
+#  Revision 1.20  2002/03/18 16:10:22  mge
+#  Added IPTables patches by Pascal Fuckerieder
+#
+#  Revision 1.19  2002/01/14 15:37:39  mge
+#  Added sitar-0.6.8-sw-raid.v0.1.patch by Bernhard Thoni
+#
+#  Revision 1.18  2001/09/10 21:05:45  mge
+#  - iptables, begin of work
+#
+#  Revision 1.17  2001/09/07 01:13:54  mge
+#  - cosmetic changes
+#
+#  Revision 1.16  2001/09/06 23:48:25  mge
+#  - make $RPM and $DPKG global variables
+#  - make Passwords in /etc/lilo.conf and /etc/pppoed.conf invisible
+#    (Thanks to mlasar@suse.de)
+#
+#  Revision 1.15  2001/09/03 10:30:33  waldb
+#  fixed minor bugs,
+#   - moved $RPM and $DPKG into distribution test
+#   - removed $HWINFO in the code (we want no external
+#     application to get info's about the system
+#
+#  Revision 1.14  2001/08/20 22:26:34  mge
+#  make "support_all.pl" and "sitar.pl" work slightly different:
+#  "sitar.pl" will do everything, as the old "sitar.pl" did, "support_all.pl"
+#  uses the command line parameters.
+#
+#  Revision 1.13  2001/08/20 04:16:39  mge
+#  - manpage cleanups
+#  - changed release num to 0.6.6
+#
+#  Revision 1.12  2001/08/17 11:15:57  mge
+#  more lines for manpage
+#
+#  Revision 1.11  2001/08/15 04:30:51  mge
+#  cosmetic change
+#
+#  Revision 1.10  2001/08/15 03:57:30  mge
+#  Makefile cleanups, introduced CVS-log into
+#  	CodingStyle Makefile sitar.pl.in sitar.spec
+#
+#
 
