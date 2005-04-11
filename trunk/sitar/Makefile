@@ -30,7 +30,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.9.0
+RELEASE=0.9.1
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps

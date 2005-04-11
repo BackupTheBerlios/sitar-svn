@@ -29,7 +29,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.0
+Version:	0.9.1
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -96,6 +96,8 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Mon Apr 11 2005 - mge@suse.de
+- 
 * Mon Mar 21 2005 - mge@suse.de
 - more fixes for Novell #73833:
         * lvm scanning, if /etc/lvm/backup does not exist

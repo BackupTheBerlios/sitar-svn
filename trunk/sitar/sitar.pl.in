@@ -213,28 +213,31 @@ my $outdir       = "";
 # commands
 #
 $ENV{PATH}	= '/sbin:/bin:/usr/bin:/usr/sbin';
-my $CMD_CAT     = `which cat`;
-my $CMD_CHKCONF = `which chkconfig`;
-my $CMD_DF      = `which df`;
-my $CMD_FDISK   = `which fdisk`;
-my $CMD_FIND    = `which find`;
-my $CMD_FILE    = `which file`;
-my $CMD_GREP    = `which grep`;
-my $CMD_GZIP    = `which gzip`;
-my $CMD_HEAD	= `which head`;
-my $CMD_HOSTNAME= `which hostname`;
-my $CMD_IFCONF  = `which ifconfig`;
-my $CMD_IPTABLES= `which iptables`;
-my $CMD_LS	= `which ls`;
-my $CMD_LSPCI   = `which lspci`;
-my $CMD_LSPNP   = `which lspnp`;
-my $CMD_MOUNT   = `which mount`;
-my $CMD_POSTCONF= `which postconf`;
-my $CMD_ROUTE   = `which route`;
-my $CMD_SORT	= `which sort`;
-my $CMD_TUNE2FS = `which tune2fs`;
-my $CMD_UNAME   = `which uname`;
-my $CMD_UNIQ	= `which uniq`;
+open( SAVEERR, ">&STDERR" );
+open( STDERR,  ">/dev/null" );
+chomp( my $CMD_CAT     = `which cat` );
+chomp( my $CMD_CHKCONF = `which chkconfig` );
+chomp( my $CMD_DF      = `which df` );
+chomp( my $CMD_FDISK   = `which fdisk` );
+chomp( my $CMD_FIND    = `which find` );
+chomp( my $CMD_FILE    = `which file` );
+chomp( my $CMD_GREP    = `which grep` );
+chomp( my $CMD_GZIP    = `which gzip` );
+chomp( my $CMD_HEAD	= `which head` );
+chomp( my $CMD_HOSTNAME= `which hostname` );
+chomp( my $CMD_IFCONF  = `which ifconfig` );
+chomp( my $CMD_IPTABLES= `which iptables` );
+chomp( my $CMD_LS	= `which ls` );
+chomp( my $CMD_LSPCI   = `which lspci` );
+chomp( my $CMD_LSPNP   = `which lspnp` );
+chomp( my $CMD_MOUNT   = `which mount` );
+chomp( my $CMD_POSTCONF= `which postconf` );
+chomp( my $CMD_ROUTE   = `which route` );
+chomp( my $CMD_SORT	= `which sort` );
+chomp( my $CMD_TUNE2FS = `which tune2fs` );
+chomp( my $CMD_UNAME   = `which uname` );
+chomp( my $CMD_UNIQ	= `which uniq` );
+open( STDERR, ">&SAVEERR" );
 $ENV{ PATH }    = '';
 #
 # distributions
@@ -916,7 +919,7 @@ sub si_software_raid_details() {
 }
 
 sub si_pnp() {
-	if ( ( -r "$CMD_LSPNP" ) && ( -r "/proc/bus/pnp" ) ) {
+	if ( ( -x "$CMD_LSPNP" ) && ( -r "/proc/bus/pnp" ) ) {
 		open( IN, "$CMD_LSPNP | " );
 		siprtt( "h2", "PNP Devices" );
 		siprtttt( "tabborder", "lll", "PNP Devices", 3 );
@@ -996,7 +999,7 @@ sub si_pci() {
 		}
 		siprt( "endtab" );
 		close( IN );
-	} else {
+	} elsif( -x "$CMD_LSPCI" ) {
 		siprtt( "h2", "PCI Devices" );
 		siprtttt( "tabborder", "lllll", "PCI Devices", 5 );
 		siprt( "tabrow" );
@@ -1912,16 +1915,18 @@ sub si_ipchains () {
 }
 
 sub si_chkconfig () {
-	push @lines, $_;
-	siprtt( "h1", "Automatic Startup (chkconfig -l)" );
-	siprt( "pre" );
-	open( CONFIG, "$CMD_CHKCONF -l |" );
-	while ( <CONFIG> ) {
-		chomp();
-		siprtt( "verb", "$_\n" );
+	if( -x "$CMD_CHKCONF" ) {
+		push @lines, $_;
+		siprtt( "h1", "Automatic Startup (chkconfig -l)" );
+		siprt( "pre" );
+		open( CONFIG, "$CMD_CHKCONF -l |" );
+		while ( <CONFIG> ) {
+			chomp();
+			siprtt( "verb", "$_\n" );
+		}
+		close( CONFIG );
+		siprt( "endpre" );
 	}
-	close( CONFIG );
-	siprt( "endpre" );
 }
 
 sub si_iptables () {
@@ -2284,7 +2289,7 @@ sub si_etc() {
 		}
 	}
 	# Postfix
-	if ( -d "/etc/postfix/" ) {
+	if ( ( -d "/etc/postfix/" ) && (-x "$CMD_POSTCONF" ) ) {
 		siprtt( "h2", "Postfix (postconf -n)" );
 		siprt( "pre" );
 		open( CONFIG, "$CMD_POSTCONF -n |" );
@@ -2395,9 +2400,8 @@ sub si_kernel_config() {
 }
 
 sub si_proc_config() {
-	my $CMD_GZIP;
 	my $comment = "\#";
-	if ( -r "/proc/config.gz" ) {
+	if ( ( -r "/proc/config.gz" ) && ( -x "$CMD_GZIP" ) ) {
 		siprtt( "h1", "Kernel Configuration" );
 		siprt( "multipre" );
 		open( CONFIG, "$CMD_GZIP -dc /proc/config.gz |" );
