@@ -19,8 +19,8 @@
 #
 #  Authors/Contributors:
 #		Matthias G. Eckermann
-#		Stephan Müller		Janto Trappe
-#		Waldemar Brodkorb	Björn Jacke
+#		Stephan MÃ¼ller		Janto Trappe
+#		Waldemar Brodkorb	BjÃ¶rn Jacke
 #		Bernhard Thoni		Pascal Fuckerieder
 #		Andreas Rother		Uwe Hering
 #		Jan Jensen		Falko Trojahn
@@ -143,8 +143,8 @@ A typical file to include the configurations files of the application C<foobar> 
 =head1 AUTHOR
 
 The SITAR project was created by Matthias G. Eckermann <mge@suse.de>; Stephan
-Müller helped with Firewalling and Security issues; Janto Trappe and Waldemar
-Brodkorb created the Debian port; Björn Jacke helped on several issues;
+MÃ¼ller helped with Firewalling and Security issues; Janto Trappe and Waldemar
+Brodkorb created the Debian port; BjÃ¶rn Jacke helped on several issues;
 Bernhard Thoni introduced the software raid support; Pascal Fuckerieder wrote
 the IPTables/Netfilter code and Andreas Rother submitted a patch for running
 sitar on RedHat Linux. So finally these Linux Systems are supported: SuSE
@@ -2643,7 +2643,7 @@ sub si_selection_yast2( ) {
 			print "=Sel: ", $mytype, "-sitar-", $HOSTNAME, " ", $RELEASE, "\n\n";
 			print "=Siz: ", $total{ $mytype }, " ", $total{ $mytype }, "\n\n";
 			print "=Sum: ",    $mytype, " selection of '", $HOSTNAME, "'; by SITAR on ", $now_string, "\n";
-			print "=Sum.de: ", $mytype, " Auswahl für '",  $HOSTNAME, "'; SITAR am ",    $now_string, "\n";
+			print "=Sum.de: ", $mytype, " Auswahl fÃ¼r '",  $HOSTNAME, "'; SITAR am ",    $now_string, "\n";
 			my @alllanguages = qw ( cs el_GR en es fr gl hu it ja lt nl pt pt_BR sl_SI sv tr);
 			foreach $ll ( sort @alllanguages ) {
 				print "=Sum.", $ll, ": SITAR '", $HOSTNAME, "', ", $now_string, "\n";

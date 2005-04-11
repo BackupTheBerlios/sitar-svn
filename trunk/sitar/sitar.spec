@@ -18,8 +18,8 @@
 #
 #  Authors/Contributors:
 #		Matthias G. Eckermann
-#		Stephan Müller		Janto Trappe
-#		Waldemar Brodkorb	Björn Jacke
+#		Stephan MÃ¼ller		Janto Trappe
+#		Waldemar Brodkorb	BjÃ¶rn Jacke
 #		Bernhard Thoni		Pascal Fuckerieder
 #		Andreas Rother		Uwe Hering
 #		Jan Jensen		Falko Trojahn
@@ -246,7 +246,7 @@ fi
 #  - cosmetic changes
 #
 #  Revision 1.9  2001/09/07 00:59:13  mge
-#  - added Björn Jacke to list of authors
+#  - added BjÃ¶rn Jacke to list of authors
 #
 #  Revision 1.8  2001/09/07 00:09:09  mge
 #  - released 0.6.8

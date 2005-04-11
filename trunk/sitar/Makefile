@@ -18,8 +18,8 @@
 #
 #  Authors/Contributors:
 #		Matthias G. Eckermann
-#		Stephan Müller 		Janto Trappe
-#		Waldemar Brodkorb 	Björn Jacke
+#		Stephan MÃ¼ller 		Janto Trappe
+#		Waldemar Brodkorb 	BjÃ¶rn Jacke
 #		Bernhard Thoni 		Pascal Fuckerieder
 #		Andreas Rother 		Uwe Hering
 #		Jan Jensen 		Falko Trojahn
