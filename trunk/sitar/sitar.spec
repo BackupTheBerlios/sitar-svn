@@ -97,7 +97,11 @@ fi
 
 %changelog
 * Mon Apr 11 2005 - mge@suse.de
-- 
+- this is release 0.9.1:
+	* added initial support for EVMS
+	* converted all files to UTF-8
+	* moved all external programs to one block;
+	  enabled PATH-searching for these tools
 * Mon Mar 21 2005 - mge@suse.de
 - more fixes for Novell #73833:
         * lvm scanning, if /etc/lvm/backup does not exist
