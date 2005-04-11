@@ -201,7 +201,6 @@ GetOptions(
 #
 # distribution test
 #
-$ENV{ PATH } = "";
 my $UNITED       = "/etc/UnitedLinux-release";
 my $SUSE         = "/etc/SuSE-release";
 my $SLOX         = "/etc/SLOX-release";
@@ -210,60 +209,88 @@ my $REDHAT       = "/etc/redhat-release";
 my $release      = "";
 my $distribution = "";
 my $outdir       = "";
-my ( $DPKG, $RPM );
+#
+# commands
+#
+$ENV{PATH}	= '/sbin:/bin:/usr/bin:/usr/sbin';
+my $CMD_CAT     = `which cat`;
+my $CMD_CHKCONF = `which chkconfig`;
+my $CMD_DF      = `which df`;
+my $CMD_FDISK   = `which fdisk`;
+my $CMD_FIND    = `which find`;
+my $CMD_FILE    = `which file`;
+my $CMD_GREP    = `which grep`;
+my $CMD_GZIP    = `which gzip`;
+my $CMD_HEAD	= `which head`;
+my $CMD_HOSTNAME= `which hostname`;
+my $CMD_IFCONF  = `which ifconfig`;
+my $CMD_IPTABLES= `which iptables`;
+my $CMD_LS	= `which ls`;
+my $CMD_LSPCI   = `which lspci`;
+my $CMD_LSPNP   = `which lspnp`;
+my $CMD_MOUNT   = `which mount`;
+my $CMD_POSTCONF= `which postconf`;
+my $CMD_ROUTE   = `which route`;
+my $CMD_SORT	= `which sort`;
+my $CMD_TUNE2FS = `which tune2fs`;
+my $CMD_UNAME   = `which uname`;
+my $CMD_UNIQ	= `which uniq`;
+$ENV{ PATH }    = '';
+#
+# distributions
+#
+my ( $DPKG, $CMD_RPM, $CMD_STATUS );
 if ( -e $DEBIAN ) {
-	$release      = `/usr/bin/head -n 1 /etc/debian_version`;
+	$release      = `$CMD_HEAD -n 1 /etc/debian_version`;
 	$distribution = "debian";
-	$DPKG         = "/usr/bin/dpkg";
+	$CMD_STATUS   = "/var/lib/dpkg/status";
+	$CMD_DPKG     = "/usr/bin/dpkg";
 } elsif ( -e $REDHAT ) {
-	$release      = `/usr/bin/head -n 1 /etc/redhat-release`;
+	$release      = `$CMD_HEAD -n 1 /etc/redhat-release`;
 	$distribution = "redhat";
-	$RPM          = "/bin/rpm";
+	$CMD_RPM      = "/bin/rpm";
 } elsif ( ( -e $UNITED ) && ( -e $SUSE ) ) {
-	$release = `/usr/bin/head -n 1 /etc/UnitedLinux-release`;
+	$release      = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
 	chomp $release;
-	$release = join "", $release, ", ", `/usr/bin/head -n 1 /etc/SuSE-release`;
+	$release      = join "", $release, ", ", `$CMD_HEAD -n 1 /etc/SuSE-release`;
 	chomp $release;
 	$distribution = "sles";
-	$RPM          = "/bin/rpm";
+	$CMD_RPM      = "/bin/rpm";
 } elsif ( -e $UNITED ) {
-	$release      = `/usr/bin/head -n 1 /etc/UnitedLinux-release`;
+	$release      = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
 	$distribution = "unitedlinux";
-	$RPM          = "/bin/rpm";
+	$CMD_RPM      = "/bin/rpm";
 } elsif ( -e $SLOX ) {
-	$release      = `/usr/bin/head -n 1 /etc/SLOX-release`;
+	$release      = `$CMD_HEAD -n 1 /etc/SLOX-release`;
 	$distribution = "sles";
-	$RPM          = "/bin/rpm";
+	$CMD_RPM      = "/bin/rpm";
 } elsif ( -e $SUSE ) {
-	$release      = `/usr/bin/head -n 1 /etc/SuSE-release`;
+	$release      = `$CMD_HEAD -n 1 /etc/SuSE-release`;
 	$distribution = "suse";
-	$RPM          = "/bin/rpm";
+	$CMD_RPM      = "/bin/rpm";
 } else {
 	$distribution = "unknown";
 	print "\n distribution not supported!!\n\n";
 }
 chomp $release;
 #
-my $ULPACK_RAW_NAME    = "http://www.unitedlinux.com/feedback";
-my $ULPACK_NICE_NAME   = "United Linux";
-my $SUSEPACK_RAW_NAME  = "http://www.suse.de/feedback";
-my $SUSEPACK_NICE_NAME = "SuSE Linux";
+my $ULPACK_RAW_NAME   = "http://www.unitedlinux.com/feedback";
+my $ULPACK_NICE_NAME  = "United Linux";
+my $SUSEPACK_RAW_NAME = "http://www.suse.de/feedback";
+my $SUSEPACK_NICE_NAME= "SuSE Linux";
 #
 # global vars
 #
-my $LS      = "/bin/ls";
-my $SORTPRG = "/usr/bin/sort";
-my $UNIQPRG = "/usr/bin/uniq";
-my $STATUS  = "/var/lib/dpkg/status";
-chomp( my $HOSTNAME = `/bin/hostname -f` );
-my $UNAME = `/bin/uname -a`;
-chomp $UNAME;
-my $UNAMER = `/bin/uname -r`;
-chomp $UNAMER;
-my $now_string                = localtime();
-my %proc_h                    = ();
-my $machinetype               = `/bin/uname -m`;
-my $config_dir                = "/var/lib/support";
+my $now_string        = localtime();
+my %proc_h            = ();
+my $config_dir        = "/var/lib/support";
+chomp( my $HOSTNAME = `$CMD_HOSTNAME -f` );
+chomp( my $UNAME = `$CMD_UNAME -a` );
+chomp( my $UNAMER = `$CMD_UNAME -r` );
+chomp( my $UNAMEM = `$CMD_UNAME -m` );
+#
+# AppArmor/SubDomain
+#
 my $apparmor_verbose_name     = "AppArmor (by Immunix)";
 my $apparmor_kernel_path      = "/subdomain";
 my $apparmor_config_path      = "/etc/logprof.conf";
@@ -633,8 +660,7 @@ sub si_cpuinfo() {
 	siprtt( "h1", "CPU" );
 	siprtttt( "tabborder", "ll", "CPU", 2 );
 	open( IN, "/proc/cpuinfo" );
-	chomp( $machinetype );
-	if ( $machinetype eq "alpha" ) {
+	if ( $UNAMEM eq "alpha" ) {
 		while ( <IN> ) {
 			my ( $proc, $value ) = split /:/;
 			chop( $proc );
@@ -745,9 +771,9 @@ sub si_general_sys() {
 sub si_proc_kernel() {
 	siprtt( "h1", "Kernel" );
 	siprtttt( "tabborder", "ll", "Kernel", 2 );
-	for $NN ( sort `/usr/bin/find /proc/sys/kernel/ -type f` ) {
+	for $NN ( sort `$CMD_FIND /proc/sys/kernel/ -type f` ) {
 		chomp $NN;
-		$value = `/bin/cat $NN`;
+		$value = `$CMD_CAT $NN`;
 		if ( $value ne "" ) {
 			my $MM = $NN;
 			$MM =~ s/\/proc\/sys\/kernel\///;
@@ -890,8 +916,8 @@ sub si_software_raid_details() {
 }
 
 sub si_pnp() {
-	if ( ( -r "/sbin/lspnp" ) && ( -r "/proc/bus/pnp" ) ) {
-		open( IN, "/sbin/lspnp | " );
+	if ( ( -r "$CMD_LSPNP" ) && ( -r "/proc/bus/pnp" ) ) {
+		open( IN, "$CMD_LSPNP | " );
 		siprtt( "h2", "PNP Devices" );
 		siprtttt( "tabborder", "lll", "PNP Devices", 3 );
 		siprt( "tabrow" );
@@ -981,7 +1007,7 @@ sub si_pci() {
 		my %lspcidevices_h = {};
 		my $MyDevice       = "";
 		my $takenew        = 1;
-		open( LSPCI, "/sbin/lspci -vm | " );
+		open( LSPCI, "$CMD_LSPCI -vm | " );
 		while ( <LSPCI> ) {
 			if ( $_ eq "\n" ) {
 				$takenew = 1;
@@ -1117,17 +1143,17 @@ sub si_ide() {
 			for $abc ( "a" .. "d" ) {
 				if ( -r "/proc/ide/hd$abc" ) {
 					$hddev = "/dev/hd$abc";
-					chomp( $media  = `/bin/cat /proc/ide/hd${abc}/media` );
-					chomp( $driver = `/bin/cat /proc/ide/hd${abc}/driver` );
-					chomp( $model  = `/bin/cat /proc/ide/hd${abc}/model` );
+					chomp( $media  = `$CMD_CAT /proc/ide/hd${abc}/media` );
+					chomp( $driver = `$CMD_CAT /proc/ide/hd${abc}/driver` );
+					chomp( $model  = `$CMD_CAT /proc/ide/hd${abc}/model` );
 					siprt( "tabrow" );
 					siprtt( "cell", "/dev/hd$abc" );
 					siprtt( "cell", $media );
 					siprtt( "cell", $model );
 					siprtt( "cell", $driver );
 					if ( $media eq "disk" ) {
-						# $capa   = `/bin/cat /proc/ide/hd${abc}/capacity`;
-						# $cache  = `/bin/cat /proc/ide/hd${abc}/cache`;
+						# $capa   = `$CMD_CAT /proc/ide/hd${abc}/capacity`;
+						# $cache  = `$CMD_CAT /proc/ide/hd${abc}/cache`;
 						open( GEO, "/proc/ide/hd${abc}/geometry " );
 						while ( <GEO> ) {
 							if ( m/^logical/g ) {
@@ -1422,7 +1448,7 @@ sub si_scsi() {
 sub si_df() {
 	my %rule    = ();
 	my $isbegin = 1;
-	open( DF, "/bin/df |" );
+	open( DF, "$CMD_DF |" );
 	siprtt( "h1", "Filesystem Disk Space Usage" );
 	siprtttt( "tabborder", "llllllll", "Filesystem Disk Space Usage", 8 );
 	siprt( "tabrow" );
@@ -1461,7 +1487,7 @@ sub si_mount() {
 	%fend      = ();
 	%mountopts = ();
 	@sarray    = ();
-	open( MOUNT, "/bin/mount |" );
+	open( MOUNT, "$CMD_MOUNT |" );
 	while ( <MOUNT> ) {
 		if ( m/^\/dev/g ) {
 			@params                    = split /\s+/;
@@ -1471,7 +1497,7 @@ sub si_mount() {
 		}
 	}
 	close( MOUNT );
-	open( FDISK, "/sbin/fdisk -l |" );
+	open( FDISK, "$CMD_fdisk -l |" );
 	while ( <FDISK> ) {
 		s/\*//gs;
 		if ( m/^\/dev/g ) {
@@ -1490,7 +1516,7 @@ sub si_mount() {
 		}
 	}
 	close( FDISK );
-	open( DFK, "/bin/df -PPk |" );
+	open( DFK, "$CMD_DF -PPk |" );
 	while ( <DFK> ) {
 		if ( m/^\/dev/g ) {
 			@dfkparams = split /\s+/, $_, 6;
@@ -1553,7 +1579,7 @@ sub si_mount() {
 	open( SAVEERR, ">&STDERR" );
 	open( STDERR,  ">/dev/null" );
 	for $tt ( sort @sarray ) {
-		open( TUNE, "/sbin/tune2fs -l $tt |" );
+		open( TUNE, "$CMD_TUNEFS -l $tt |" );
 		while ( <TUNE> ) {
 			if ( m/^Reserved block count:\s*(\w+)\s*$/g ) {
 				$resblocks{ $tt } = $1;
@@ -1619,7 +1645,7 @@ sub si_mount() {
 	si_conf( "/etc/lvm/lvm.conf", "/etc/lvm/lvm.conf", "\#" );
 	si_conf( "/etc/lvm/.cache",   "/etc/lvm/.cache",   "\#" );
 	if( -d "/etc/lvm/backup" ) {
-		for $NN ( sort `/usr/bin/find /etc/lvm/backup/ -type f` ) {
+		for $NN ( sort `$CMD_FIND /etc/lvm/backup/ -type f` ) {
 			chomp $NN;
 			si_conf( $NN, $NN, "\#" );
 		}
@@ -1629,7 +1655,7 @@ sub si_mount() {
 sub si_ifconfig() {
 	my %rule    = ();
 	my $isbegin = 1;
-	open( IFCONFIG, "/sbin/ifconfig -v |" );
+	open( IFCONFIG, "$CMD_IFCONF -v |" );
 	siprtt( "h1", "Networking Interfaces" );
 	siprt( "pre" );
 	siprtt( "verb", "skipping IPv6 Options" );
@@ -1678,7 +1704,7 @@ sub si_ifconfig() {
 sub si_route() {
 	my %rule    = ();
 	my $isbegin = 1;
-	open( ROUTE, "/sbin/route -n |" );
+	open( ROUTE, "$CMD_ROUTE -n |" );
 	siprtt( "h1", "Routing" );
 	siprtttt( "tabborder", "llllllll", "Routing", 8 );
 	siprt( "tabrow" );
@@ -1733,7 +1759,7 @@ sub si_route() {
 					close( CRONTAB );
 				}
 				if ( -r "/var/spool/cron" ) {
-					for $NN ( `/usr/bin/find /var/spool/cron -type f` ) {
+					for $NN ( `$CMD_FIND /var/spool/cron -type f` ) {
 						chomp $NN;
 						my %rule    = ();
 						my $isbegin = 1;
@@ -1889,7 +1915,7 @@ sub si_chkconfig () {
 	push @lines, $_;
 	siprtt( "h1", "Automatic Startup (chkconfig -l)" );
 	siprt( "pre" );
-	open( CONFIG, "/sbin/chkconfig -l |" );
+	open( CONFIG, "$CMD_CHKCONF -l |" );
 	while ( <CONFIG> ) {
 		chomp();
 		siprtt( "verb", "$_\n" );
@@ -1905,7 +1931,7 @@ sub si_iptables () {
 		chomp();
 		siprtt( "h2", "Table $_" );
 		siprt( "pre" );
-		open( CONFIG, "/usr/sbin/iptables -v -L -n -t $_ |" );
+		open( CONFIG, "$CMD_IPTABLES -v -L -n -t $_ |" );
 		while ( <CONFIG> ) {
 			chomp();
 			siprtt( "verb", "$_\n" );
@@ -2074,9 +2100,9 @@ sub si_proc_sys_net () {
 				siprtttt( "tabborder", "llp{.5\\textwidth}", "/proc/sys/net/$NET", 3 );
 				open( SAVEERR, ">&STDERR" );
 				open( STDERR,  ">/dev/null" );
-				for $NN ( sort `/usr/bin/find /proc/sys/net/$NET/ -type f` ) {
+				for $NN ( sort `$CMD_FIND /proc/sys/net/$NET/ -type f` ) {
 					chomp $NN;
-					$value = `/bin/cat $NN`;
+					$value = `$CMD_CAT $NN`;
 					if ( $value ne "" ) {
 						my $MM = $NN;
 						$MM =~ s/\/proc\/sys\/net\/$NET\///;
@@ -2104,9 +2130,9 @@ sub si_immunix_apparmor () {
 		siprtttt( "tabborder", "lll", "Configuration", 3 );
 		open( SAVEERR, ">&STDERR" );
 		open( STDERR,  ">/dev/null" );
-		for $NN ( sort `/usr/bin/find $apparmor_kernel_path/ -type f` ) {
+		for $NN ( sort `$CMD_FIND $apparmor_kernel_path/ -type f` ) {
 			chomp $NN;
-			$value = `/bin/cat $NN`;
+			$value = `$CMD_CAT $NN`;
 			if ( $value ne "" ) {
 				my $MM = $NN;
 				$MM =~ s/$apparmor_kernel_path\///;
@@ -2142,13 +2168,13 @@ sub si_immunix_apparmor () {
 			si_conf( $apparmor_config_path, $apparmor_config_path, "\#" );
 		}
 		if ( -d "$apparmor_config_directory" ) {
-			for $NN ( `/usr/bin/find $apparmor_config_directory -type f` ) {
+			for $NN ( `$CMD_FIND $apparmor_config_directory -type f` ) {
 				chomp $NN;
 				si_conf( $NN, $NN, "\#" );
 			}
 		}
 		siprtt( "h2", "Profiles" );
-		for $NN ( `/usr/bin/find $apparmor_profiles_path -type f` ) {
+		for $NN ( `$CMD_FIND $apparmor_profiles_path -type f` ) {
 			chomp $NN;
 			si_conf( $NN, $NN, "" );
 		}
@@ -2261,7 +2287,7 @@ sub si_etc() {
 	if ( -d "/etc/postfix/" ) {
 		siprtt( "h2", "Postfix (postconf -n)" );
 		siprt( "pre" );
-		open( CONFIG, "/usr/sbin/postconf -n |" );
+		open( CONFIG, "$CMD_POSTCONF -n |" );
 		while ( <CONFIG> ) {
 			chomp();
 			siprtt( "verb", "$_\n" );
@@ -2274,7 +2300,7 @@ sub si_etc() {
 	# some more services/programs
 	#
 	if ( -d $config_dir ) {
-		for $NN ( `/usr/bin/find $config_dir -iname "*.include" -type f` ) {
+		for $NN ( `$CMD_FIND $config_dir -iname "*.include" -type f` ) {
 			chomp $NN;
 			%myfiles = ();
 			do "$NN";
@@ -2309,9 +2335,9 @@ sub si_etc_redhat() {
 	# Sysconfig
 	if ( -r "/etc/sysconfig" ) {
 		siprtt( "h2", "Sysconfig" );
-		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
+		for $NN ( `$CMD_FIND /etc/sysconfig -type f` ) {
 			chomp $NN;
-			if ( `/usr/bin/file -b $NN | /bin/grep -i -e text` ) {
+			if ( `$CMD_FILE -b $NN | $CMD_GREP -i -e text` ) {
 				si_conf( $NN, $NN, "\#" );
 			}
 		}
@@ -2321,9 +2347,9 @@ sub si_etc_redhat() {
 sub si_etc_united() {
 	if ( -r "/etc/sysconfig" ) {
 		siprtt( "h2", "Sysconfig" );
-		for $NN ( `/usr/bin/find /etc/sysconfig -type f` ) {
+		for $NN ( `$CMD_FIND /etc/sysconfig -type f` ) {
 			chomp $NN;
-			if ( `/usr/bin/file -b $NN | /bin/grep -i -e text | /bin/grep -i -v "shell script"` ) {
+			if ( `$CMD_FILE -b $NN | $CMD_GREP -i -e text | $CMD_GREP -i -v "shell script"` ) {
 				si_conf( $NN, $NN, "\#" );
 			}
 		}
@@ -2331,7 +2357,7 @@ sub si_etc_united() {
 	# SuSE proxy suite
 	if ( -r "/etc/proxy-suite" ) {
 		siprtt( "h2", "SuSE Proxy Suite" );
-		for $NN ( `/usr/bin/find /etc/proxy-suite -name "*.conf"` ) {
+		for $NN ( `$CMD_FIND /etc/proxy-suite -name "*.conf"` ) {
 			chomp $NN;
 			si_conf( $NN, $NN, "\#" );
 		}
@@ -2344,7 +2370,7 @@ sub si_etc_suse() {
 		siprtt( "h2", "/etc/rc.config*" );
 		si_conf( "/etc/rc.config", "/etc/rc.config", "\#" );
 		if ( -r "/etc/rc.config.d" ) {
-			for $NN ( `/usr/bin/find /etc/rc.config.d -name "*.config"` ) {
+			for $NN ( `$CMD_FIND /etc/rc.config.d -name "*.config"` ) {
 				chomp $NN;
 				si_conf( $NN, $NN, "\#" );
 			}
@@ -2369,17 +2395,12 @@ sub si_kernel_config() {
 }
 
 sub si_proc_config() {
-	my $GZIP;
+	my $CMD_GZIP;
 	my $comment = "\#";
 	if ( -r "/proc/config.gz" ) {
-		if ( -r "/bin/gzip" ) {
-			$GZIP = "/bin/gzip";
-		} else {
-			$GZIP = "/usr/bin/gzip";
-		}
 		siprtt( "h1", "Kernel Configuration" );
 		siprt( "multipre" );
-		open( CONFIG, "$GZIP -dc /proc/config.gz |" );
+		open( CONFIG, "$CMD_GZIP -dc /proc/config.gz |" );
 		while ( <CONFIG> ) {
 			chomp();
 			if ( !m/^($comment)|^$/ ) {
@@ -2405,7 +2426,7 @@ sub si_installed_deb() {
 	my $num   = 0;
 	my @debs;
 	my $mark = "--sitar-mark-$now_string--";
-	sysopen( STATUS, "$STATUS", O_RDONLY ) || die "can't open '$STATUS'";
+	sysopen( STATUS, "$CMD_STATUS", O_RDONLY ) || die "can't open '$CMD_STATUS'";
 	$pos[ 0 ] = 0;
 	while ( <STATUS> ) { $pos[ $#pos + 1 ] = tell if /^$/; }
 	for ( $i = 0 ; $i < $#pos ; $i++ ) {
@@ -2443,11 +2464,11 @@ sub si_installed_sles() {
 	my $total = 0;
 	my $num   = 0;
 	my @packagers;
-	open( PACKS, "$RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $SORTPRG | $UNIQPRG |" );
+	open( PACKS, "$CMD_RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $CMD_SORT | $CMD_UNIQ |" );
 	while ( <PACKS> ) { push @packagers, $_; }
 	close( PACKS );
 	my @rpms;
-	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::a\n' |" );
+	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::a\n' |" );
 	while ( <RPMS> ) { push @rpms, $_; }
 	close( RPMS );
 	for $pack ( sort @packagers ) {
@@ -2526,7 +2547,7 @@ sub si_installed_rpm() {
 	my $total = 0;
 	my $num   = 0;
 	my @rpms;
-	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{VERSION}::%{SIZE}::%{SUMMARY}\n' |" );
+	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}::%{SIZE}::%{SUMMARY}\n' |" );
 	while ( <RPMS> ) { push @rpms, $_; }
 	close( RPMS );
 	for $rpm ( sort @rpms ) {
@@ -2553,7 +2574,7 @@ sub si_installed_rpm() {
 sub si_selection_deb() {
 	my $deb_sel = "sitar-$HOSTNAME-deb-selections";
 	sysopen( DEBSEL, "$deb_sel", O_CREAT | O_EXCL | O_WRONLY ) || die "can't create '$deb_sel'!";
-	open( IN, "$DPKG --get-selections |" );
+	open( IN, "$CMD_DPKG --get-selections |" );
 	while ( <IN> ) {
 		print DEBSEL $_;
 	}
@@ -2562,7 +2583,7 @@ sub si_selection_deb() {
 }
 
 sub si_selection_rpm() {
-	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{SIZE}\n' |" );
+	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{SIZE}\n' |" );
 	my $total = 0;
 	my $num   = 0;
 	my @rpms  = ();
@@ -2584,7 +2605,7 @@ sub si_selection_yast2( ) {
 	my %rpms = ( ul => (), sles => (), addon => (), suse => () );
 	my %ords = ( ul => 1, sles => 2, addon => 4, suse => 3 );
 	my @alltypes = qw ( addon sles suse ul );
-	open( RPMS, "$RPM -qa --queryformat '%{NAME}::%{SIZE}::%{PACKAGER}::%{DISTRIBUTION}\n' |" );
+	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{SIZE}::%{PACKAGER}::%{DISTRIBUTION}\n' |" );
 	while ( <RPMS> ) {
 		my ( $name, $size, $mypack, $distri ) = split /::/;
 		chomp $mypack;
