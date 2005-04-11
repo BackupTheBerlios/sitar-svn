@@ -74,7 +74,6 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 make DESTDIR=${RPM_BUILD_ROOT} install
 rm -rf $RPM_BUILD_ROOT/usr/share/doc/sitar
-./cvs2rpmlog.pl < sitar.pl.in  > sitar.changes
 %{?suse_check}
 
 %files
