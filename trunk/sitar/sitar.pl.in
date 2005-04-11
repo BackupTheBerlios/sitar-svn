@@ -212,33 +212,33 @@ my $outdir       = "";
 #
 # commands
 #
-$ENV{PATH}	= '/sbin:/bin:/usr/bin:/usr/sbin';
+$ENV{ PATH } = '/sbin:/bin:/usr/bin:/usr/sbin';
 open( SAVEERR, ">&STDERR" );
 open( STDERR,  ">/dev/null" );
-chomp( my $CMD_CAT     = `which cat` );
-chomp( my $CMD_CHKCONF = `which chkconfig` );
-chomp( my $CMD_DF      = `which df` );
-chomp( my $CMD_FDISK   = `which fdisk` );
-chomp( my $CMD_FIND    = `which find` );
-chomp( my $CMD_FILE    = `which file` );
-chomp( my $CMD_GREP    = `which grep` );
-chomp( my $CMD_GZIP    = `which gzip` );
-chomp( my $CMD_HEAD	= `which head` );
-chomp( my $CMD_HOSTNAME= `which hostname` );
-chomp( my $CMD_IFCONF  = `which ifconfig` );
-chomp( my $CMD_IPTABLES= `which iptables` );
-chomp( my $CMD_LS	= `which ls` );
-chomp( my $CMD_LSPCI   = `which lspci` );
-chomp( my $CMD_LSPNP   = `which lspnp` );
-chomp( my $CMD_MOUNT   = `which mount` );
-chomp( my $CMD_POSTCONF= `which postconf` );
-chomp( my $CMD_ROUTE   = `which route` );
-chomp( my $CMD_SORT	= `which sort` );
-chomp( my $CMD_TUNE2FS = `which tune2fs` );
-chomp( my $CMD_UNAME   = `which uname` );
-chomp( my $CMD_UNIQ	= `which uniq` );
+chomp( my $CMD_CAT      = `which cat` );
+chomp( my $CMD_CHKCONF  = `which chkconfig` );
+chomp( my $CMD_DF       = `which df` );
+chomp( my $CMD_FDISK    = `which fdisk` );
+chomp( my $CMD_FIND     = `which find` );
+chomp( my $CMD_FILE     = `which file` );
+chomp( my $CMD_GREP     = `which grep` );
+chomp( my $CMD_GZIP     = `which gzip` );
+chomp( my $CMD_HEAD     = `which head` );
+chomp( my $CMD_HOSTNAME = `which hostname` );
+chomp( my $CMD_IFCONF   = `which ifconfig` );
+chomp( my $CMD_IPTABLES = `which iptables` );
+chomp( my $CMD_LS       = `which ls` );
+chomp( my $CMD_LSPCI    = `which lspci` );
+chomp( my $CMD_LSPNP    = `which lspnp` );
+chomp( my $CMD_MOUNT    = `which mount` );
+chomp( my $CMD_POSTCONF = `which postconf` );
+chomp( my $CMD_ROUTE    = `which route` );
+chomp( my $CMD_SORT     = `which sort` );
+chomp( my $CMD_TUNE2FS  = `which tune2fs` );
+chomp( my $CMD_UNAME    = `which uname` );
+chomp( my $CMD_UNIQ     = `which uniq` );
 open( STDERR, ">&SAVEERR" );
-$ENV{ PATH }    = '';
+$ENV{ PATH } = '';
 #
 # distributions
 #
@@ -253,9 +253,9 @@ if ( -e $DEBIAN ) {
 	$distribution = "redhat";
 	$CMD_RPM      = "/bin/rpm";
 } elsif ( ( -e $UNITED ) && ( -e $SUSE ) ) {
-	$release      = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
+	$release = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
 	chomp $release;
-	$release      = join "", $release, ", ", `$CMD_HEAD -n 1 /etc/SuSE-release`;
+	$release = join "", $release, ", ", `$CMD_HEAD -n 1 /etc/SuSE-release`;
 	chomp $release;
 	$distribution = "sles";
 	$CMD_RPM      = "/bin/rpm";
@@ -277,20 +277,20 @@ if ( -e $DEBIAN ) {
 }
 chomp $release;
 #
-my $ULPACK_RAW_NAME   = "http://www.unitedlinux.com/feedback";
-my $ULPACK_NICE_NAME  = "United Linux";
-my $SUSEPACK_RAW_NAME = "http://www.suse.de/feedback";
-my $SUSEPACK_NICE_NAME= "SuSE Linux";
+my $ULPACK_RAW_NAME    = "http://www.unitedlinux.com/feedback";
+my $ULPACK_NICE_NAME   = "United Linux";
+my $SUSEPACK_RAW_NAME  = "http://www.suse.de/feedback";
+my $SUSEPACK_NICE_NAME = "SuSE Linux";
 #
 # global vars
 #
-my $now_string        = localtime();
-my %proc_h            = ();
-my $config_dir        = "/var/lib/support";
+my $now_string = localtime();
+my %proc_h     = ();
+my $config_dir = "/var/lib/support";
 chomp( my $HOSTNAME = `$CMD_HOSTNAME -f` );
-chomp( my $UNAME = `$CMD_UNAME -a` );
-chomp( my $UNAMER = `$CMD_UNAME -r` );
-chomp( my $UNAMEM = `$CMD_UNAME -m` );
+chomp( my $UNAME    = `$CMD_UNAME -a` );
+chomp( my $UNAMER   = `$CMD_UNAME -r` );
+chomp( my $UNAMEM   = `$CMD_UNAME -m` );
 #
 # AppArmor/SubDomain
 #
@@ -876,7 +876,7 @@ sub si_software_raid_details() {
 					}
 				}
 			}
-		} elsif ( ( -r $MDSTAT ) && ( $UNAMER =~ m/^2\..*/ ) ) {
+			} elsif ( ( -r $MDSTAT ) && ( $UNAMER =~ m/^2\..*/ ) ) {
 			#CODE for kernel-2.2 software-raid
 			while ( <IN1> ) {
 				$counter1++;
@@ -999,7 +999,7 @@ sub si_pci() {
 		}
 		siprt( "endtab" );
 		close( IN );
-	} elsif( -x "$CMD_LSPCI" ) {
+	} elsif ( -x "$CMD_LSPCI" ) {
 		siprtt( "h2", "PCI Devices" );
 		siprtttt( "tabborder", "lllll", "PCI Devices", 5 );
 		siprt( "tabrow" );
@@ -1647,7 +1647,7 @@ sub si_mount() {
 	si_conf( "/etc/fstab",        "/etc/fstab",        "\#" );
 	si_conf( "/etc/lvm/lvm.conf", "/etc/lvm/lvm.conf", "\#" );
 	si_conf( "/etc/lvm/.cache",   "/etc/lvm/.cache",   "\#" );
-	if( -d "/etc/lvm/backup" ) {
+	if ( -d "/etc/lvm/backup" ) {
 		for $NN ( sort `$CMD_FIND /etc/lvm/backup/ -type f` ) {
 			chomp $NN;
 			si_conf( $NN, $NN, "\#" );
@@ -1915,7 +1915,7 @@ sub si_ipchains () {
 }
 
 sub si_chkconfig () {
-	if( -x "$CMD_CHKCONF" ) {
+	if ( -x "$CMD_CHKCONF" ) {
 		push @lines, $_;
 		siprtt( "h1", "Automatic Startup (chkconfig -l)" );
 		siprt( "pre" );
@@ -2289,7 +2289,7 @@ sub si_etc() {
 		}
 	}
 	# Postfix
-	if ( ( -d "/etc/postfix/" ) && (-x "$CMD_POSTCONF" ) ) {
+	if ( ( -d "/etc/postfix/" ) && ( -x "$CMD_POSTCONF" ) ) {
 		siprtt( "h2", "Postfix (postconf -n)" );
 		siprt( "pre" );
 		open( CONFIG, "$CMD_POSTCONF -n |" );
@@ -2647,7 +2647,7 @@ sub si_selection_yast2( ) {
 			print "=Sel: ", $mytype, "-sitar-", $HOSTNAME, " ", $RELEASE, "\n\n";
 			print "=Siz: ", $total{ $mytype }, " ", $total{ $mytype }, "\n\n";
 			print "=Sum: ",    $mytype, " selection of '", $HOSTNAME, "'; by SITAR on ", $now_string, "\n";
-			print "=Sum.de: ", $mytype, " Auswahl für '",  $HOSTNAME, "'; SITAR am ",    $now_string, "\n";
+			print "=Sum.de: ", $mytype, " Auswahl für '", $HOSTNAME, "'; SITAR am ",    $now_string, "\n";
 			my @alllanguages = qw ( cs el_GR en es fr gl hu it ja lt nl pt pt_BR sl_SI sv tr);
 			foreach $ll ( sort @alllanguages ) {
 				print "=Sum.", $ll, ": SITAR '", $HOSTNAME, "', ", $now_string, "\n";
