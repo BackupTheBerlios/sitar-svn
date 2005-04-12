@@ -25,7 +25,8 @@
 #		Andreas Rother		Uwe Hering
 #		Jan Jensen		Falko Trojahn
 #		Stephan Martin		Holger Dopp
-#		Seth Arnold
+#		Seth Arnold		Manfred Hollstein
+#		Stefan Werden
 #
 
 =head1 NAME
@@ -34,7 +35,7 @@ SITAR - System InformaTion At Runtime
 
 =head1 SYNOPSIS
 
-sitar|sitar.pl  B<--format>=I<format> B<--outfile>=I<file> B<--help> B<--version>
+sitar|sitar.pl B<--check-consistency> B<--format>=I<format> B<--outfile>=I<file|dir> B<--help> B<--version>
 
 Available I<format>s: html, tex, sdocbook, yast1, yast2
 
@@ -52,12 +53,11 @@ There are three files/links available:
 
 If called without B<--outfile> and/or without B<--format>, all available output formats are produced below /tmp/sitar-$hostname-$date. 
 
-If called with B<--format> and B<--outfile> exactly this is produced.
+If called with B<--format> and B<--outfile> exactly this is produced.  Please note, that the format B<yast2> needs a directory given with the parameter B<--outfile>!
 
 =item support_all.pl
 
-must always be called with both options: B<--format> B<--outfile>, but does nothing,
-if called without any options.
+must always be called with both options: B<--format> B<--outfile>, but does nothing, if called without any options.
 
 =back
 
@@ -73,6 +73,14 @@ Prints a short summary of options.
 
 Prints the sitar version
 
+=item B<--check-consistency>
+
+This option checks the consistency of configurations-files as declared in the RPMs, by invoking I<rpm -Vca>. It produces a file I</var/lib/support/Configuration_Consistency.include>, which is preserved between different sitar-runs.  The list contains all names of configuration files, which are tagged as configuration files within the RPMs and were changed compared to the release shipped within the RPMs.  
+
+The following standard sitar-run includes the file I</var/lib/support/Configuration_Consistency.include>, as described below (section FILES) and prints out the full content of the changed files.  At the moment, it is neither possible nor intended, to print only the differences to the I<shipped> status.
+
+Please note, that this really might need a long time (from 5-20 minutes).
+
 =item B<--format>=I<format>
 
 Tell SITAR, which output format to use. At the moment four formats are supported:
@@ -87,25 +95,29 @@ as an alias, also B<latex> can be used.
 
 =item sdocbook
 
-produces simplified docbook-xml; the format is not named B<xml>, because there are several (in theory:an arbitrary number) of xml flavours available.
+produces simplified docbook-xml; the format is not named B<xml>, because there are several (in theory: an arbitrary number) of xml flavours available.
 
 =item yast1
 
 =item yast2
 
+Please note, that this format needs a directory given with the parameter B<--outfile>!
+
 =back
 
-=item B<--outfile>=I<file> 
+=item B<--outfile>=I<file|dir> 
 
-All formatted output will be stored in the file given here.
-Please don't forget to give the right extension here:
-C<.html> for HTML, C<.tex> for TeX or LaTeX, C<.sdocbook.xml> for simplified docbook-xml, C<.sel> for YaST-Selection-files.
+All formatted output will be stored in the file given here.  Please don't forget to give the right extension here: C<.html> for HTML, C<.tex> for TeX or LaTeX, C<.sdocbook.xml> for simplified docbook-xml, C<.sel> for YaST-Selection-files.
+
+Please note, that the format B<yast2> needs a directory given with this parameter!
 
 =back
 
 =head1 FILES
 
 From a tool called C<PaDS> by Thorsten Wandersmann sitar inherited the ability, to extend the list of configuration files. To achieve that, just put a perl-snippet in the directory C</var/lib/support/>; this snippet B<must> have the extension C<.include> and may include only one perl-statement: an array-declaration for the array C<@files>, that contains the file-names with full path, see EXAMPLES below.
+
+See also B<--check-consistency> above.
 
 =head1 ERRORS
 
@@ -116,6 +128,10 @@ The program may B<silently> fail if either the C</proc> Filesystem does not exis
 While running, stdout is redirected to the designated C<outfile> file. So one will find diagnostics in this file; this (not very helpful) behaviour may change in the future.
 
 =head1 EXAMPLES
+
+Check configuration files and produce the full stack of output-formats:
+
+C<sitar --check-consistency>
 
 For generating a HTML documentation type as user C<root>:
 	
@@ -149,6 +165,8 @@ Bernhard Thoni introduced the software raid support; Pascal Fuckerieder wrote
 the IPTables/Netfilter code and Andreas Rother submitted a patch for running
 sitar on RedHat Linux. So finally these Linux Systems are supported: SuSE
 Linux, Debian, RedHat.
+
+With testing, bug-reporting, enhancements and code-contributions also helped: Uwe Hering, Jan Jensen, Falko Trojahn, Stephan Martin, Holger Dopp, Seth Arnold, Manfred Hollstein, Stefan Werden and others.
 
 For more information on SITAR, see: http://sitar.berlios.de/
 
@@ -193,10 +211,11 @@ my $siprt_mode = "";
 my $outfile    = "";
 my ( $printhelp, $printversion );
 GetOptions(
-	'f|format=s'  => \$siprt_mode,
-	'o|outfile=s' => \$outfile,
-	'h|help'      => \$printhelp,
-	'v|version'   => \$printversion
+	'f|format=s'          => \$siprt_mode,
+	'o|outfile=s'         => \$outfile,
+	'c|check-consistency' => \$check_consistency,
+	'h|help'              => \$printhelp,
+	'v|version'           => \$printversion
 );
 #
 # distribution test
@@ -285,9 +304,10 @@ my $SUSEPACK_NICE_NAME = "SuSE Linux";
 #
 # global vars
 #
-my $now_string = localtime();
-my %proc_h     = ();
-my $config_dir = "/var/lib/support";
+my $now_string  = localtime();
+my %proc_h      = ();
+my $config_dir  = "/var/lib/support";
+my $consistency = "Configuration_Consistency.include";
 chomp( my $HOSTNAME = `$CMD_HOSTNAME -f` );
 chomp( my $UNAME    = `$CMD_UNAME -a` );
 chomp( my $UNAMER   = `$CMD_UNAME -r` );
@@ -1668,7 +1688,7 @@ sub si_mount() {
 		close( EVMSINFO );
 		$ENV{ PATH } = '';
 		# cleanup behind 'evms_gather_info'
-		if( -r "gather_info.qry" ) {
+		if ( -r "gather_info.qry" ) {
 			unlink "gather_info.qry";
 		}
 		siprt( "endpre" );
@@ -2007,10 +2027,12 @@ sub si_conf_filename_stat($$) {
 	siprtt( "cell", "mtime" );
 	siprtt( "cell", localtime( $ff_mtime ) );
 	siprt( "endrow" );
-	siprt( "tabrow" );
-	siprtt( "cell", "line comment char" );
-	siprtt( "cell", $comment );
-	siprt( "endrow" );
+	if ( $comment ne "" ) {
+		siprt( "tabrow" );
+		siprtt( "cell", "line comment char" );
+		siprtt( "cell", $comment );
+		siprt( "endrow" );
+	}
 	siprt( "endtab" );
 }
 
@@ -2338,7 +2360,8 @@ sub si_etc() {
 			$OO =~ s+$config_dir++g;
 			$OO =~ s+^/++g;
 			$OO = substr( $OO, 0, rindex( $OO, ".include" ) );
-			siprtt( "h2", ucfirst( $OO ) );
+			siprtt( "h2", ucfirst( $OO ) . " ($NN)" );
+			si_conf_filename_stat( $NN, "" );
 			foreach $mm ( sort keys %myfiles ) {
 				if ( $mm !~ /proc/ ) {
 					if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
@@ -2691,18 +2714,56 @@ sub si_selection_yast2( ) {
 sub si_getopts($) {
 }
 
+sub si_check_consistency() {
+	my %configfiles = ();
+	open( SAVEERR,     ">&STDERR" );
+	open( STDERR,      ">/dev/null" );
+	open( CONFIGFILES, "$CMD_RPM -qca |" );
+	while ( <CONFIGFILES> ) {
+		chomp();
+		if ( $_ =~ /^\// ) {
+			open( ONERPM, "$CMD_RPM -Vf --nodeps --noscript $_ |" );
+			while ( <ONERPM> ) {
+				if ( $_ && ( $_ !~ /^missing/ ) && ( $_ !~ /\/bin\// ) && ( $_ !~ /\/sbin\// ) ) {
+					chomp();
+					$configfiles{ ( substr( $_, index( $_, "/" ) ) ) } = 1;
+				}
+			}
+			close( ONERPM );
+		}
+	}
+	close( CONFIGFILES );
+	#
+	#
+	# /var/lib/support/Configuration_Consistency.include
+	#
+	if ( !-d "$config_dir" ) {
+		mkdir $config_dir;
+	}
+	open( CONSISTENCY, ">$config_dir/$consistency" );
+	print CONSISTENCY "\n\@files = (\n";
+	foreach my $kkk ( sort keys %configfiles ) {
+		print CONSISTENCY "\"", $kkk, "\",\n";
+	}
+	print CONSISTENCY ");\n\n";
+	close( CONSISTENCY );
+	open( STDERR, ">&SAVEERR" );
+}
+
 sub si_print_version () {
 	print "SITAR - System InformaTion At Runtime - Release ", $RELEASE, "\nCopyright (C) ", $COPYRIGHT, "\n";
 }
 
 sub si_print_help () {
-	print "Options available:\n\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2\n\t--outfile=<file>\toutput filename (without: stdout)\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
+	print "Options available:\n\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2\n\t--outfile=<file|dir>\toutput filename (without: stdout)\n\t\t\t\tfor format 'yast2' outfile must be a directory\n\t--check-consistency\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
 }
 
 sub si_run_sitar() {
-	open( TESTFILE, ">$outfile" )
-	  || die "ERROR:\tThe output-file:\n\t$outfile\n\tcan not be opened for writing. Probably the parent-directory\n\tdoes not exist. - Exiting ...";
-	close( TESTFILE );
+	if ( $siprt_mode ne "yast2" ) {
+		open( TESTFILE, ">$outfile" )
+		  || die "ERROR:\tThe output-file:\n\t$outfile\n\tcan not be opened for writing. Probably the parent-directory\n\tdoes not exist. - Exiting ...";
+		close( TESTFILE );
+	}
 	if ( $siprt_mode eq "html" || $siprt_mode eq "tex" || $siprt_mode eq "sdocbook" ) {
 		open( SAVEOUT, ">&STDOUT" );
 		if ( $outfile ne "" ) {
@@ -2791,6 +2852,10 @@ sub si_run_sitar() {
 		print( "Please run sitar as user root.\n" );
 		exit;
 	}
+	if ( $check_consistency ) {
+		print( "Checking consistency of configuration files. This might need a long time...\n" );
+		si_check_consistency();
+	}
 	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$printhelp ) && ( !$siprt_mode ) && ( !$outfile ) && ( !$printversion ) ) {
 		@siprt_modes = ( "html", "tex", "sdocbook", "yast1", "yast2" );
 		( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime( time );
@@ -2818,6 +2883,13 @@ sub si_run_sitar() {
 			si_run_sitar();
 		}
 		chdir $CWD;
+	} elsif ( $siprt_mode eq "yast2" ) {
+		if ( ( -d $outfile ) && ( !$printhelp ) && ( !$printversion ) ) {
+			$outdir = $outfile;
+			si_run_sitar();
+		} else {
+			si_print_help();
+		}
 	} elsif ( $siprt_mode && $outfile && ( !$printhelp ) && ( !$printversion ) ) {
 		si_run_sitar();
 	} elsif ( $printversion ) {

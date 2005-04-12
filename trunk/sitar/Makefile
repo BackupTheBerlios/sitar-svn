@@ -30,7 +30,7 @@
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
-RELEASE=0.9.1
+RELEASE=0.9.2
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -89,6 +89,9 @@ install:	sitar.pl sitar.1 sitar.ps sitar.html
 	install	-m 644	sitar.ps			${DESTDIR}/${DOCDIR}/sitar/sitar.ps
 	install	-m 644	LICENSE				${DESTDIR}/${DOCDIR}/sitar/LICENSE
 	install -m 644 	proc.txt			${DESTDIR}/${PREFIX}/share/sitar/proc.txt
+
+perltidy:	sitar.pl.in
+	perltidy -i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob -ce -sbt=0 -bt=0 -pt=0 -nola sitar.pl.in
 
 #
 #  $Log: Makefile,v $

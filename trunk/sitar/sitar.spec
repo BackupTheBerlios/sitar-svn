@@ -29,7 +29,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.1
+Version:	0.9.2
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -95,6 +95,14 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Mon Apr 12 2005 - mge@suse.de
+- fixes Novell Bug #76733:
+  SITAR should optionally check system consistency
+- release 0.9.2:
+	* fixes issue around --output=yast2, thanks to 
+	  Dr. Stefan Werden
+	* introduces "--check-consistency" as required by 
+	  Manfred Hollstein ( = #76733)
 * Mon Apr 11 2005 - mge@suse.de
 - this is release 0.9.1:
 	* added initial support for EVMS
