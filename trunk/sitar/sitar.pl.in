@@ -2721,12 +2721,16 @@ sub si_check_consistency() {
 	open( CONFIGFILES, "$CMD_RPM -qca |" );
 	while ( <CONFIGFILES> ) {
 		chomp();
-		if ( $_ =~ /^\// ) {
-			open( ONERPM, "$CMD_RPM -Vf --nodeps --noscript $_ |" );
+		my $ccc = $_;
+		if ( $ccc =~ /^\// ) {
+			open( ONERPM, "$CMD_RPM -Vf --nodeps --noscript $ccc |" );
 			while ( <ONERPM> ) {
-				if ( $_ && ( $_ !~ /^missing/ ) && ( $_ !~ /\/bin\// ) && ( $_ !~ /\/sbin\// ) ) {
-					chomp();
-					$configfiles{ ( substr( $_, index( $_, "/" ) ) ) } = 1;
+				chomp();
+				if ( $_ && ( $_ !~ /^missing/ ) ) {
+					$ddd=substr( $_, index( $_, "/" ) );
+					if( $ddd eq $ccc ) {
+						$configfiles{ $ddd } = 1;
+					}
 				}
 			}
 			close( ONERPM );
