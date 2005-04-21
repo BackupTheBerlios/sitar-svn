@@ -29,7 +29,7 @@
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
-Version:	0.9.2
+Version:	0.9.3
 Release:	0
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
@@ -95,6 +95,9 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Thi Apr 21 2005 - mge@suse.de
+- 0.9.3: (hopefully) final fix for Novell Bug #76733:
+	configfile verification
 * Mon Apr 12 2005 - mge@suse.de
 - fixes Novell Bug #76733:
   SITAR should optionally check system consistency

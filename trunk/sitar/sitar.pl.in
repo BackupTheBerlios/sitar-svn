@@ -2727,8 +2727,8 @@ sub si_check_consistency() {
 			while ( <ONERPM> ) {
 				chomp();
 				if ( $_ && ( $_ !~ /^missing/ ) ) {
-					$ddd=substr( $_, index( $_, "/" ) );
-					if( $ddd eq $ccc ) {
+					$ddd = substr( $_, index( $_, "/" ) );
+					if ( $ddd eq $ccc ) {
 						$configfiles{ $ddd } = 1;
 					}
 				}
