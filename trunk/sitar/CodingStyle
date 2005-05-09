@@ -4,56 +4,57 @@ SITAR coding style					Matthias G. Eckermann
 To avoid formatting nightmare, I suggest following this rules of formatting
 the code of sitar and associated tools:
 
-	1. read /usr/src/linux/Documentation/CodingStyle carefully
+1. read /usr/src/linux/Documentation/CodingStyle carefully
 
-	2. most rules apply, with first an exception to chapter 2:
-	   even on functions, please "put the opening brace last on the line,
-	   and put the closing brace first, thusly":
+2. most rules apply, with first an exception to chapter 2:
+   even on functions, please "put the opening brace last on the line,
+   and put the closing brace first, thusly":
 
-		int function( int x ) {
-                	body of function
-	        }
-	
-	3. Second exception to chapter 3. Remember: you don't want to win
-	   the next obfuscated programming contest; so please use long and
-	   descriptive names for variables, constants and functions. 
-	   Local names may be short, like in:
-		for( $i; $i<4; $i++ ) {
-			print $i;
-		}
+	int function( int x ) {
+               	body of function
+        }
 
-	4. Use QT-Style for brackets, i.e. one blank behind or before.
+3. Second exception to chapter 3. Remember: you don't want to win
+   the next obfuscated programming contest; so please use long and
+   descriptive names for variables, constants and functions. 
+   Local names may be short, like in:
 
-	5. Mark globals as such and indicate their type, e.g.:
-		- for a constant write (uppercase!)
-			my $RELEASE = "%%RELEASE%%";
-		- for a global hash write
-			my %myhash_h;
-		- for a global array write
-			my @myarray_a;
-		- for a "normal" global write
-			my $myvar_g;
+	for( $i; $i<4; $i++ ) {
+		print $i;
+	}
 
-	6. Never use blank lines except between functions. If your code
-	   is unreadable due to missing blank lines, rewrite the code.
+4. Use QT-Style for brackets, i.e. one blank behind or before.
 
-	7. Follow the "Perl style guide" on 
-	     http://www.perl.com/CPAN-local/doc/manual/html/pod/perlstyle.html
-	   except the indentation: use 8 column indent instead and the other
-	   things that contradict these explicit rules. 
+5. Mark globals as such and indicate their type, e.g.:
+	- for a constant write (uppercase!)
+		my $RELEASE = "%%RELEASE%%";
+	- for a global hash write
+		my %myhash_h;
+	- for a global array write
+		my @myarray_a;
+	- for a "normal" global write
+		my $myvar_g;
 
-	8. Use perltidy
-		http://perltidy.sourceforge.net/
-	   with the following options:
-		-i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob -ce -sbt=0 -bt=0 -pt=0
-	   For more recent releases of perltidy, please use:
-		-i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob -ce -sbt=0 -bt=0 -pt=0 -nola
-	
-	9. Documentation: we use perldoc at the moment. For more information see:
-		man perlpod
-		man pod2man
-		man perlsyn  /PODs
-	
-more to come ...
+6. Never use blank lines except between functions. If your code
+   is unreadable due to missing blank lines, rewrite the code.
+
+7. Follow the "Perl style guide" on 
+	http://www.perl.com/CPAN-local/doc/manual/html/pod/perlstyle.html
+   except the indentation: use 8 column indent instead and the other
+   things that contradict these explicit rules. 
+
+8. Use perltidy
+	http://perltidy.sourceforge.net/
+   with the following options:
+	-i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob -ce -sbt=0 -bt=0 -pt=0
+   For more recent releases of perltidy, please use:
+	-i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob -ce -sbt=0 -bt=0 -pt=0 -nola
+
+9. Documentation: we use perldoc at the moment. For more information see:
+	man perlpod
+	man pod2man
+	man perlsyn  /PODs
+
+so short
 		MgE
 

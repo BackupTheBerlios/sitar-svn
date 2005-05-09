@@ -35,7 +35,7 @@ SITAR - System InformaTion At Runtime
 
 =head1 SYNOPSIS
 
-sitar|sitar.pl B<--check-consistency> B<--format>=I<format> B<--outfile>=I<file|dir> B<--help> B<--version>
+sitar|sitar.pl B<--check-consistency> B<--format>=I<format> B<--SITAR_OPT_OUTFILE>=I<file|dir> B<--help> B<--version>
 
 Available I<format>s: html, tex, sdocbook, yast1, yast2
 
@@ -51,13 +51,13 @@ There are three files/links available:
 
 =item sitar.pl
 
-If called without B<--outfile> and/or without B<--format>, all available output formats are produced below /tmp/sitar-$hostname-$date. 
+If called without B<--SITAR_OPT_OUTFILE> and/or without B<--format>, all available output formats are produced below /tmp/sitar-$hostname-$date. 
 
-If called with B<--format> and B<--outfile> exactly this is produced.  Please note, that the format B<yast2> needs a directory given with the parameter B<--outfile>!
+If called with B<--format> and B<--SITAR_OPT_OUTFILE> exactly this is produced.  Please note, that the format B<yast2> needs a directory given with the parameter B<--SITAR_OPT_OUTFILE>!
 
 =item support_all.pl
 
-must always be called with both options: B<--format> B<--outfile>, but does nothing, if called without any options.
+must always be called with both options: B<--format> B<--SITAR_OPT_OUTFILE>, but does nothing, if called without any options.
 
 =back
 
@@ -101,11 +101,11 @@ produces simplified docbook-xml; the format is not named B<xml>, because there a
 
 =item yast2
 
-Please note, that this format needs a directory given with the parameter B<--outfile>!
+Please note, that this format needs a directory given with the parameter B<--SITAR_OPT_OUTFILE>!
 
 =back
 
-=item B<--outfile>=I<file|dir> 
+=item B<--SITAR_OPT_OUTFILE>=I<file|dir> 
 
 All formatted output will be stored in the file given here.  Please don't forget to give the right extension here: C<.html> for HTML, C<.tex> for TeX or LaTeX, C<.sdocbook.xml> for simplified docbook-xml, C<.sel> for YaST-Selection-files.
 
@@ -125,7 +125,7 @@ The program may B<silently> fail if either the C</proc> Filesystem does not exis
 
 =head1 DIAGNOSTICS
 
-While running, stdout is redirected to the designated C<outfile> file. So one will find diagnostics in this file; this (not very helpful) behaviour may change in the future.
+While running, stdout is redirected to the designated C<SITAR_OPT_OUTFILE> file. So one will find diagnostics in this file; this (not very helpful) behaviour may change in the future.
 
 =head1 EXAMPLES
 
@@ -135,11 +135,11 @@ C<sitar --check-consistency>
 
 For generating a HTML documentation type as user C<root>:
 	
-C<sitar.pl --format=html --outfile=/tmp/$HOSTNAME.html>
+C<sitar.pl --format=html --SITAR_OPT_OUTFILE=/tmp/$HOSTNAME.html>
 
 For PDF type as user C<root>:
 
-C<sitar.pl --format=tex --outfile=/tmp/$HOSTNAME.tex>
+C<sitar.pl --format=tex --SITAR_OPT_OUTFILE=/tmp/$HOSTNAME.tex>
 
 and twice (as an ordinary user): 
 
@@ -203,31 +203,28 @@ selected to be played upon. The sitar is also called as satar and sundari.
 
 use Getopt::Long;
 use Fcntl;
-my $COPYHOLDER = "SuSE Linux, a Novell Business";
-my $COPYRIGHT  = "1999-2005 $COPYHOLDER";
-my $RELEASE    = "%%RELEASE%%";
-my $PREFIX     = "%%PREFIX%%";
-my $siprt_mode = "";
-my $outfile    = "";
-my ( $printhelp, $printversion );
+
+#
+# sitar options and globals
+#
+my $SITAR_COPYHOLDER = "SuSE Linux, a Novell Business";
+my $SITAR_COPYRIGHT  = "1999-2005 $SITAR_COPYHOLDER";
+my $SITAR_RELEASE    = "%%SITAR_RELEASE%%";
+my $SITAR_PREFIX     = "%%SITAR_PREFIX%%";
+my $SITAR_OPT_FORMAT = "";
+my $SITAR_OPT_OUTFILE= "";
+my $SITAR_OPT_OUTDIR = "";
+my ( $SITAR_OPT_HELP, $SITAR_OPT_VERSION, $SITAR_OPT_CONSISTENCY );
 GetOptions(
-	'f|format=s'          => \$siprt_mode,
-	'o|outfile=s'         => \$outfile,
-	'c|check-consistency' => \$check_consistency,
-	'h|help'              => \$printhelp,
-	'v|version'           => \$printversion
+	'f|format=s'          => \$SITAR_OPT_FORMAT,
+	'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
+	'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
+	'h|help'              => \$SITAR_OPT_HELP,
+	'v|version'           => \$SITAR_OPT_VERSION
 );
-#
-# distribution test
-#
-my $UNITED       = "/etc/UnitedLinux-release";
-my $SUSE         = "/etc/SuSE-release";
-my $SLOX         = "/etc/SLOX-release";
-my $DEBIAN       = "/etc/debian_version";
-my $REDHAT       = "/etc/redhat-release";
-my $release      = "";
-my $distribution = "";
-my $outdir       = "";
+my $SITAR_CONFIG_DIR  = "/var/lib/support";
+my $SITAR_CONSISTENCY_FILENAME = "Configuration_Consistency.include";
+
 #
 # commands
 #
@@ -259,60 +256,68 @@ chomp( my $CMD_UNAME     = `which uname` );
 chomp( my $CMD_UNIQ      = `which uniq` );
 open( STDERR, ">&SAVEERR" );
 $ENV{ PATH } = '';
+
 #
-# distributions
+# distribution test
 #
+my $DIST_UNITED	= "/etc/UnitedLinux-release";
+my $DIST_SUSE   = "/etc/SuSE-release";
+my $DIST_SLOX   = "/etc/SLOX-release";
+my $DIST_DEBIAN = "/etc/debian_version";
+my $DIST_REDHAT = "/etc/redhat-release";
+my $DIST_RELEASE= "";
+my $DIST_DISTRIBUTION= "";
 my ( $DPKG, $CMD_RPM, $CMD_STATUS );
-if ( -e $DEBIAN ) {
-	$release      = `$CMD_HEAD -n 1 /etc/debian_version`;
-	$distribution = "debian";
+if ( -e $DIST_DEBIAN ) {
+	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/debian_version`;
+	$DIST_DISTRIBUTION = "debian";
 	$CMD_STATUS   = "/var/lib/dpkg/status";
 	$CMD_DPKG     = "/usr/bin/dpkg";
-} elsif ( -e $REDHAT ) {
-	$release      = `$CMD_HEAD -n 1 /etc/redhat-release`;
-	$distribution = "redhat";
+} elsif ( -e $DIST_REDHAT ) {
+	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/redhat-release`;
+	$DIST_DISTRIBUTION = "redhat";
 	$CMD_RPM      = "/bin/rpm";
-} elsif ( ( -e $UNITED ) && ( -e $SUSE ) ) {
-	$release = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
-	chomp $release;
-	$release = join "", $release, ", ", `$CMD_HEAD -n 1 /etc/SuSE-release`;
-	chomp $release;
-	$distribution = "sles";
+} elsif ( ( -e $DIST_UNITED ) && ( -e $DIST_SUSE ) ) {
+	$DIST_RELEASE = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
+	chomp $DIST_RELEASE;
+	$DIST_RELEASE = join "", $DIST_RELEASE, ", ", `$CMD_HEAD -n 1 /etc/SuSE-release`;
+	chomp $DIST_RELEASE;
+	$DIST_DISTRIBUTION = "sles";
 	$CMD_RPM      = "/bin/rpm";
-} elsif ( -e $UNITED ) {
-	$release      = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
-	$distribution = "unitedlinux";
+} elsif ( -e $DIST_UNITED ) {
+	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
+	$DIST_DISTRIBUTION = "unitedlinux";
 	$CMD_RPM      = "/bin/rpm";
-} elsif ( -e $SLOX ) {
-	$release      = `$CMD_HEAD -n 1 /etc/SLOX-release`;
-	$distribution = "sles";
+} elsif ( -e $DIST_SLOX ) {
+	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/SLOX-release`;
+	$DIST_DISTRIBUTION = "sles";
 	$CMD_RPM      = "/bin/rpm";
-} elsif ( -e $SUSE ) {
-	$release      = `$CMD_HEAD -n 1 /etc/SuSE-release`;
-	$distribution = "suse";
+} elsif ( -e $DIST_SUSE ) {
+	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/SuSE-release`;
+	$DIST_DISTRIBUTION = "suse";
 	$CMD_RPM      = "/bin/rpm";
 } else {
-	$distribution = "unknown";
+	$DIST_DISTRIBUTION = "unknown";
 	print "\n distribution not supported!!\n\n";
 }
-chomp $release;
+chomp $DIST_RELEASE;
 #
 my $ULPACK_RAW_NAME    = "http://www.unitedlinux.com/feedback";
 my $ULPACK_NICE_NAME   = "United Linux";
 my $SUSEPACK_RAW_NAME  = "http://www.suse.de/feedback";
 my $SUSEPACK_NICE_NAME = "SuSE Linux";
+
 #
 # global vars
 #
-my $now_string  = localtime();
+my $now_string_g= localtime();
 my %proc_h      = ();
-my $config_dir  = "/var/lib/support";
-my $consistency = "Configuration_Consistency.include";
 chomp( my $HOSTNAME = `$CMD_HOSTNAME -f` );
 chomp( my $UNAME    = `$CMD_UNAME -a` );
 chomp( my $UNAMER   = `$CMD_UNAME -r` );
 chomp( my $UNAMEM   = `$CMD_UNAME -m` );
 chomp( my $CWD      = `pwd` );
+
 #
 # AppArmor/SubDomain
 #
@@ -334,16 +339,16 @@ my $sdocbook_header = "<?xml version=\"1.0\"?>
 ]>
 <article class=\"techreport\">
 <articleinfo>
-  <corpauthor>SITAR $RELEASE</corpauthor>
+  <corpauthor>SITAR $SITAR_RELEASE</corpauthor>
   <copyright>
     <year>1999</year>
     <year>2005</year>
-    <holder>$COPYHOLDER</holder>
+    <holder>$SITAR_COPYHOLDER</holder>
   </copyright>
   <bibliomisc><ulink url=\"http://sitar.berlios.de/\">http://sitar.berlios.de/</ulink></bibliomisc>
   <title>$HOSTNAME</title>
-  <date>$now_string</date>
-  <subtitle>$release</subtitle>
+  <date>$now_string_g</date>
+  <subtitle>$DIST_RELEASE</subtitle>
 </articleinfo>";
 my $sdocbook_footer = "</article>";
 my $html_header     = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"
@@ -377,20 +382,20 @@ my $html_header     = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional
     ADDRESS         { font-family: sans-serif; font-style: italic; }
   -->
   </style>
-    <title>$HOSTNAME, $now_string</title>
+    <title>$HOSTNAME, $now_string_g</title>
 </head>
 <body bgcolor=\"#FFFFFF\">
   <table summary=\"header\" border=\"0\" width=\"100%\">
     <tr>
-      <td valign=\"bottom\"><h1>$HOSTNAME, $now_string</h1></td>
+      <td valign=\"bottom\"><h1>$HOSTNAME, $now_string_g</h1></td>
     </tr>
     <tr>
-      <td valign=\"top\"><h2>$UNAME<br>$release</h2></td>
+      <td valign=\"top\"><h2>$UNAME<br>$DIST_RELEASE</h2></td>
     </tr>
   </table>
   <hr>";
 my $html_footer = "<hr />
-<address>SITAR $RELEASE is &copy; $COPYRIGHT</address>
+<address>SITAR $SITAR_RELEASE is &copy; $SITAR_COPYRIGHT</address>
 </html>\n";
 #
 # $tex_header
@@ -399,7 +404,7 @@ $UNAMET = $UNAME;
 $UNAMET =~ s/\_/\\_/g;
 $UNAMET =~ s/\#/\\\#/g;
 my $tex_header = "%
-% produced by SITAR (C) $COPYRIGHT
+% produced by SITAR (C) $SITAR_COPYRIGHT
 %
 % for standalone documents use:
 %
@@ -412,9 +417,9 @@ my $tex_header = "%
 % 
 \\begin\{document\} 
 %
-\\title\{$HOSTNAME, $now_string \\\\
-\{\\normalsize $UNAMET\\ $release\} \}
-\\author\{$RELEASE\}
+\\title\{$HOSTNAME, $now_string_g \\\\
+\{\\normalsize $UNAMET\\ $DIST_RELEASE\} \}
+\\author\{$SITAR_RELEASE\}
 \\maketitle
 \\tableofcontents 
 \\newpage
@@ -427,88 +432,89 @@ my $tex_header = "%
 % \\selectlanguage\{english\} 
 % 
 % \\section{$HOSTNAME, 
-% 	$now_string \\\\ 
-%	\{\\normalsize $UNAMET\\ $release\} \}}
-% ( by $RELEASE ) 
+% 	$now_string_g \\\\ 
+%	\{\\normalsize $UNAMET\\ $DIST_RELEASE\} \}}
+% ( by $SITAR_RELEASE ) 
 %
 ";
 my $tex_footer     = "\n\\end\{document\}\n";
 my $old_tex_footer = "\n
 \\par\\noindent
-\\textsf{SITAR is \\textcopyright{} $COPYRIGHT}\\par
+\\textsf{SITAR is \\textcopyright{} $SITAR_COPYRIGHT}\\par
 \\end\{document\}\n";
+
 #
-# Table of contents
+# Table of contents and output
 #
-my $seccnt       = 0;
-my $subseccnt    = 0;
-my $subsubseccnt = 0;
-my $OutputBuffer = "";
-my $TOCBuffer    = "";
-my $lastTOClevel = 0;
-my $lastSEClevel = 0;
-my $IsVerbatim   = 0;
+my $toc_seccnt_g       = 0;
+my $toc_subseccnt_g    = 0;
+my $toc_subsubseccnt_g = 0;
+my $toc_last_toc_level_g = 0;
+my $toc_last_sec_level_g = 0;
+my $toc_buffer_g    = "";
+my $output_is_verbatim_g   = 0;
+my $output_buffer_g = "";
 
 sub mysprint {
-	$OutputBuffer = join "", $OutputBuffer, @_;
+	$output_buffer_g = join "", $output_buffer_g, @_;
 }
 
 sub addtoc($$$) {
 	my ( $level, $ancor, $value ) = @_;
-	if ( $level > $lastTOClevel ) {
-		$TOCBuffer = join "", $TOCBuffer, "<ul class=\"toc\">\n";
-	} elsif ( $level < $lastTOClevel ) {
-		for ( $ll = $lastTOClevel ; $ll > $level ; $ll-- ) {
-			$TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n\n";
+	if ( $level > $toc_last_toc_level_g ) {
+		$toc_buffer_g = join "", $toc_buffer_g, "<ul class=\"toc\">\n";
+	} elsif ( $level < $toc_last_toc_level_g ) {
+		for ( $ll = $toc_last_toc_level_g ; $ll > $level ; $ll-- ) {
+			$toc_buffer_g = join "", $toc_buffer_g, "</li>\n</ul>\n\n";
 		}
-		$TOCBuffer = join "", $TOCBuffer, "</li>\n";
-	} elsif ( $lastTOClevel != 0 ) {
-		$TOCBuffer = join "", $TOCBuffer, "</li>\n";
+		$toc_buffer_g = join "", $toc_buffer_g, "</li>\n";
+	} elsif ( $toc_last_toc_level_g != 0 ) {
+		$toc_buffer_g = join "", $toc_buffer_g, "</li>\n";
 	} else {
 	}
-	$TOCBuffer = join "", $TOCBuffer, "<li><a href=\"#", $ancor, "\">", $value, "</a>\n";
-	$lastTOClevel = $level;
+	$toc_buffer_g = join "", $toc_buffer_g, "<li><a href=\"#", $ancor, "\">", $value, "</a>\n";
+	$toc_last_toc_level_g = $level;
 }
 
 sub addtoc_sdocbook($$$) {
 	my ( $level, $ancor, $value ) = @_;
-	if ( $level > $lastTOClevel ) {
-		$TOCBuffer = join "", $TOCBuffer, "<itemizedlist>\n";
-	} elsif ( $level < $lastTOClevel ) {
-		for ( $ll = $lastTOClevel ; $ll > $level ; $ll-- ) {
-			$TOCBuffer = join "", $TOCBuffer, "</listitem>\n</itemizedlist>\n\n";
+	if ( $level > $toc_last_toc_level_g ) {
+		$toc_buffer_g = join "", $toc_buffer_g, "<itemizedlist>\n";
+	} elsif ( $level < $toc_last_toc_level_g ) {
+		for ( $ll = $toc_last_toc_level_g ; $ll > $level ; $ll-- ) {
+			$toc_buffer_g = join "", $toc_buffer_g, "</listitem>\n</itemizedlist>\n\n";
 		}
-		$TOCBuffer = join "", $TOCBuffer, "</listitem>\n";
-	} elsif ( $lastTOClevel != 0 ) {
-		$TOCBuffer = join "", $TOCBuffer, "</listitem>\n";
+		$toc_buffer_g = join "", $toc_buffer_g, "</listitem>\n";
+	} elsif ( $toc_last_toc_level_g != 0 ) {
+		$toc_buffer_g = join "", $toc_buffer_g, "</listitem>\n";
 	} else {
 	}
-	$TOCBuffer = join "", $TOCBuffer, "<listitem><para><xref linkend=\"sec$ancor\"/>$value</para>\n";
-	$lastTOClevel = $level;
+	$toc_buffer_g = join "", $toc_buffer_g, "<listitem><para><xref linkend=\"sec$ancor\"/>$value</para>\n";
+	$toc_last_toc_level_g = $level;
 }
 
 sub siprint($$$$) {
 	my ( $m, $value, $attr, $colsnum ) = @_;
-	if ( $siprt_mode eq "html" ) {
+	if ( $SITAR_OPT_FORMAT eq "html" ) {
 		$value =~ s/\&/\&amp;/g;
 		$value =~ s/</\&lt;/g;
 		$value =~ s/>/\&gt;/g;
 		if ( $m eq "h1" ) {
-			$seccnt++;
-			mysprint "<h1><a name=\"", $seccnt, "\"\n>", $seccnt, ".&nbsp;", $value, "</a></h1>";
-			addtoc( 1, "$seccnt", "$seccnt.&nbsp;$value" );
-			$subseccnt = 0;
+			$toc_seccnt_g++;
+			mysprint "<h1><a name=\"", $toc_seccnt_g, "\"\n>", $toc_seccnt_g, ".&nbsp;", $value, "</a></h1>";
+			addtoc( 1, "$toc_seccnt_g", "$toc_seccnt_g.&nbsp;$value" );
+			$toc_subseccnt_g = 0;
 		}
 		if ( $m eq "h2" ) {
-			$subseccnt++;
-			mysprint "<h2><a name=\"", $seccnt, ".", $subseccnt, "\"\n>", $seccnt, ".", $subseccnt, "&nbsp;", $value, "</a></h2>";
-			addtoc( 2, "$seccnt.$subseccnt", "$seccnt.$subseccnt&nbsp;$value" );
-			$subsubseccnt = 0;
+			$toc_subseccnt_g++;
+			mysprint "<h2><a name=\"", $toc_seccnt_g, ".", $toc_subseccnt_g, "\"\n>", $toc_seccnt_g, ".", $toc_subseccnt_g, "&nbsp;", $value, "</a></h2>";
+			addtoc( 2, "$toc_seccnt_g.$toc_subseccnt_g", "$toc_seccnt_g.$toc_subseccnt_g&nbsp;$value" );
+			$toc_subsubseccnt_g = 0;
 		}
 		if ( $m eq "h3" ) {
-			$subsubseccnt++;
-			mysprint "<h3><a name=\"", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n>", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "&nbsp;", $value, "</a></h3>";
-			addtoc( 3, "$seccnt.$subseccnt.$subsubseccnt", "$seccnt.$subseccnt.$subsubseccnt&nbsp;$value" );
+			$toc_subsubseccnt_g++;
+			mysprint "<h3><a name=\"", $toc_seccnt_g, ".", $toc_subseccnt_g, ".", $toc_subsubseccnt_g, "\"\n>", $toc_seccnt_g, ".", $toc_subseccnt_g, ".", $toc_subsubseccnt_g, "&nbsp;", $value, "</a></h3>";
+			addtoc( 3, "$toc_seccnt_g.$toc_subseccnt_g.$toc_subsubseccnt_g", "$toc_seccnt_g.$toc_subseccnt_g.$toc_subsubseccnt_g&nbsp;$value" );
 		}
 		if ( $m eq "tabborder" ) {
 			mysprint "<table summary=\"", $attr, "\"\n border=\"1\">";
@@ -517,10 +523,10 @@ sub siprint($$$$) {
 		if ( $m eq "endtab" )      { mysprint "</table>\n"; }
 		if ( $m eq "tabrow" )      { mysprint "<tr\n>"; }
 		if ( $m eq "endrow" )      { mysprint "</tr>\n"; }
-		if ( $m eq "pre" )         { mysprint "<pre>"; $IsVerbatim = 1; }
-		if ( $m eq "endpre" )      { mysprint "</pre>\n"; $IsVerbatim = 0; }
-		if ( $m eq "multipre" )    { mysprint "<pre>"; $IsVerbatim = 1; }
-		if ( $m eq "endmultipre" ) { mysprint "</pre>\n"; $IsVerbatim = 0; }
+		if ( $m eq "pre" )         { mysprint "<pre>"; $output_is_verbatim_g = 1; }
+		if ( $m eq "endpre" )      { mysprint "</pre>\n"; $output_is_verbatim_g = 0; }
+		if ( $m eq "multipre" )    { mysprint "<pre>"; $output_is_verbatim_g = 1; }
+		if ( $m eq "endmultipre" ) { mysprint "</pre>\n"; $output_is_verbatim_g = 0; }
 		if ( $m eq "cellspan" )    {
 			mysprint "<td \nnowrap colspan=\"", $attr, "\">", $value, "</td>";
 		}
@@ -537,16 +543,16 @@ sub siprint($$$$) {
 		if ( $m eq "verb" )    { mysprint $value; }
 		if ( $m eq "header" )  { print $html_header; }
 		if ( $m eq "toc" )     {
-			for ( $ii = $lastTOClevel ; $ii > 0 ; $ii-- ) {
-				$TOCBuffer = join "", $TOCBuffer, "</li>\n</ul>\n";
+			for ( $ii = $toc_last_toc_level_g ; $ii > 0 ; $ii-- ) {
+				$toc_buffer_g = join "", $toc_buffer_g, "</li>\n</ul>\n";
 			}
-			print "<h1>Table of Contents</h1>\n", $TOCBuffer;
+			print "<h1>Table of Contents</h1>\n", $toc_buffer_g;
 			print "\n<hr />\n";
 		}
-		if ( $m eq "body" )   { print $OutputBuffer; }
+		if ( $m eq "body" )   { print $output_buffer_g; }
 		if ( $m eq "footer" ) { print $html_footer; }
-	} elsif ( $siprt_mode eq "tex" || $siprt_mode eq "latex" ) {
-		if ( $IsVerbatim == 0 ) {
+	} elsif ( $SITAR_OPT_FORMAT eq "tex" || $SITAR_OPT_FORMAT eq "latex" ) {
+		if ( $output_is_verbatim_g == 0 ) {
 			$value =~ s/\_/\\_/g;
 			$value =~ s/\#/\\\#/g;
 			$value =~ s/%/\\%/g;
@@ -567,17 +573,17 @@ sub siprint($$$$) {
 		if ( $m eq "endtab" )   { print "\\end\{longtable\}\\par\\endgroup\n"; }
 		if ( $m eq "tabrow" )   { }
 		if ( $m eq "endrow" )   { print "\\\\\n"; }
-		if ( $m eq "pre" )      { print "\\begin\{verbatim\}"; $IsVerbatim = 1; }
-		if ( $m eq "endpre" )   { print "\\end\{verbatim\}\n"; $IsVerbatim = 0; }
+		if ( $m eq "pre" )      { print "\\begin\{verbatim\}"; $output_is_verbatim_g = 1; }
+		if ( $m eq "endpre" )   { print "\\end\{verbatim\}\n"; $output_is_verbatim_g = 0; }
 		if ( $m eq "multipre" ) {
 			print "\n\\par\\begingroup\\tiny\\par\n";
 			print "\\begin\{multicols\}\{2\}\n\\begin\{verbatim\}\n";
-			$IsVerbatim = 1;
+			$output_is_verbatim_g = 1;
 		}
 		if ( $m eq "endmultipre" ) {
 			print "\\end\{verbatim\}\n";
 			print "\\end\{multicols\}\\par\\endgroup\\par\n";
-			$IsVerbatim = 0;
+			$output_is_verbatim_g = 0;
 		}
 		if ( $m eq "cellspan" ) { print $value, "\&"; }
 		if ( $m eq "emptycell" ) { print "\&"; }
@@ -589,7 +595,7 @@ sub siprint($$$$) {
 		if ( $m eq "verb" )      { print $value; }
 		if ( $m eq "header" )    { print $tex_header; }
 		if ( $m eq "footer" )    { print $tex_footer; }
-	} elsif ( $siprt_mode eq "sdocbook" ) {
+	} elsif ( $SITAR_OPT_FORMAT eq "sdocbook" ) {
 		$value =~ s/\&/\&amp;/g;
 		$value =~ s/</\&lt;/g;
 		$value =~ s/>/\&gt;/g;
@@ -597,35 +603,35 @@ sub siprint($$$$) {
 		$attr  =~ s/</\&lt;/g;
 		$attr  =~ s/>/\&gt;/g;
 		if ( $m eq "h1" ) {
-			while ( $lastSEClevel > 0 ) {
+			while ( $toc_last_sec_level_g > 0 ) {
 				mysprint "\n</section>\n";
-				$lastSEClevel--;
+				$toc_last_sec_level_g--;
 			}
-			$seccnt++;
-			mysprint "<section label=\"sec", $seccnt, "\" id=\"sec", $seccnt, "\"\n><title>", $value, "</title><para />\n";
-			addtoc_sdocbook( 1, "$seccnt", "$seccnt.$value" );
-			$subseccnt    = 0;
-			$lastSEClevel = 1;
+			$toc_seccnt_g++;
+			mysprint "<section label=\"sec", $toc_seccnt_g, "\" id=\"sec", $toc_seccnt_g, "\"\n><title>", $value, "</title><para />\n";
+			addtoc_sdocbook( 1, "$toc_seccnt_g", "$toc_seccnt_g.$value" );
+			$toc_subseccnt_g    = 0;
+			$toc_last_sec_level_g = 1;
 		}
 		if ( $m eq "h2" ) {
-			while ( $lastSEClevel > 1 ) {
+			while ( $toc_last_sec_level_g > 1 ) {
 				mysprint "\n</section>\n";
-				$lastSEClevel--;
+				$toc_last_sec_level_g--;
 			}
-			$subseccnt++;
-			mysprint "<section label=\"sec", $seccnt, ".", $subseccnt, "\" id=\"sec", $seccnt, ".", $subseccnt, "\"\n><title>", $value, "</title><para />\n";
-			addtoc_sdocbook( 2, "$seccnt.$subseccnt", "$seccnt.$subseccnt&nbsp;$value" );
-			$subsubseccnt = 0;
-			$lastSEClevel = 2;
+			$toc_subseccnt_g++;
+			mysprint "<section label=\"sec", $toc_seccnt_g, ".", $toc_subseccnt_g, "\" id=\"sec", $toc_seccnt_g, ".", $toc_subseccnt_g, "\"\n><title>", $value, "</title><para />\n";
+			addtoc_sdocbook( 2, "$toc_seccnt_g.$toc_subseccnt_g", "$toc_seccnt_g.$toc_subseccnt_g&nbsp;$value" );
+			$toc_subsubseccnt_g = 0;
+			$toc_last_sec_level_g = 2;
 		}
 		if ( $m eq "h3" ) {
-			if ( $lastSEClevel > 2 ) {
+			if ( $toc_last_sec_level_g > 2 ) {
 				mysprint "\n</section>\n";
 			}
-			$subsubseccnt++;
-			mysprint "<section label=\"sec", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\" id=\"sec", $seccnt, ".", $subseccnt, ".", $subsubseccnt, "\"\n><title>", $value, "</title><para />\n";
-			addtoc_sdocbook( 3, "$seccnt.$subseccnt.$subsubseccnt", "$seccnt.$subseccnt.$subsubseccnt&nbsp;$value" );
-			$lastSEClevel = 3;
+			$toc_subsubseccnt_g++;
+			mysprint "<section label=\"sec", $toc_seccnt_g, ".", $toc_subseccnt_g, ".", $toc_subsubseccnt_g, "\" id=\"sec", $toc_seccnt_g, ".", $toc_subseccnt_g, ".", $toc_subsubseccnt_g, "\"\n><title>", $value, "</title><para />\n";
+			addtoc_sdocbook( 3, "$toc_seccnt_g.$toc_subseccnt_g.$toc_subsubseccnt_g", "$toc_seccnt_g.$toc_subseccnt_g.$toc_subsubseccnt_g&nbsp;$value" );
+			$toc_last_sec_level_g = 3;
 		}
 		if ( $m eq "tabborder" ) {
 			mysprint "<table frame=\"all\"><title>", $attr, "</title><tgroup cols=\"", $colsnum, "\"><tbody>";
@@ -643,37 +649,37 @@ sub siprint($$$$) {
 		if ( $m eq "tabhead" )   { mysprint "<entry>", $value, "</entry>"; }
 		if ( $m eq "pre" )       {
 			mysprint "<programlisting>\n<![CDATA[\n";
-			$IsVerbatim = 1;
+			$output_is_verbatim_g = 1;
 		}
 		if ( $m eq "endpre" ) {
 			mysprint "\n]]>\n</programlisting>\n";
-			$IsVerbatim = 0;
+			$output_is_verbatim_g = 0;
 		}
 		if ( $m eq "multipre" ) {
 			mysprint "<programlisting>\n<![CDATA[\n";
-			$IsVerbatim = 1;
+			$output_is_verbatim_g = 1;
 		}
 		if ( $m eq "endmultipre" ) {
 			mysprint "\n]]>\n</programlisting>\n";
-			$IsVerbatim = 0;
+			$output_is_verbatim_g = 0;
 		}
 		if ( $m eq "verb" )   { mysprint $value; }
 		if ( $m eq "header" ) { print $sdocbook_header; }
 		if ( $m eq "body" )   {
-			while ( $lastSEClevel > 0 ) {
+			while ( $toc_last_sec_level_g > 0 ) {
 				mysprint "\n</section>\n";
-				$lastSEClevel--;
+				$toc_last_sec_level_g--;
 			}
-			print $OutputBuffer;
+			print $output_buffer_g;
 		}
 		if ( $m eq "footer" ) { print $sdocbook_footer; }
 		if ( $m eq "toc" )    {
-			for ( $ii = $lastTOClevel ; $ii > 0 ; $ii-- ) {
-				$TOCBuffer = join "", $TOCBuffer, "</listitem>\n</itemizedlist>\n";
+			for ( $ii = $toc_last_toc_level_g ; $ii > 0 ; $ii-- ) {
+				$toc_buffer_g = join "", $toc_buffer_g, "</listitem>\n</itemizedlist>\n";
 			}
-			print "<section id=\"TOC\" label=\"TOC\"><title>Table of Contents</title><para />\n", $TOCBuffer, "</section>\n";
+			print "<section id=\"TOC\" label=\"TOC\"><title>Table of Contents</title><para />\n", $toc_buffer_g, "</section>\n";
 		}
-	} elsif ( $siprt_mode eq "sql" ) {
+	} elsif ( $SITAR_OPT_FORMAT eq "sql" ) {
 	}
 }
 sub siprt($) { my ( $t1 ) = shift( @_ ); siprint( $t1, "", "", 0 ); }
@@ -736,7 +742,7 @@ sub si_general_sys() {
 	siprt( "endrow" );
 	siprt( "tabrow" );
 	siprtt( "cell", "Operating System" );
-	siprtt( "cell", $release );
+	siprtt( "cell", $DIST_RELEASE );
 	siprt( "endrow" );
 	siprt( "tabrow" );
 	siprtt( "cell", "UName" );
@@ -744,7 +750,7 @@ sub si_general_sys() {
 	siprt( "endrow" );
 	siprt( "tabrow" );
 	siprtt( "cell", "Date" );
-	siprtt( "cell", $now_string );
+	siprtt( "cell", $now_string_g );
 	siprt( "endrow" );
 	open( IN, "/proc/meminfo" );
 	while ( <IN> ) {
@@ -1100,7 +1106,7 @@ sub si_lsdev() {
 	while ( <DMA> ) {
 		chop;
 		@line = split( ': ' );
-		if ( $distribution eq "redhat" ) {
+		if ( $DIST_DISTRIBUTION eq "redhat" ) {
 			$name = $line[ 1 ];
 		} else {
 			@tmp = split( /[ \(]/, $line[ 1 ] );
@@ -1114,7 +1120,7 @@ sub si_lsdev() {
 	while ( <IOPORTS> ) {
 		chop;
 		@line = split( ' : ' );
-		if ( $distribution eq "redhat" ) {
+		if ( $DIST_DISTRIBUTION eq "redhat" ) {
 			$name = $line[ 1 ];
 		} else {
 			@tmp = split( /[ \(]/, $line[ 1 ] );
@@ -2115,7 +2121,7 @@ sub si_conf($$$) {
 }
 
 sub si_build_proc_description() {
-	open( PROCTXT, "<$PREFIX/share/sitar/proc.txt" );
+	open( PROCTXT, "<$SITAR_PREFIX/share/sitar/proc.txt" );
 	#if ( -r "/usr/src/linux/Documentation/proc.txt" ) {
 	#	open( PROCTXT, "</usr/src/linux/Documentation/proc.txt" );
 	#} elsif ( -r "/usr/src/linux/Documentation/filesystems/proc.txt" ) {
@@ -2348,8 +2354,8 @@ sub si_etc() {
 	#
 	# some more services/programs
 	#
-	if ( -d $config_dir ) {
-		for $NN ( `$CMD_FIND $config_dir -iname "*.include" -type f` ) {
+	if ( -d $SITAR_CONFIG_DIR ) {
+		for $NN ( `$CMD_FIND $SITAR_CONFIG_DIR -iname "*.include" -type f` ) {
 			chomp $NN;
 			%myfiles = ();
 			do "$NN";
@@ -2357,7 +2363,7 @@ sub si_etc() {
 				$myfiles{ $_ } = 0;
 			}
 			$OO = $NN;
-			$OO =~ s+$config_dir++g;
+			$OO =~ s+$SITAR_CONFIG_DIR++g;
 			$OO =~ s+^/++g;
 			$OO = substr( $OO, 0, rindex( $OO, ".include" ) );
 			siprtt( "h2", ucfirst( $OO ) . " ($NN)" );
@@ -2474,7 +2480,7 @@ sub si_installed_deb() {
 	my $total = 0;
 	my $num   = 0;
 	my @debs;
-	my $mark = "--sitar-mark-$now_string--";
+	my $mark = "--sitar-mark-$now_string_g--";
 	sysopen( STATUS, "$CMD_STATUS", O_RDONLY ) || die "can't open '$CMD_STATUS'";
 	$pos[ 0 ] = 0;
 	while ( <STATUS> ) { $pos[ $#pos + 1 ] = tell if /^$/; }
@@ -2643,7 +2649,7 @@ sub si_selection_rpm() {
 		$num++;
 	}
 	close( RPMS );
-	print "\# SuSE-Linux Configuration : ", int( $total / 1024 ), " : ", $num, "\n", "Description: $HOSTNAME $now_string\n", "Info:\n", "Ofni:\n", "Toinstall:\n";
+	print "\# SuSE-Linux Configuration : ", int( $total / 1024 ), " : ", $num, "\n", "Description: $HOSTNAME $now_string_g\n", "Info:\n", "Ofni:\n", "Toinstall:\n";
 	for $rr ( sort @rpms ) { print $rr, "\n"; }
 	print "Llatsniot:\n";
 }
@@ -2682,20 +2688,20 @@ sub si_selection_yast2( ) {
 	close( RPMS );
 	foreach $mytype ( @alltypes ) {
 		if ( $num{ $mytype } > 0 ) {
-			$outfile = join "", $outdir, "/sitar-$mytype-$HOSTNAME-yast2.sel";
-			if ( $outfile ne "" ) {
-				open( STDOUT, ">$outfile" );
+			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$mytype-$HOSTNAME-yast2.sel";
+			if ( $SITAR_OPT_OUTFILE ne "" ) {
+				open( STDOUT, ">$SITAR_OPT_OUTFILE" );
 			}
 			print "\# SuSE Linux Package Selection 3.0 (c) 2002 SUSE LINUX AG\n";
-			print "\# generated on ", $now_string, " by SITAR ", $RELEASE, "\n\n";
+			print "\# generated on ", $now_string_g, " by SITAR ", $SITAR_RELEASE, "\n\n";
 			print "=Ver: 3.0\n\n";
-			print "=Sel: ", $mytype, "-sitar-", $HOSTNAME, " ", $RELEASE, "\n\n";
+			print "=Sel: ", $mytype, "-sitar-", $HOSTNAME, " ", $SITAR_RELEASE, "\n\n";
 			print "=Siz: ", $total{ $mytype }, " ", $total{ $mytype }, "\n\n";
-			print "=Sum: ",    $mytype, " selection of '", $HOSTNAME, "'; by SITAR on ", $now_string, "\n";
-			print "=Sum.de: ", $mytype, " Auswahl für '", $HOSTNAME, "'; SITAR am ",    $now_string, "\n";
+			print "=Sum: ",    $mytype, " selection of '", $HOSTNAME, "'; by SITAR on ", $now_string_g, "\n";
+			print "=Sum.de: ", $mytype, " Auswahl für '", $HOSTNAME, "'; SITAR am ",    $now_string_g, "\n";
 			my @alllanguages = qw ( cs el_GR en es fr gl hu it ja lt nl pt pt_BR sl_SI sv tr);
 			foreach $ll ( sort @alllanguages ) {
-				print "=Sum.", $ll, ": SITAR '", $HOSTNAME, "', ", $now_string, "\n";
+				print "=Sum.", $ll, ": SITAR '", $HOSTNAME, "', ", $now_string_g, "\n";
 			}
 			if ( $mytype eq "ul" ) {
 				print "\n=Cat: baseconf\n\n";
@@ -2741,10 +2747,10 @@ sub si_check_consistency() {
 	#
 	# /var/lib/support/Configuration_Consistency.include
 	#
-	if ( !-d "$config_dir" ) {
-		mkdir $config_dir;
+	if ( !-d "$SITAR_CONFIG_DIR" ) {
+		mkdir $SITAR_CONFIG_DIR;
 	}
-	open( CONSISTENCY, ">$config_dir/$consistency" );
+	open( CONSISTENCY, ">$SITAR_CONFIG_DIR/$SITAR_CONSISTENCY_FILENAME" );
 	print CONSISTENCY "\n\@files = (\n";
 	foreach my $kkk ( sort keys %configfiles ) {
 		print CONSISTENCY "\"", $kkk, "\",\n";
@@ -2755,23 +2761,23 @@ sub si_check_consistency() {
 }
 
 sub si_print_version () {
-	print "SITAR - System InformaTion At Runtime - Release ", $RELEASE, "\nCopyright (C) ", $COPYRIGHT, "\n";
+	print "SITAR - System InformaTion At Runtime - Release ", $SITAR_RELEASE, "\nCopyright (C) ", $SITAR_COPYRIGHT, "\n";
 }
 
 sub si_print_help () {
-	print "Options available:\n\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2\n\t--outfile=<file|dir>\toutput filename (without: stdout)\n\t\t\t\tfor format 'yast2' outfile must be a directory\n\t--check-consistency\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
+	print "Options available:\n\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2\n\t--SITAR_OPT_OUTFILE=<file|dir>\toutput filename (without: stdout)\n\t\t\t\tfor format 'yast2' SITAR_OPT_OUTFILE must be a directory\n\t--check-consistency\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
 }
 
 sub si_run_sitar() {
-	if ( $siprt_mode ne "yast2" ) {
-		open( TESTFILE, ">$outfile" )
-		  || die "ERROR:\tThe output-file:\n\t$outfile\n\tcan not be opened for writing. Probably the parent-directory\n\tdoes not exist. - Exiting ...";
+	if ( $SITAR_OPT_FORMAT ne "yast2" ) {
+		open( TESTFILE, ">$SITAR_OPT_OUTFILE" )
+		  || die "ERROR:\tThe output-file:\n\t$SITAR_OPT_OUTFILE\n\tcan not be opened for writing. Probably the parent-directory\n\tdoes not exist. - Exiting ...";
 		close( TESTFILE );
 	}
-	if ( $siprt_mode eq "html" || $siprt_mode eq "tex" || $siprt_mode eq "sdocbook" ) {
+	if ( $SITAR_OPT_FORMAT eq "html" || $SITAR_OPT_FORMAT eq "tex" || $SITAR_OPT_FORMAT eq "sdocbook" ) {
 		open( SAVEOUT, ">&STDOUT" );
-		if ( $outfile ne "" ) {
-			open( STDOUT, ">$outfile" );
+		if ( $SITAR_OPT_OUTFILE ne "" ) {
+			open( STDOUT, ">$SITAR_OPT_OUTFILE" );
 		}
 		siprt( "header" );
 		si_general_sys();
@@ -2800,25 +2806,25 @@ sub si_run_sitar() {
 		}
 		si_immunix_apparmor();
 		si_proc();
-		if ( $distribution eq "unitedlinux" ) {
+		if ( $DIST_DISTRIBUTION eq "unitedlinux" ) {
 			si_chkconfig();
 			si_etc();
 			si_etc_united();
 			si_installed_sles();
 			si_proc_config();
-		} elsif ( $distribution eq "suse" || $distribution eq "sles" ) {
+		} elsif ( $DIST_DISTRIBUTION eq "suse" || $DIST_DISTRIBUTION eq "sles" ) {
 			si_chkconfig();
 			si_etc();
 			si_etc_united();
 			si_etc_suse();
 			si_installed_sles();
 			si_proc_config();
-		} elsif ( $distribution eq "redhat" ) {
+		} elsif ( $DIST_DISTRIBUTION eq "redhat" ) {
 			si_chkconfig();
 			si_etc();
 			si_etc_redhat();
 			si_installed_rpm();
-		} elsif ( $distribution eq "debian" ) {
+		} elsif ( $DIST_DISTRIBUTION eq "debian" ) {
 			si_etc();
 			si_etc_debian();
 			si_installed_deb();
@@ -2831,18 +2837,18 @@ sub si_run_sitar() {
 		siprt( "body" );
 		siprt( "footer" );
 		open( STDOUT, ">&SAVEOUT" );
-	} elsif ( $siprt_mode eq "yast1" ) {
+	} elsif ( $SITAR_OPT_FORMAT eq "yast1" ) {
 		open( SAVEOUT, ">&STDOUT" );
-		if ( $outfile ne "" ) {
-			open( STDOUT, ">$outfile" );
+		if ( $SITAR_OPT_OUTFILE ne "" ) {
+			open( STDOUT, ">$SITAR_OPT_OUTFILE" );
 		}
 		si_selection_rpm();
 		open( STDOUT, ">&SAVEOUT" );
-	} elsif ( $siprt_mode eq "yast2" ) {
+	} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
 		open( SAVEOUT, ">&STDOUT" );
 		si_selection_yast2();
 		open( STDOUT, ">&SAVEOUT" );
-	} elsif ( $siprt_mode eq "pci" ) {
+	} elsif ( $SITAR_OPT_FORMAT eq "pci" ) {
 		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.pci");
 		# si_lspci();
 		# open (STDOUT,  ">&SAVEOUT");
@@ -2856,49 +2862,49 @@ sub si_run_sitar() {
 		print( "Please run sitar as user root.\n" );
 		exit;
 	}
-	if ( $check_consistency ) {
+	if ( $SITAR_OPT_CONSISTENCY ) {
 		print( "Checking consistency of configuration files. This might need a long time...\n" );
 		si_check_consistency();
 	}
-	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$printhelp ) && ( !$siprt_mode ) && ( !$outfile ) && ( !$printversion ) ) {
-		@siprt_modes = ( "html", "tex", "sdocbook", "yast1", "yast2" );
+	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_FORMAT ) && ( !$SITAR_OPT_OUTFILE ) && ( !$SITAR_OPT_VERSION ) ) {
+		@SITAR_OPT_FORMATs = ( "html", "tex", "sdocbook", "yast1", "yast2" );
 		( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime( time );
-		$outdir = join "", "/tmp/sitar-", $HOSTNAME, "-", $year + 1900, sprintf( "%02d", $mon + 1 ), sprintf( "%02d", $mday ), sprintf( "%02d", $hour );
-		mkdir $outdir;
-		chdir $outdir;
-		for $mm ( @siprt_modes ) {
-			$siprt_mode   = $mm;
-			$OutputBuffer = "";
-			$TOCBuffer    = "";
-			$lastTOClevel = 0;
-			if ( $siprt_mode eq "yast1" ) {
-				$outfile = join "", $outdir, "/sitar-$HOSTNAME-yast1.sel";
-			} elsif ( $siprt_mode eq "yast2" ) {
+		$SITAR_OPT_OUTDIR = join "", "/tmp/sitar-", $HOSTNAME, "-", $year + 1900, sprintf( "%02d", $mon + 1 ), sprintf( "%02d", $mday ), sprintf( "%02d", $hour );
+		mkdir $SITAR_OPT_OUTDIR;
+		chdir $SITAR_OPT_OUTDIR;
+		for $mm ( @SITAR_OPT_FORMATs ) {
+			$SITAR_OPT_FORMAT   = $mm;
+			$output_buffer_g = "";
+			$toc_buffer_g    = "";
+			$toc_last_toc_level_g = 0;
+			if ( $SITAR_OPT_FORMAT eq "yast1" ) {
+				$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME-yast1.sel";
+			} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
 			} else {
-				if ( $siprt_mode eq "latex" ) {
-					$siprt_mode = "tex";
-					$outfile = join "", $outdir, "/sitar-$HOSTNAME.tex";
-				} elsif ( $siprt_mode eq "sdocbook" ) {
-					$outfile = join "", $outdir, "/sitar-$HOSTNAME.sdocbook.xml";
+				if ( $SITAR_OPT_FORMAT eq "latex" ) {
+					$SITAR_OPT_FORMAT = "tex";
+					$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.tex";
+				} elsif ( $SITAR_OPT_FORMAT eq "sdocbook" ) {
+					$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.sdocbook.xml";
 				} else {
-					$outfile = join "", $outdir, "/sitar-$HOSTNAME.$mm";
+					$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.$mm";
 				}
 			}
 			si_run_sitar();
 		}
 		chdir $CWD;
-	} elsif ( $siprt_mode eq "yast2" ) {
-		if ( ( -d $outfile ) && ( !$printhelp ) && ( !$printversion ) ) {
-			$outdir = $outfile;
+	} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
+		if ( ( -d $SITAR_OPT_OUTFILE ) && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_VERSION ) ) {
+			$SITAR_OPT_OUTDIR = $SITAR_OPT_OUTFILE;
 			si_run_sitar();
 		} else {
 			si_print_help();
 		}
-	} elsif ( $siprt_mode && $outfile && ( !$printhelp ) && ( !$printversion ) ) {
+	} elsif ( $SITAR_OPT_FORMAT && $SITAR_OPT_OUTFILE && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_VERSION ) ) {
 		si_run_sitar();
-	} elsif ( $printversion ) {
+	} elsif ( $SITAR_OPT_VERSION ) {
 		si_print_version();
-	} elsif ( ( $siprt_mode && ( !$outfile ) ) || ( ( !$siprt_mode ) && $outfile ) || $printhelp ) {
+	} elsif ( ( $SITAR_OPT_FORMAT && ( !$SITAR_OPT_OUTFILE ) ) || ( ( !$SITAR_OPT_FORMAT ) && $SITAR_OPT_OUTFILE ) || $SITAR_OPT_HELP ) {
 		si_print_help();
 	}
 }
