@@ -1,6 +1,5 @@
-			SITAR coding style
-							Matthias G. Eckermann
-							2001-08-14,2002-04-11
+SITAR coding style					Matthias G. Eckermann
+-----------------------------------------------------------------------------
 
 To avoid formatting nightmare, I suggest following this rules of formatting
 the code of sitar and associated tools:
@@ -57,21 +56,4 @@ the code of sitar and associated tools:
 	
 more to come ...
 		MgE
-
--- 
-$Log: CodingStyle,v $
-Revision 1.6  2002/12/02 17:43:18  mge
-Changed PerlTidy options to:
-	-i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob -ce -sbt=0 -bt=0 -pt=0 -nola
-Sorry for the confusion.
-Release 0.7.5
-
-Revision 1.5  2002/04/11 14:56:00  mge
-use perltidy with "-nbbb" now
-changed copyright to -2002
-
-Revision 1.4  2001/08/15 03:57:30  mge
-Makefile cleanups, introduced CVS-log into
-	CodingStyle Makefile sitar.pl.in sitar.spec
-
 
