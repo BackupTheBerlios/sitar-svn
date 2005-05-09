@@ -203,17 +203,16 @@ selected to be played upon. The sitar is also called as satar and sundari.
 
 use Getopt::Long;
 use Fcntl;
-
 #
 # sitar options and globals
 #
-my $SITAR_COPYHOLDER = "SuSE Linux, a Novell Business";
-my $SITAR_COPYRIGHT  = "1999-2005 $SITAR_COPYHOLDER";
-my $SITAR_RELEASE    = "%%SITAR_RELEASE%%";
-my $SITAR_PREFIX     = "%%SITAR_PREFIX%%";
-my $SITAR_OPT_FORMAT = "";
-my $SITAR_OPT_OUTFILE= "";
-my $SITAR_OPT_OUTDIR = "";
+my $SITAR_COPYHOLDER  = "SuSE Linux, a Novell Business";
+my $SITAR_COPYRIGHT   = "1999-2005 $SITAR_COPYHOLDER";
+my $SITAR_RELEASE     = "%%SITAR_RELEASE%%";
+my $SITAR_PREFIX      = "%%SITAR_PREFIX%%";
+my $SITAR_OPT_FORMAT  = "";
+my $SITAR_OPT_OUTFILE = "";
+my $SITAR_OPT_OUTDIR  = "";
 my ( $SITAR_OPT_HELP, $SITAR_OPT_VERSION, $SITAR_OPT_CONSISTENCY );
 GetOptions(
 	'f|format=s'          => \$SITAR_OPT_FORMAT,
@@ -222,9 +221,8 @@ GetOptions(
 	'h|help'              => \$SITAR_OPT_HELP,
 	'v|version'           => \$SITAR_OPT_VERSION
 );
-my $SITAR_CONFIG_DIR  = "/var/lib/support";
+my $SITAR_CONFIG_DIR           = "/var/lib/support";
 my $SITAR_CONSISTENCY_FILENAME = "Configuration_Consistency.include";
-
 #
 # commands
 #
@@ -256,46 +254,45 @@ chomp( my $CMD_UNAME     = `which uname` );
 chomp( my $CMD_UNIQ      = `which uniq` );
 open( STDERR, ">&SAVEERR" );
 $ENV{ PATH } = '';
-
 #
 # distribution test
 #
-my $DIST_UNITED	= "/etc/UnitedLinux-release";
-my $DIST_SUSE   = "/etc/SuSE-release";
-my $DIST_SLOX   = "/etc/SLOX-release";
-my $DIST_DEBIAN = "/etc/debian_version";
-my $DIST_REDHAT = "/etc/redhat-release";
-my $DIST_RELEASE= "";
-my $DIST_DISTRIBUTION= "";
+my $DIST_UNITED       = "/etc/UnitedLinux-release";
+my $DIST_SUSE         = "/etc/SuSE-release";
+my $DIST_SLOX         = "/etc/SLOX-release";
+my $DIST_DEBIAN       = "/etc/debian_version";
+my $DIST_REDHAT       = "/etc/redhat-release";
+my $DIST_RELEASE      = "";
+my $DIST_DISTRIBUTION = "";
 my ( $DPKG, $CMD_RPM, $CMD_STATUS );
 if ( -e $DIST_DEBIAN ) {
 	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/debian_version`;
 	$DIST_DISTRIBUTION = "debian";
-	$CMD_STATUS   = "/var/lib/dpkg/status";
-	$CMD_DPKG     = "/usr/bin/dpkg";
+	$CMD_STATUS        = "/var/lib/dpkg/status";
+	$CMD_DPKG          = "/usr/bin/dpkg";
 } elsif ( -e $DIST_REDHAT ) {
 	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/redhat-release`;
 	$DIST_DISTRIBUTION = "redhat";
-	$CMD_RPM      = "/bin/rpm";
+	$CMD_RPM           = "/bin/rpm";
 } elsif ( ( -e $DIST_UNITED ) && ( -e $DIST_SUSE ) ) {
 	$DIST_RELEASE = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
 	chomp $DIST_RELEASE;
 	$DIST_RELEASE = join "", $DIST_RELEASE, ", ", `$CMD_HEAD -n 1 /etc/SuSE-release`;
 	chomp $DIST_RELEASE;
 	$DIST_DISTRIBUTION = "sles";
-	$CMD_RPM      = "/bin/rpm";
+	$CMD_RPM           = "/bin/rpm";
 } elsif ( -e $DIST_UNITED ) {
 	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/UnitedLinux-release`;
 	$DIST_DISTRIBUTION = "unitedlinux";
-	$CMD_RPM      = "/bin/rpm";
+	$CMD_RPM           = "/bin/rpm";
 } elsif ( -e $DIST_SLOX ) {
 	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/SLOX-release`;
 	$DIST_DISTRIBUTION = "sles";
-	$CMD_RPM      = "/bin/rpm";
+	$CMD_RPM           = "/bin/rpm";
 } elsif ( -e $DIST_SUSE ) {
 	$DIST_RELEASE      = `$CMD_HEAD -n 1 /etc/SuSE-release`;
 	$DIST_DISTRIBUTION = "suse";
-	$CMD_RPM      = "/bin/rpm";
+	$CMD_RPM           = "/bin/rpm";
 } else {
 	$DIST_DISTRIBUTION = "unknown";
 	print "\n distribution not supported!!\n\n";
@@ -306,18 +303,16 @@ my $ULPACK_RAW_NAME    = "http://www.unitedlinux.com/feedback";
 my $ULPACK_NICE_NAME   = "United Linux";
 my $SUSEPACK_RAW_NAME  = "http://www.suse.de/feedback";
 my $SUSEPACK_NICE_NAME = "SuSE Linux";
-
 #
 # global vars
 #
-my $now_string_g= localtime();
-my %proc_h      = ();
+my $now_string_g = localtime();
+my %proc_h       = ();
 chomp( my $HOSTNAME = `$CMD_HOSTNAME -f` );
 chomp( my $UNAME    = `$CMD_UNAME -a` );
 chomp( my $UNAMER   = `$CMD_UNAME -r` );
 chomp( my $UNAMEM   = `$CMD_UNAME -m` );
 chomp( my $CWD      = `pwd` );
-
 #
 # AppArmor/SubDomain
 #
@@ -442,18 +437,17 @@ my $old_tex_footer = "\n
 \\par\\noindent
 \\textsf{SITAR is \\textcopyright{} $SITAR_COPYRIGHT}\\par
 \\end\{document\}\n";
-
 #
 # Table of contents and output
 #
-my $toc_seccnt_g       = 0;
-my $toc_subseccnt_g    = 0;
-my $toc_subsubseccnt_g = 0;
+my $toc_seccnt_g         = 0;
+my $toc_subseccnt_g      = 0;
+my $toc_subsubseccnt_g   = 0;
 my $toc_last_toc_level_g = 0;
 my $toc_last_sec_level_g = 0;
-my $toc_buffer_g    = "";
-my $output_is_verbatim_g   = 0;
-my $output_buffer_g = "";
+my $toc_buffer_g         = "";
+my $output_is_verbatim_g = 0;
+my $output_buffer_g      = "";
 
 sub mysprint {
 	$output_buffer_g = join "", $output_buffer_g, @_;
@@ -610,7 +604,7 @@ sub siprint($$$$) {
 			$toc_seccnt_g++;
 			mysprint "<section label=\"sec", $toc_seccnt_g, "\" id=\"sec", $toc_seccnt_g, "\"\n><title>", $value, "</title><para />\n";
 			addtoc_sdocbook( 1, "$toc_seccnt_g", "$toc_seccnt_g.$value" );
-			$toc_subseccnt_g    = 0;
+			$toc_subseccnt_g      = 0;
 			$toc_last_sec_level_g = 1;
 		}
 		if ( $m eq "h2" ) {
@@ -621,7 +615,7 @@ sub siprint($$$$) {
 			$toc_subseccnt_g++;
 			mysprint "<section label=\"sec", $toc_seccnt_g, ".", $toc_subseccnt_g, "\" id=\"sec", $toc_seccnt_g, ".", $toc_subseccnt_g, "\"\n><title>", $value, "</title><para />\n";
 			addtoc_sdocbook( 2, "$toc_seccnt_g.$toc_subseccnt_g", "$toc_seccnt_g.$toc_subseccnt_g&nbsp;$value" );
-			$toc_subsubseccnt_g = 0;
+			$toc_subsubseccnt_g   = 0;
 			$toc_last_sec_level_g = 2;
 		}
 		if ( $m eq "h3" ) {
@@ -2873,9 +2867,9 @@ sub si_run_sitar() {
 		mkdir $SITAR_OPT_OUTDIR;
 		chdir $SITAR_OPT_OUTDIR;
 		for $mm ( @SITAR_OPT_FORMATs ) {
-			$SITAR_OPT_FORMAT   = $mm;
-			$output_buffer_g = "";
-			$toc_buffer_g    = "";
+			$SITAR_OPT_FORMAT     = $mm;
+			$output_buffer_g      = "";
+			$toc_buffer_g         = "";
 			$toc_last_toc_level_g = 0;
 			if ( $SITAR_OPT_FORMAT eq "yast1" ) {
 				$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME-yast1.sel";
@@ -2908,6 +2902,4 @@ sub si_run_sitar() {
 		si_print_help();
 	}
 }
-
 #
-
