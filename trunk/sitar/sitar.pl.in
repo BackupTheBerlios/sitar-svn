@@ -335,7 +335,7 @@ my $sdocbook_header = "<?xml version=\"1.0\"?>
 ]>
 <article class=\"techreport\">
 <articleinfo>
-  <corpauthor>SITAR $SITAR_RELEASE, built from revision $SITAR_SVNVERSION</corpauthor>
+  <corpauthor>SITAR $SITAR_RELEASE-$SITAR_SVNVERSION</corpauthor>
   <copyright>
     <year>1999</year>
     <year>2005</year>
@@ -391,7 +391,7 @@ my $html_header     = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional
   </table>
   <hr>";
 my $html_footer = "<hr />
-<address>SITAR $SITAR_RELEASE is &copy; $SITAR_COPYRIGHT, built from revision $SITAR_SVNVERSION</address>
+<address>SITAR $SITAR_RELEASE-$SITAR_SVNVERSION is &copy; $SITAR_COPYRIGHT</address>
 </html>\n";
 #
 # $tex_header
@@ -415,7 +415,7 @@ my $tex_header = "%
 %
 \\title\{$HOSTNAME, $now_string_g \\\\
 \{\\normalsize $UNAMET\\ $DIST_RELEASE\} \}
-\\author\{$SITAR_RELEASE, built from revision $SITAR_SVNVERSION\}
+\\author\{$SITAR_RELEASE-$SITAR_SVNVERSION\}
 \\maketitle
 \\tableofcontents 
 \\newpage
@@ -430,7 +430,7 @@ my $tex_header = "%
 % \\section{$HOSTNAME, 
 % 	$now_string_g \\\\ 
 %	\{\\normalsize $UNAMET\\ $DIST_RELEASE\} \}}
-% ( by $SITAR_RELEASE, built from revision $SITAR_SVNVERSION ) 
+% ( by $SITAR_RELEASE-$SITAR_SVNVERSION ) 
 %
 ";
 my $tex_footer     = "\n\\end\{document\}\n";
@@ -2756,8 +2756,7 @@ sub si_check_consistency() {
 }
 
 sub si_print_version () {
-	print "SITAR -\tSystem InformaTion At Runtime - Release ", $SITAR_RELEASE, "\nCopyright (C) ", $SITAR_COPYRIGHT, ",\n";
-	print "\t\tbuilt from revision ", $SITAR_SVNVERSION, "\n";
+	print "SITAR -\tSystem InformaTion At Runtime - Release ", $SITAR_RELEASE, "-", $SITAR_SVNVERSION, "\nCopyright (C) ", $SITAR_COPYRIGHT, "\n";
 }
 
 sub si_print_help () {
