@@ -30,7 +30,7 @@
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
 Version:	0.9.4
-Release:	0
+Release:	dev
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
 Copyright:	GPL
