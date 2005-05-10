@@ -31,6 +31,7 @@ PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
 PERL=/usr/bin/perl
 RELEASE=0.9.4
+SVNVERSION=$(shell svnversion .)
 RELDATE=$(shell date +"%Y%m%d")
 
 default	:	sitar.pl sitar.1 sitar.html sitar.ps
@@ -55,8 +56,9 @@ signed:	clean
 
 sitar.pl:	sitar.pl.in Makefile
 	${PERL} -p 	-e '$$pre="${PREFIX}";' \
-			-e 's/%%PREFIX%%/$$pre/; '\
-			-e 's/%%RELEASE%%/${RELEASE}/;'\
+			-e 's/%%SITAR_PREFIX%%/$$pre/; '\
+			-e 's/%%SITAR_RELEASE%%/${RELEASE}/;'\
+			-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;'\
 			sitar.pl.in > sitar.pl
 	chmod 755 sitar.pl
 	ln -fs sitar.pl support_all.pl
