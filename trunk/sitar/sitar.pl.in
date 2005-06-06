@@ -26,7 +26,7 @@
 #		Jan Jensen		Falko Trojahn
 #		Stephan Martin		Holger Dopp
 #		Seth Arnold		Manfred Hollstein
-#		Stefan Werden
+#		Stefan Werden		Robert Heinzmann
 #
 
 =head1 NAME
@@ -1719,7 +1719,7 @@ sub si_ifconfig() {
 	while ( <IFCONFIG> ) {
 		if ( m/^\S/g ) {
 			siprt( "tabrow" );
-			s/^(\w+)\s+Link\sencap:(\w+)\s+((HWaddr\s(.*))|(Loopback))\s*$/$1::$2::$5$6/ix;
+			s/^([\w:]+)\s+Link\sencap:(\w+)\s+((HWaddr\s(.*))|(Loopback))\s*$/$1::$2::$5$6/ix;
 			my ( $t1, $t2, $t3 ) = split /::/;
 			siprtt( "cell", $t1 );
 			siprtt( "cell", $t2 );

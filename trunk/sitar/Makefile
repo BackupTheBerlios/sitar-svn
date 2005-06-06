@@ -16,16 +16,6 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-#  Authors/Contributors:
-#		Matthias G. Eckermann
-#		Stephan Müller 		Janto Trappe
-#		Waldemar Brodkorb 	Björn Jacke
-#		Bernhard Thoni 		Pascal Fuckerieder
-#		Andreas Rother 		Uwe Hering
-#		Jan Jensen 		Falko Trojahn
-#		Stephan Martin		Holger Dopp
-#		Seth Arnold
-#
 
 PREFIX=/usr
 DOCDIR=${PREFIX}/share/doc/packages
@@ -64,13 +54,13 @@ sitar.pl:	sitar.pl.in Makefile
 	ln -fs sitar.pl support_all.pl
 
 sitar.1:	sitar.pl
-	pod2man --center=" " sitar.pl > sitar.01
+	pod2man --center=" " --release="${RELEASE}-${SVNVERSION}" --date=${RELDATE} sitar.pl > sitar.01
 	${PERL} -p	-e 's/.if n .na/.\\\".if n .na/;'\
 			sitar.01 > sitar.1
 	rm sitar.01
 
 sitar.html:	sitar.pl
-	pod2html --infile=sitar.pl --outfile=sitar.html\
+	pod2html  --infile=sitar.pl --outfile=sitar.html\
 	--title "SITAR - System InformaTion At Runtime"
 
 sitar.ps:	sitar.1

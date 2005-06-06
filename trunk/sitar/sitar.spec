@@ -16,16 +16,6 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-#  Authors/Contributors:
-#		Matthias G. Eckermann
-#		Stephan Müller		Janto Trappe
-#		Waldemar Brodkorb	Björn Jacke
-#		Bernhard Thoni		Pascal Fuckerieder
-#		Andreas Rother		Uwe Hering
-#		Jan Jensen		Falko Trojahn
-#		Stephan Martin		Holger Dopp
-#		Seth Arnold
-#
 
 Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
