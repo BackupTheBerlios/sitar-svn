@@ -1024,7 +1024,7 @@ sub si_pci() {
 		close( IN );
 	} elsif ( -x "$CMD_LSPCI" ) {
 		siprtt( "h2", "PCI Devices" );
-		siprtttt( "tabborder", "lllll", "PCI Devices", 5 );
+		siprtttt( "tabborder", "lp{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}l", "PCI Devices", 7 );
 		siprt( "tabrow" );
 		for $TT qw ( PCI Device Class Vendor SVendor SDevice Rev ) {
 			siprtt( "tabhead", $TT );
@@ -1062,7 +1062,9 @@ sub si_pci() {
 				if ( $tt eq "" ) {
 					siprtt( "cell", "" );
 				} else {
-					siprtt( "cell", $lspcidevices_h{ "$NN" }{ "$TT" } );
+					my $ttt = $lspcidevices_h{ "$NN" }{ "$TT" };
+					chomp $ttt;
+					siprtt( "cell", $ttt );
 				}
 			}
 			siprt( "endrow" );
@@ -1586,7 +1588,7 @@ sub si_mount() {
 	# for $tt (sort keys %mountp) {
 	siprt( "tabrow" );
 	siprtt( "tabhead", "Partition" );
-	siprtt( "tabhead", "Part.-type" );
+	siprtt( "tabhead", "PType" );
 	siprtt( "tabhead", "\#" );
 	siprtt( "tabhead", "Begin" );
 	siprtt( "tabhead", "End" );
