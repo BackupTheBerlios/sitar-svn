@@ -208,9 +208,9 @@ use Fcntl;
 #
 my $SITAR_COPYHOLDER  = "SuSE Linux, a Novell Business";
 my $SITAR_COPYRIGHT   = "1999-2005 $SITAR_COPYHOLDER";
-my $SITAR_RELEASE     = "0.9.4";
-my $SITAR_SVNVERSION  = "128:129M";
-my $SITAR_PREFIX      = "/usr";
+my $SITAR_RELEASE     = "%%SITAR_RELEASE%%";
+my $SITAR_SVNVERSION  = "%%SITAR_SVNVERSION%%";
+my $SITAR_PREFIX      = "%%SITAR_PREFIX%%";
 my $SITAR_OPT_FORMAT  = "";
 my $SITAR_OPT_OUTFILE = "";
 my $SITAR_OPT_OUTDIR  = "";

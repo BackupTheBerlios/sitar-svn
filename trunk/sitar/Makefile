@@ -32,21 +32,16 @@ clean:
 	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps pod2htm* *-selections
 
 /tmp/sitar-${RELEASE}.tar.bz2:	clean
-	- cp -a sitar.pl.in sitar.pl.in.pre
-	${PERL} -p 	-e '$$pre="${PREFIX}";' \
-			-e 's/%%SITAR_PREFIX%%/$$pre/; '\
-			-e 's/%%SITAR_RELEASE%%/${RELEASE}/;'\
-			-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;'\
-			sitar.pl.in.pre > sitar.pl.in
-	- rm -f sitar.pl.in.pre
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+	- ( pushd ..; cp -a sitar /tmp/sitar-${RELEASE} ; rm -rf /tmp/sitar-${RELEASE}/.svn ;  popd )
+	- ( pushd /tmp/sitar-${RELEASE} ; cp -a sitar.pl.in sitar.pl.in.pre ; ${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.pl.in.pre > sitar.pl.in ; rm -f sitar.pl.in.pre ; popd )
+	- ( pushd /tmp/ ; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -rf /tmp/sitar-${RELEASE} ; popd )
 
-rpm:	/tmp/sitar-${RELEASE}.tar.bz2
+rpm:	clean
+	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
 	- (pushd /tmp/ ; rpmbuild -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
 	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
-signed:	clean
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+signed:	/tmp/sitar-${RELEASE}.tar.bz2
 	- (pushd /tmp/ ; rpmbuild -ta --sign sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
 	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
