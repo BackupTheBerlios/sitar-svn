@@ -36,8 +36,7 @@ clean:
 	- ( pushd /tmp/sitar-${RELEASE} ; cp -a sitar.pl.in sitar.pl.in.pre ; ${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.pl.in.pre > sitar.pl.in ; rm -f sitar.pl.in.pre ; popd )
 	- ( pushd /tmp/ ; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -rf /tmp/sitar-${RELEASE} ; popd )
 
-rpm:	clean
-	- (pushd .. ; ln -s sitar sitar-${RELEASE}; tar cvjSpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -f sitar-${RELEASE} ; popd)
+rpm:	/tmp/sitar-${RELEASE}.tar.bz2
 	- (pushd /tmp/ ; rpmbuild -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
 	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
@@ -46,11 +45,7 @@ signed:	/tmp/sitar-${RELEASE}.tar.bz2
 	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
 sitar.pl:	sitar.pl.in Makefile
-	${PERL} -p 	-e '$$pre="${PREFIX}";' \
-			-e 's/%%SITAR_PREFIX%%/$$pre/; '\
-			-e 's/%%SITAR_RELEASE%%/${RELEASE}/;'\
-			-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;'\
-			sitar.pl.in > sitar.pl
+	${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.pl.in > sitar.pl
 	chmod 755 sitar.pl
 	ln -fs sitar.pl support_all.pl
 
