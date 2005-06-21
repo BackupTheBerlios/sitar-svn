@@ -2239,6 +2239,7 @@ my @allconfigfiless = qw (
   /etc/dhclient-enter-hooks
   /etc/dhclient.conf
   /etc/dhcpd.conf
+  /etc/elilo.conf
   /etc/group
   /etc/grub.conf
   /etc/ha.d/authkeys
