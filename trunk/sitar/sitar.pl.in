@@ -247,6 +247,7 @@ chomp( my $CMD_LS        = `which ls` );
 chomp( my $CMD_LSPCI     = `which lspci` );
 chomp( my $CMD_LSPNP     = `which lspnp` );
 chomp( my $CMD_MOUNT     = `which mount` );
+chomp( my $CMD_MULTIPATH = `which multipath` );
 chomp( my $CMD_POSTCONF  = `which postconf` );
 chomp( my $CMD_ROUTE     = `which route` );
 chomp( my $CMD_SORT      = `which sort` );
@@ -314,6 +315,8 @@ chomp( my $UNAME    = `$CMD_UNAME -a` );
 chomp( my $UNAMER   = `$CMD_UNAME -r` );
 chomp( my $UNAMEM   = `$CMD_UNAME -m` );
 chomp( my $CWD      = `pwd` );
+#
+my $multipath_conf  = "/etc/multipath.conf";
 #
 # AppArmor/SubDomain
 #
@@ -1696,6 +1699,19 @@ sub si_mount() {
 		}
 		siprt( "endpre" );
 	}
+	if ( -x "$CMD_MULTIPATH" ) {
+		siprtt( "h2", "Multipathing (dm based)" );
+		si_conf( $multipath_conf, $multipath_conf, "\#" );
+		siprtt( "h3", "$CMD_MULTIPATH -ll" );
+		siprt( "pre" );
+		open( CONFIG, "$CMD_MULTIPATH -ll |" );
+		while ( <CONFIG> ) {
+			chomp();
+			siprtt( "verb", "$_\n" );
+		}
+		close( CONFIG );
+		siprt( "endpre" );
+	}
 }
 
 sub si_ifconfig() {
@@ -2232,6 +2248,7 @@ sub si_immunix_apparmor () {
 		}
 	}
 }
+
 my @allconfigfiless = qw (
   /boot/grub/menu.lst
   /etc/apache/httpd.conf
