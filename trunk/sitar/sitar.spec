@@ -24,7 +24,7 @@ Release:	dev
 Summary:	System InformaTion At Runtime
 Source0:	sitar-%{version}.tar.bz2
 Copyright:	GPL
-Group: 		Applications/System
+Group: 		System/Monitoring
 BuildRoot:	/tmp/root-%{name}/
 BuildArch: 	noarch
 
