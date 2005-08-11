@@ -35,7 +35,7 @@ SITAR - System InformaTion At Runtime
 
 =head1 SYNOPSIS
 
-sitar|sitar.pl B<--check-consistency> B<--format>=I<format> B<--SITAR_OPT_OUTFILE>=I<file|dir> B<--help> B<--version>
+sitar|sitar.pl B<--check-consistency> B<--format>=I<format> B<--outfile>=I<file|dir> B<--help> B<--version>
 
 Available I<format>s: html, tex, sdocbook, yast1, yast2
 
@@ -51,13 +51,13 @@ There are three files/links available:
 
 =item sitar.pl
 
-If called without B<--SITAR_OPT_OUTFILE> and/or without B<--format>, all available output formats are produced below /tmp/sitar-$hostname-$date. 
+If called without B<--outfile> and/or without B<--format>, all available output formats are produced below /tmp/sitar-$hostname-$date. 
 
-If called with B<--format> and B<--SITAR_OPT_OUTFILE> exactly this is produced.  Please note, that the format B<yast2> needs a directory given with the parameter B<--SITAR_OPT_OUTFILE>!
+If called with B<--format> and B<--outfile> exactly this is produced.  Please note, that the format B<yast2> needs a directory given with the parameter B<--outfile>!
 
 =item support_all.pl
 
-must always be called with both options: B<--format> B<--SITAR_OPT_OUTFILE>, but does nothing, if called without any options.
+must always be called with both options: B<--format> B<--outfile>, but does nothing, if called without any options.
 
 =back
 
@@ -101,11 +101,11 @@ produces simplified docbook-xml; the format is not named B<xml>, because there a
 
 =item yast2
 
-Please note, that this format needs a directory given with the parameter B<--SITAR_OPT_OUTFILE>!
+Please note, that this format needs a directory given with the parameter B<--outfile>!
 
 =back
 
-=item B<--SITAR_OPT_OUTFILE>=I<file|dir> 
+=item B<--outfile>=I<file|dir> 
 
 All formatted output will be stored in the file given here.  Please don't forget to give the right extension here: C<.html> for HTML, C<.tex> for TeX or LaTeX, C<.sdocbook.xml> for simplified docbook-xml, C<.sel> for YaST-Selection-files.
 
@@ -125,7 +125,7 @@ The program may B<silently> fail if either the C</proc> Filesystem does not exis
 
 =head1 DIAGNOSTICS
 
-While running, stdout is redirected to the designated C<SITAR_OPT_OUTFILE> file. So one will find diagnostics in this file; this (not very helpful) behaviour may change in the future.
+While running, stdout is redirected to the designated C<outfile> file. So one will find diagnostics in this file; this (not very helpful) behaviour may change in the future.
 
 =head1 EXAMPLES
 
@@ -135,11 +135,11 @@ C<sitar --check-consistency>
 
 For generating a HTML documentation type as user C<root>:
 	
-C<sitar.pl --format=html --SITAR_OPT_OUTFILE=/tmp/$HOSTNAME.html>
+C<sitar.pl --format=html --outfile=/tmp/$HOSTNAME.html>
 
 For PDF type as user C<root>:
 
-C<sitar.pl --format=tex --SITAR_OPT_OUTFILE=/tmp/$HOSTNAME.tex>
+C<sitar.pl --format=tex --outfile=/tmp/$HOSTNAME.tex>
 
 and twice (as an ordinary user): 
 
@@ -2782,7 +2782,7 @@ sub si_print_version () {
 }
 
 sub si_print_help () {
-	print "Options available:\n\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2\n\t--SITAR_OPT_OUTFILE=<file|dir>\toutput filename (without: stdout)\n\t\t\t\tfor format 'yast2' SITAR_OPT_OUTFILE must be a directory\n\t--check-consistency\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
+	print "Options available:\n\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2\n\t--outfile=<file|dir>\toutput filename (without: stdout)\n\t\t\t\tfor format 'yast2' outfile must be a directory\n\t--check-consistency\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
 }
 
 sub si_run_sitar() {
