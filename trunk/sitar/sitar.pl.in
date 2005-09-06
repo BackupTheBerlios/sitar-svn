@@ -1994,11 +1994,16 @@ sub si_iptables () {
 	if ( -x "$CMD_IPTABLES" ) {
 		push @lines, $_;
 		open( TABLES, "/proc/net/ip_tables_names" );
-		while ( <TABLES> ) {
+		while ( $tabname = <TABLES> ) {
+			chomp( $tabname );
+			push @tables, $tabname;
+		}
+		close( TABLES );
+		foreach $tabname ( @tables ) {
 			chomp();
-			siprtt( "h2", "Table $_" );
+			siprtt( "h2", "Table $tabname" );
 			siprt( "pre" );
-			open( CONFIG, "$CMD_IPTABLES -v -L -n -t $_ |" );
+			open( CONFIG, "$CMD_IPTABLES -v -L -n -t $tabname |" );
 			while ( <CONFIG> ) {
 				chomp();
 				siprtt( "verb", "$_\n" );
@@ -2006,7 +2011,6 @@ sub si_iptables () {
 			close( CONFIG );
 			siprt( "endpre" );
 		}
-		close( TABLES );
 	}
 }
 
