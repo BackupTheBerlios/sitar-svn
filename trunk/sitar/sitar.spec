@@ -29,7 +29,7 @@ BuildRoot:	/tmp/root-%{name}/
 BuildArch: 	noarch
 
 #Requires:	coreutils util-linux gzip grep rpm net-tools
-
+#Distribution:	SuSE SLES-9 (%{_arch}) Addon
 Packager:	Matthias G. Eckermann <mge@suse.de>
 
 %description 
