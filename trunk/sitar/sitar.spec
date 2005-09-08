@@ -30,7 +30,7 @@ BuildArch: 	noarch
 
 #Requires:	coreutils util-linux gzip grep rpm net-tools
 #Distribution:	SuSE SLES-9 (%{_arch}) Addon
-Packager:	Matthias G. Eckermann <mge@suse.de>
+Packager:	Matthias G. Eckermann <mge@novell.com>
 
 %description 
 Sitar prepares system information using perl and binary tools, and by
@@ -49,7 +49,7 @@ Comment: Sitar is an ancient Indian instrument as well.
 
 Authors:
 --------
-    Matthias Eckermann  <mge@suse.de>
+    Matthias Eckermann  <mge@novell.com>
     and contributors
 
 %prep
