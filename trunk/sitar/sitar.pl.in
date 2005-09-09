@@ -158,7 +158,7 @@ A typical file to include the configurations files of the application C<foobar> 
  
 =head1 AUTHOR
 
-The SITAR project was created by Matthias G. Eckermann <mge@novell.com>;
+The SITAR project was created by Matthias G. Eckermann <mge@suse.de>;
 Stephan M"uller helped with Firewalling and Security issues; Janto Trappe and
 Waldemar Brodkorb created the Debian port; Bj"orn Jacke helped on several
 issues; Bernhard Thoni introduced the software raid support; Pascal Fuckerieder
