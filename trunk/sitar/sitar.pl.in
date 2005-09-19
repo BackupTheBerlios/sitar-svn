@@ -242,6 +242,7 @@ chomp( my $CMD_GZIP      = `which gzip` );
 chomp( my $CMD_HEAD      = `which head` );
 chomp( my $CMD_HOSTNAME  = `which hostname` );
 chomp( my $CMD_IFCONF    = `which ifconfig` );
+chomp( my $CMD_INSTSRC   = `which installation_sources` );
 chomp( my $CMD_IPTABLES  = `which iptables` );
 chomp( my $CMD_LS        = `which ls` );
 chomp( my $CMD_LSPCI     = `which lspci` );
@@ -2537,6 +2538,18 @@ sub si_installed_deb() {
 
 sub si_installed_sles() {
 	siprtt( "h1", "Installed Packages" );
+	if( -x $CMD_INSTSRC ) {
+		siprtt( "h2", "Installation Sources" );
+		siprtt( "h2", "Table Installation Sources" );
+		siprt( "pre" );
+		open( INSTSRC, "$CMD_INSTSRC -s |" );
+		while ( <INSTSRC> ) {
+			chomp();
+			siprtt( "verb", "$_\n" );
+		}
+		close( INSTSRC );
+		siprt( "endpre" );
+	}
 	my $total = 0;
 	my $num   = 0;
 	my @packagers;
