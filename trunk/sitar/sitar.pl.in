@@ -2540,7 +2540,6 @@ sub si_installed_sles() {
 	siprtt( "h1", "Installed Packages" );
 	if( -x $CMD_INSTSRC ) {
 		siprtt( "h2", "Installation Sources" );
-		siprtt( "h2", "Table Installation Sources" );
 		siprt( "pre" );
 		open( INSTSRC, "$CMD_INSTSRC -s |" );
 		while ( <INSTSRC> ) {
