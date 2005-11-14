@@ -27,6 +27,7 @@
 #		Stephan Martin		Holger Dopp
 #		Seth Arnold		Manfred Hollstein
 #		Stefan Werden		Robert Heinzmann
+#		Martin Spill
 #
 
 =head1 NAME
@@ -327,17 +328,69 @@ my $apparmor_config_path      = "/etc/logprof.conf";
 my $apparmor_config_directory = "/etc/immunix/";
 my $apparmor_profiles_path    = "/etc/subdomain.d";
 #
+# configfiles to hide/ignore	
+#
+my %ignoreconfigfiles = (
+	"/etc/defkeymap.map"	=> 1,
+	""			=> 0
+);
+#
+# allconfigfiless
+#
+my @allconfigfiless = qw (
+  /boot/grub/menu.lst
+  /etc/apache/httpd.conf
+  /etc/crontab
+  /etc/dhclient-enter-hooks
+  /etc/dhclient.conf
+  /etc/dhcpd.conf
+  /etc/elilo.conf
+  /etc/group
+  /etc/grub.conf
+  /etc/ha.d/authkeys
+  /etc/ha.d/ha.cf
+  /etc/ha.d/haresources
+  /etc/hosts
+  /etc/hosts.allow
+  /etc/hosts.deny
+  /etc/httpd/httpd.conf
+  /etc/inetd.conf
+  /etc/init.d/boot.local
+  /etc/inittab
+  /etc/lilo.conf
+  /etc/ntp.conf
+  /etc/passwd
+  /etc/ppp/options
+  /etc/ppp/pppoe-server-options
+  /etc/pppoed.conf
+  /etc/printcap
+  /etc/raid0.conf
+  /etc/raid1.conf
+  /etc/raid5.conf
+  /etc/raidtab
+  /etc/rc.firewall
+  /etc/resolv.conf
+  /etc/rinetd.conf
+  /etc/route.conf
+  /etc/snmp/snmpd.conf
+  /etc/snort/snort.conf
+  /etc/squid.conf
+  /etc/squid/squid.conf
+  /etc/syslog.conf
+  /etc/xinetd.conf
+  /var/spool/fax/etc/config
+  /var/spool/fax/etc/config.modem
+);
+#
 # HEADER
 #
 # # <?xml-stylesheet type="text/css2" href="file:///xyz.css"?>
 #
-my $sdocbook_header = "<?xml version=\"1.0\"?>
-<!DOCTYPE article
-	PUBLIC \"-//OASIS//DTD Simplified DocBook XML V1.1CR2//EN\"
-	\"http://docbook.org/xml/simple/1.1CR2/sdocbook.dtd\" [
-<!ENTITY nbsp \"&#x000A0;\" >
+my $sdocbook_header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE article PUBLIC \"-//OASIS//DTD DocBook XML V4.1.2//EN\" \"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd\" [
+  <!ENTITY nbsp \"&#x000A0;\" >
 ]>
-<article class=\"techreport\">
+<article class=\"techreport\" lang=\"en-US\">
 <articleinfo>
   <corpauthor>SITAR $SITAR_RELEASE-$SITAR_SVNVERSION</corpauthor>
   <copyright>
@@ -1981,7 +2034,7 @@ sub si_chkconfig () {
 		push @lines, $_;
 		siprtt( "h1", "Automatic Startup (chkconfig -l)" );
 		siprt( "pre" );
-		open( CONFIG, "$CMD_CHKCONF -l |" );
+		open( CONFIG, "$CMD_CHKCONF --list |" );
 		while ( <CONFIG> ) {
 			chomp();
 			siprtt( "verb", "$_\n" );
@@ -2100,43 +2153,45 @@ sub si_conf_secure($$$) {
 sub si_conf($$$) {
 	my ( $title, $filename, $comment ) = @_;
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
-		if ( $title eq $filename ) {
-			siprtt( "h3", "$filename" );
-		} else {
-			siprtt( "h3", "$title - $filename" );
-		}
-		si_conf_filename_stat( $filename, $comment );
-		# print STDERR $filename, ": ", $comment, "\n";
-		siprt( "pre" );
-		if ( $comment eq "/**/" ) {
-			open( CONFIG, $filename );
-			my $old_recsep = $/;
-			undef $/;
-			$ttt = <CONFIG>;
-			$ttt =~ s#/\*.*?\*/##gs;
-			$ttt =~ s#//.*##g;
-			$ttt =~ s/\n\s*\n/\n/gs;
-			close( CONFIG );
-			siprtt( "verb", $ttt );
-			$/ = $old_recsep;
-		} elsif ( $comment eq "" ) {
-			open( CONFIG, "<$filename" );
-			while ( <CONFIG> ) {
-				chomp();
-				siprtt( "verb", "$_\n" );
+		if ( !exists ( $ignoreconfigfiles{ $filename } ) ) {
+			if ( $title eq $filename ) {
+				siprtt( "h3", "$filename" );
+			} else {
+				siprtt( "h3", "$title - $filename" );
 			}
-			close( CONFIG );
-		} else {
-			open( CONFIG, "<$filename" );
-			while ( <CONFIG> ) {
-				chomp();
-				if ( !m/^\s*($comment)|^\s*$|^$/ ) {
+			si_conf_filename_stat( $filename, $comment );
+			# print STDERR $filename, ": ", $comment, "\n";
+			siprt( "pre" );
+			if ( $comment eq "/**/" ) {
+				open( CONFIG, $filename );
+				my $old_recsep = $/;
+				undef $/;
+				$ttt = <CONFIG>;
+				$ttt =~ s#/\*.*?\*/##gs;
+				$ttt =~ s#//.*##g;
+				$ttt =~ s/\n\s*\n/\n/gs;
+				close( CONFIG );
+				siprtt( "verb", $ttt );
+				$/ = $old_recsep;
+			} elsif ( $comment eq "" ) {
+				open( CONFIG, "<$filename" );
+				while ( <CONFIG> ) {
+					chomp();
 					siprtt( "verb", "$_\n" );
 				}
+				close( CONFIG );
+			} else {
+				open( CONFIG, "<$filename" );
+				while ( <CONFIG> ) {
+					chomp();
+					if ( !m/^\s*($comment)|^\s*$|^$/ ) {
+						siprtt( "verb", "$_\n" );
+					}
+				}
+				close( CONFIG );
 			}
-			close( CONFIG );
+			siprt( "endpre" );
 		}
-		siprt( "endpre" );
 	}
 }
 
@@ -2255,51 +2310,6 @@ sub si_immunix_apparmor () {
 		}
 	}
 }
-
-my @allconfigfiless = qw (
-  /boot/grub/menu.lst
-  /etc/apache/httpd.conf
-  /etc/crontab
-  /etc/dhclient-enter-hooks
-  /etc/dhclient.conf
-  /etc/dhcpd.conf
-  /etc/elilo.conf
-  /etc/group
-  /etc/grub.conf
-  /etc/ha.d/authkeys
-  /etc/ha.d/ha.cf
-  /etc/ha.d/haresources
-  /etc/hosts
-  /etc/hosts.allow
-  /etc/hosts.deny
-  /etc/httpd/httpd.conf
-  /etc/inetd.conf
-  /etc/init.d/boot.local
-  /etc/inittab
-  /etc/lilo.conf
-  /etc/ntp.conf
-  /etc/passwd
-  /etc/ppp/options
-  /etc/ppp/pppoe-server-options
-  /etc/pppoed.conf
-  /etc/printcap
-  /etc/raid0.conf
-  /etc/raid1.conf
-  /etc/raid5.conf
-  /etc/raidtab
-  /etc/rc.firewall
-  /etc/resolv.conf
-  /etc/rinetd.conf
-  /etc/route.conf
-  /etc/snmp/snmpd.conf
-  /etc/snort/snort.conf
-  /etc/squid.conf
-  /etc/squid/squid.conf
-  /etc/syslog.conf
-  /etc/xinetd.conf
-  /var/spool/fax/etc/config
-  /var/spool/fax/etc/config.modem
-);
 
 sub si_proc () {
 	si_build_proc_description();

@@ -17,24 +17,28 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-PREFIX=/usr
-DOCDIR=${PREFIX}/share/doc/packages
-PERL=/usr/bin/perl
-RELEASE=0.9.4
-SVNVERSION=$(shell svnversion .)
-RELDATE=$(shell date +"%Y%m%d")
+PREFIX		:=	/usr
+DOCDIR		:=	${PREFIX}/share/doc/packages
+PERL		:=	/usr/bin/perl
+RELEASE		:=	0.9.5
+SVNVERSION      :=      $(shell svnversion -n . | sed "s/:/./" )
+RELDATE         :=      $(shell date +"%Y%m%d")
 
-default	:	sitar.pl sitar.1 sitar.html sitar.ps
+
+default	:	sitar.pl sitar.1 sitar.html sitar.ps sitar.spec
 
 tar:		/tmp/sitar-${RELEASE}.tar.bz2
 
 clean:
-	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps pod2htm* *-selections
+	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps pod2htm* *-selections sitar.spec
 
-/tmp/sitar-${RELEASE}.tar.bz2:	clean
+/tmp/sitar-${RELEASE}.tar.bz2:	clean sitar.spec
 	- ( pushd ..; cp -a sitar /tmp/sitar-${RELEASE} ; rm -rf /tmp/sitar-${RELEASE}/.svn ;  popd )
 	- ( pushd /tmp/sitar-${RELEASE} ; cp -a sitar.pl.in sitar.pl.in.pre ; ${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.pl.in.pre > sitar.pl.in ; rm -f sitar.pl.in.pre ; popd )
 	- ( pushd /tmp/ ; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -rf /tmp/sitar-${RELEASE} ; popd )
+
+sitar.spec:   sitar.spec.in
+	${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.spec.in > sitar.spec
 
 rpm:	/tmp/sitar-${RELEASE}.tar.bz2
 	- (pushd /tmp/ ; rpmbuild -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
