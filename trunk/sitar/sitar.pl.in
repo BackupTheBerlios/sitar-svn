@@ -215,16 +215,20 @@ my $SITAR_PREFIX      = "%%SITAR_PREFIX%%";
 my $SITAR_OPT_FORMAT  = "";
 my $SITAR_OPT_OUTFILE = "";
 my $SITAR_OPT_OUTDIR  = "";
+my $SITAR_OPT_LIMIT   = 700000;
+my $SITAR_OPT_GCONF   = "No";
+my $SITAR_CONFIG_DIR  = "/var/lib/support";
+my $SITAR_CONSIST_FN  = "Configuration_Consistency.include";
+my $SITAR_UNPACKED_FN = "Find_Unpacked.include";
 my ( $SITAR_OPT_HELP, $SITAR_OPT_VERSION, $SITAR_OPT_CONSISTENCY );
 GetOptions(
 	'f|format=s'          => \$SITAR_OPT_FORMAT,
 	'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
 	'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
+	'f|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
 	'h|help'              => \$SITAR_OPT_HELP,
 	'v|version'           => \$SITAR_OPT_VERSION
 );
-my $SITAR_CONFIG_DIR           = "/var/lib/support";
-my $SITAR_CONSISTENCY_FILENAME = "Configuration_Consistency.include";
 #
 # commands
 #
@@ -318,7 +322,9 @@ chomp( my $UNAMER   = `$CMD_UNAME -r` );
 chomp( my $UNAMEM   = `$CMD_UNAME -m` );
 chomp( my $CWD      = `pwd` );
 #
-my $multipath_conf  = "/etc/multipath.conf";
+my ( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks );
+#
+my $multipath_conf = "/etc/multipath.conf";
 #
 # AppArmor/SubDomain
 #
@@ -328,11 +334,11 @@ my $apparmor_config_path      = "/etc/logprof.conf";
 my $apparmor_config_directory = "/etc/immunix/";
 my $apparmor_profiles_path    = "/etc/subdomain.d";
 #
-# configfiles to hide/ignore	
+# configfiles to hide/ignore
 #
 my %ignoreconfigfiles = (
-	"/etc/defkeymap.map"	=> 1,
-	""			=> 0
+	"/etc/defkeymap.map" => 1,
+	""                   => 0
 );
 #
 # allconfigfiless
@@ -2086,9 +2092,11 @@ sub si_packetfilter() {
 	}
 }
 
-sub si_conf_filename_stat($$) {
-	my ( $filename, $comment ) = @_;
-	my ( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
+sub si_conf_filename_stat($$$) {
+	my ( $filename, $comment, $call_stat ) = @_;
+	if ( $call_stat == 1 ) {
+		( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
+	}
 	siprtttt( "tabborder", "ll", "stat:$filename", 2 );
 	siprt( "tabrow" );
 	siprtt( "cell", "uid gid" );
@@ -2117,10 +2125,11 @@ sub si_conf_filename_stat($$) {
 
 sub si_conf_secure($$$) {
 	my ( $filename, $comment, $blankout ) = @_;
+	( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
 		siprtt( "h3", $filename );
 		# print STDERR $filename, ": ", $comment, "\n";
-		si_conf_filename_stat( $filename, $comment );
+		si_conf_filename_stat( $filename, $comment, 0 );
 		siprt( "pre" );
 		if ( $comment eq "/**/" ) {
 			open( CONFIG, $filename );
@@ -2153,13 +2162,19 @@ sub si_conf_secure($$$) {
 sub si_conf($$$) {
 	my ( $title, $filename, $comment ) = @_;
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
-		if ( !exists ( $ignoreconfigfiles{ $filename } ) ) {
+		if ( exists( $ignoreconfigfiles{ $filename } ) ) {
+			# debug
+		} elsif ( ( $SITAR_OPT_GCONF eq "No" ) && ( $filename =~ /etc\/opt\/gnome\/gconf/ ) ) {
+			# print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
+		} elsif ( ( $SITAR_OPT_LIMIT > 0 ) && ( $ff_size > $SITAR_OPT_LIMIT ) ) {
+			# print "LIMIT exceed; skipped $fname\n";
+		} else {
 			if ( $title eq $filename ) {
 				siprtt( "h3", "$filename" );
 			} else {
 				siprtt( "h3", "$title - $filename" );
 			}
-			si_conf_filename_stat( $filename, $comment );
+			si_conf_filename_stat( $filename, $comment, 1 );
 			# print STDERR $filename, ": ", $comment, "\n";
 			siprt( "pre" );
 			if ( $comment eq "/**/" ) {
@@ -2399,7 +2414,7 @@ sub si_etc() {
 			$OO =~ s+^/++g;
 			$OO = substr( $OO, 0, rindex( $OO, ".include" ) );
 			siprtt( "h2", ucfirst( $OO ) . " ($NN)" );
-			si_conf_filename_stat( $NN, "" );
+			si_conf_filename_stat( $NN, "", 1 );
 			foreach $mm ( sort keys %myfiles ) {
 				if ( $mm !~ /proc/ ) {
 					if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
@@ -2548,7 +2563,7 @@ sub si_installed_deb() {
 
 sub si_installed_sles() {
 	siprtt( "h1", "Installed Packages" );
-	if( -x $CMD_INSTSRC ) {
+	if ( -x $CMD_INSTSRC ) {
 		siprtt( "h2", "Installation Sources" );
 		siprt( "pre" );
 		open( INSTSRC, "$CMD_INSTSRC -s |" );
@@ -2793,7 +2808,7 @@ sub si_check_consistency() {
 	if ( !-d "$SITAR_CONFIG_DIR" ) {
 		mkdir $SITAR_CONFIG_DIR;
 	}
-	open( CONSISTENCY, ">$SITAR_CONFIG_DIR/$SITAR_CONSISTENCY_FILENAME" );
+	open( CONSISTENCY, ">$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" );
 	print CONSISTENCY "\n\@files = (\n";
 	foreach my $kkk ( sort keys %configfiles ) {
 		print CONSISTENCY "\"", $kkk, "\",\n";
@@ -2803,12 +2818,50 @@ sub si_check_consistency() {
 	open( STDERR, ">&SAVEERR" );
 }
 
+sub si_find_unpacked($$) {
+	chomp( my ( $ddd, $ignore_binary ) = @_ );
+	print( "Finding unpackaged files below $ddd. This might need a long time...\n" );
+	my %configfiles = ();
+	for $NN ( `$CMD_FIND $ddd -type f` ) {
+		chomp $NN;
+		chomp( my $res = `$CMD_RPM -qf $NN` );
+		if ( $res =~ /is not owned by any package$/ ) {
+			if ( ( $NN !~ /~$/ ) && ( -r $NN ) ) {
+				chomp( $type = `$CMD_FILE -p -b $NN` );
+				if ( $ignore_binary && ( ( $type =~ /^Berkeley DB/ ) || ( $type =~ /data/ ) ) ) {
+					# si_debug( sprintf "---\t", $type, "\t", $NN );
+				} else {
+					# si_debug( sprintf "\t", $type, "\t", $NN );
+					$configfiles{ $NN } = 1;
+				}
+			}
+		}
+	}
+	if ( !-d "$SITAR_CONFIG_DIR" ) {
+		mkdir $SITAR_CONFIG_DIR;
+	}
+	open( FINDUNPACKED, ">$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" );
+	print FINDUNPACKED "\n\@files = (\n";
+	foreach my $kkk ( sort keys %configfiles ) {
+		print FINDUNPACKED "\"", $kkk, "\",\n";
+	}
+	print FINDUNPACKED ");\n\n";
+	close( FINDUNPACKED );
+}
+
 sub si_print_version () {
 	print "SITAR -\tSystem InformaTion At Runtime - Release ", $SITAR_RELEASE, "-", $SITAR_SVNVERSION, "\nCopyright (C) ", $SITAR_COPYRIGHT, "\n";
 }
 
 sub si_print_help () {
-	print "Options available:\n\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2\n\t--outfile=<file|dir>\toutput filename (without: stdout)\n\t\t\t\tfor format 'yast2' outfile must be a directory\n\t--check-consistency\n\t--help\t\t\tthis page\n\t--version\t\tprintout SITAR version\n";
+	print "Options available:
+\t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2
+\t--outfile=<file|dir>\toutput filename (without: stdout)
+\t\t\t\tfor format 'yast2' outfile must be a directory
+\t--check-consistency
+\t--find-unpacked
+\t--help\t\t\tthis page
+\t--version\t\tprintout SITAR version";
 }
 
 sub si_run_sitar() {
@@ -2904,6 +2957,9 @@ sub si_run_sitar() {
 	if ( $< != 0 ) {
 		print( "Please run sitar as user root.\n" );
 		exit;
+	}
+	if ( $SITAR_OPT_FINDUNPACKED ) {
+		si_find_unpacked( "/etc/", 1 );
 	}
 	if ( $SITAR_OPT_CONSISTENCY ) {
 		print( "Checking consistency of configuration files. This might need a long time...\n" );
