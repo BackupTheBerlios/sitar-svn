@@ -222,7 +222,7 @@ my $SITAR_OPT_FORMAT  = "";
 my $SITAR_OPT_OUTFILE = "";
 my $SITAR_OPT_OUTDIR  = "";
 my $SITAR_OPT_LIMIT   = 700000;
-my $SITAR_OPT_GCONF   = "No";
+my $SITAR_OPT_GNOME   = "No";
 my $SITAR_CONFIG_DIR  = "/var/lib/support";
 my $SITAR_CONSIST_FN  = "Configuration_Consistency.include";
 my $SITAR_UNPACKED_FN = "Find_Unpacked.include";
@@ -2171,7 +2171,7 @@ sub si_conf($$$) {
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
 		if ( exists( $ignoreconfigfiles{ $filename } ) ) {
 			# debug
-		} elsif ( ( $SITAR_OPT_GCONF eq "No" ) && ( $filename =~ /etc\/opt\/gnome\/gconf/ ) ) {
+		} elsif ( ( $SITAR_OPT_GNOME eq "No" ) && ( $filename =~ /etc\/opt\/gnome/ ) ) {
 			# print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
 		} elsif ( ( $SITAR_OPT_LIMIT > 0 ) && ( $ff_size > $SITAR_OPT_LIMIT ) ) {
 			# print "LIMIT exceed; skipped $fname\n";
