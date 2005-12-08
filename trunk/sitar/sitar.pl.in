@@ -36,7 +36,7 @@ SITAR - System InformaTion At Runtime
 
 =head1 SYNOPSIS
 
-sitar|sitar.pl B<--check-consistency> B<--format>=I<format> B<--outfile>=I<file|dir> B<--help> B<--version>
+sitar|sitar.pl B<--check-consistency> B<--find-unpacked> B<--format>=I<format> B<--outfile>=I<file|dir> B<--help> B<--version> 
 
 Available I<format>s: html, tex, sdocbook, yast1, yast2
 
@@ -79,6 +79,12 @@ Prints the sitar version
 This option checks the consistency of configurations-files as declared in the RPMs, by invoking I<rpm -Vca>. It produces a file I</var/lib/support/Configuration_Consistency.include>, which is preserved between different sitar-runs.  The list contains all names of configuration files, which are tagged as configuration files within the RPMs and were changed compared to the release shipped within the RPMs.  
 
 The following standard sitar-run includes the file I</var/lib/support/Configuration_Consistency.include>, as described below (section FILES) and prints out the full content of the changed files.  At the moment, it is neither possible nor intended, to print only the differences to the I<shipped> status.
+
+Please note, that this really might need a long time (from 5-20 minutes).
+
+=item B<--find-unpacked>
+
+Find files below /etc, that do not belong to any RPM, and for that reason should be documented.
 
 Please note, that this really might need a long time (from 5-20 minutes).
 
