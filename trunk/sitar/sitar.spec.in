@@ -64,6 +64,7 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 make DESTDIR=${RPM_BUILD_ROOT} install
 rm -rf $RPM_BUILD_ROOT/usr/share/doc/sitar
+mkdir -p $RPM_BUILD_ROOT/var/lib/support
 %{?suse_check}
 
 %files
