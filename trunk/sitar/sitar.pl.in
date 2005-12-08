@@ -2167,6 +2167,7 @@ sub si_conf_secure($$$) {
 
 sub si_conf($$$) {
 	my ( $title, $filename, $comment ) = @_;
+	( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
 		if ( exists( $ignoreconfigfiles{ $filename } ) ) {
 			# debug
@@ -2180,7 +2181,7 @@ sub si_conf($$$) {
 			} else {
 				siprtt( "h3", "$title - $filename" );
 			}
-			si_conf_filename_stat( $filename, $comment, 1 );
+			si_conf_filename_stat( $filename, $comment, 0 );
 			# print STDERR $filename, ": ", $comment, "\n";
 			siprt( "pre" );
 			if ( $comment eq "/**/" ) {
