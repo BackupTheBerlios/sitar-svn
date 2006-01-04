@@ -3015,6 +3015,7 @@ sub si_run_sitar() {
 }
 # MAIN
 {
+	print "Development Release - TODO:\n\t- implement '/etc/lsb-release'\n\t- implement 'HAL' $LSHAL support\n\t- make including /etc/subdomain.d optional (default=yes)\n\t- avoid including /etc/lvm/archive, optional (default=no)\n\n";
 	# read configuration file
 	si_parse_conf_file( $SITAR_CONFIG_FILE );
 	# parse command line options
@@ -3026,9 +3027,6 @@ sub si_run_sitar() {
 		'h|help'              => \$SITAR_OPT_HELP,
 		'v|version'           => \$SITAR_OPT_VERSION
 	);
-
-print "TODO: implement '/ect/lsb-release', 'HAL'/$LSHAL, ...\n";
-
 	my @myname = split /\//, $0;
 	if ( $< != 0 ) {
 		print( "Please run sitar as user root.\n" );
