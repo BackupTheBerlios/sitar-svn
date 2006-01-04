@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 #  SITAR - System InformaTion At Runtime
-#  Copyright (C) 1999-2005 SuSE Linux, a Novell Business
+#  Copyright (C) 1999-2006 SuSE Linux, a Novell Business
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -179,7 +179,7 @@ For more information on SITAR, see: http://sitar.berlios.de/
 
 =head1 LICENSE
 
-Copyright (C) 1999-2005 SuSE Linux, a Novell Business
+Copyright (C) 1999-2006 SuSE Linux, a Novell Business
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -214,7 +214,7 @@ use Fcntl;
 # sitar options and globals
 #
 my $SITAR_COPYHOLDER  = "SuSE Linux, a Novell Business";
-my $SITAR_COPYRIGHT   = "1999-2005 $SITAR_COPYHOLDER";
+my $SITAR_COPYRIGHT   = "1999-2006 $SITAR_COPYHOLDER";
 my $SITAR_RELEASE     = "%%SITAR_RELEASE%%";
 my $SITAR_SVNVERSION  = "%%SITAR_SVNVERSION%%";
 my $SITAR_PREFIX      = "%%SITAR_PREFIX%%";
@@ -227,14 +227,6 @@ my $SITAR_CONFIG_DIR  = "/var/lib/support";
 my $SITAR_CONSIST_FN  = "Configuration_Consistency.include";
 my $SITAR_UNPACKED_FN = "Find_Unpacked.include";
 my ( $SITAR_OPT_HELP, $SITAR_OPT_VERSION, $SITAR_OPT_CONSISTENCY );
-GetOptions(
-	'f|format=s'          => \$SITAR_OPT_FORMAT,
-	'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
-	'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
-	'f|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
-	'h|help'              => \$SITAR_OPT_HELP,
-	'v|version'           => \$SITAR_OPT_VERSION
-);
 #
 # commands
 #
@@ -257,6 +249,7 @@ chomp( my $CMD_INSTSRC   = `which installation_sources` );
 chomp( my $CMD_IPTABLES  = `which iptables` );
 chomp( my $CMD_LS        = `which ls` );
 chomp( my $CMD_LSPCI     = `which lspci` );
+chomp( my $CMD_LSHAL     = `which lshal` );
 chomp( my $CMD_LSPNP     = `which lspnp` );
 chomp( my $CMD_MOUNT     = `which mount` );
 chomp( my $CMD_MULTIPATH = `which multipath` );
@@ -276,6 +269,7 @@ my $DIST_SUSE         = "/etc/SuSE-release";
 my $DIST_SLOX         = "/etc/SLOX-release";
 my $DIST_DEBIAN       = "/etc/debian_version";
 my $DIST_REDHAT       = "/etc/redhat-release";
+my $DIST_LSB          = "/etc/lsb-release";
 my $DIST_RELEASE      = "";
 my $DIST_DISTRIBUTION = "";
 my ( $DPKG, $CMD_RPM, $CMD_STATUS );
@@ -334,7 +328,7 @@ my $multipath_conf = "/etc/multipath.conf";
 #
 # AppArmor/SubDomain
 #
-my $apparmor_verbose_name     = "AppArmor (by Immunix)";
+my $apparmor_verbose_name     = "AppArmor";
 my $apparmor_kernel_path      = "/subdomain";
 my $apparmor_config_path      = "/etc/logprof.conf";
 my $apparmor_config_directory = "/etc/immunix/";
@@ -407,7 +401,7 @@ my $sdocbook_header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
   <corpauthor>SITAR $SITAR_RELEASE-$SITAR_SVNVERSION</corpauthor>
   <copyright>
     <year>1999</year>
-    <year>2005</year>
+    <year>2006</year>
     <holder>$SITAR_COPYHOLDER</holder>
   </copyright>
   <bibliomisc><ulink url=\"http://sitar.berlios.de/\">http://sitar.berlios.de/</ulink></bibliomisc>
@@ -753,6 +747,63 @@ sub siprtt($$) { my ( $t1, $t2 ) = @_; siprint( $t1, $t2, "", 0 ); }
 sub siprttt($$$) { my ( $t1, $t2, $t3 ) = @_; siprint( $t1, $t2, $t3, 0 ); }
 sub siprtttt($$$$) { my ( $t1, $t2, $t3, $t4 ) = @_; siprint( $t1, $t2, $t3, $t4 ); }
 
+#
+# si_now_gmt()
+#
+sub si_now_gmt() {
+	my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday ) = gmtime( time );
+	$year += 1900;
+	$mon  = sprintf( "%02d", $mon );
+	$mday = sprintf( "%02d", $mday );
+	$hour = sprintf( "%02d", $hour );
+	$gmt  = "gmt";
+	return "$year$mon$mday$hour$gmt";
+}
+#
+# si_debug( text );
+#
+sub si_debug($) {
+	my ( $text ) = @_;
+	if ( $SITAR_OPT_DEBUG ) {
+		print $text, "\n";
+	}
+}
+#
+# read config file
+#
+sub si_set_on_find($$$) {
+	my ( $line, $parm, $VAR ) = @_;
+	if ( $line =~ /$parm/ ) {
+		my ( $dummy, $FOUND_VAR ) = split( /.*=\s*/, $line );
+		$FOUND_VAR =~ s/^\"//;
+		$FOUND_VAR =~ s/\"$//;
+		return $FOUND_VAR;
+	}
+	return $VAR;
+}
+
+sub si_parse_conf_file($) {
+	my $fname = shift;
+	my $dummy;
+	open( CONFIG_DATA, "$fname" ) || die "could not open \"$fname\": $!";
+	while ( my $line = <CONFIG_DATA> ) {
+		next if $line =~ /^#|^$/;
+		chomp( $line );
+		$SITAR_OPT_TMP      = si_set_on_find( $line, "SITAR_OPT_TMP",      $SITAR_OPT_TMP );
+		$SITAR_OPT_BASE_URL = si_set_on_find( $line, "SITAR_OPT_BASE_URL", $SITAR_OPT_BASE_URL );
+		$SITAR_OPT_REPOS    = si_set_on_find( $line, "SITAR_OPT_REPOS",    $SITAR_OPT_REPOS );
+		$SITAR_OPT_USER     = si_set_on_find( $line, "SITAR_OPT_USER",     $SITAR_OPT_USER );
+		$SITAR_OPT_PASS     = si_set_on_find( $line, "SITAR_OPT_PASS",     $SITAR_OPT_PASS );
+		$SITAR_OPT_MESSAGE  = si_set_on_find( $line, "SITAR_OPT_MESSAGE",  $SITAR_OPT_MESSAGE );
+		$SITAR_OPT_STORAGE  = si_set_on_find( $line, "SITAR_OPT_STORAGE",  $SITAR_OPT_STORAGE );
+		$SITAR_OPT_OUTFILE  = si_set_on_find( $line, "SITAR_OPT_OUTFILE",  $SITAR_OPT_OUTFILE );
+	}
+	close( CONFIG_DATA );
+}
+
+#
+#
+#
 sub si_cpuinfo() {
 	siprtt( "h1", "CPU" );
 	siprtttt( "tabborder", "ll", "CPU", 2 );
@@ -1093,6 +1144,7 @@ sub si_pci() {
 		}
 		siprt( "endtab" );
 		close( IN );
+	} elsif ( -x "$CMD_LSHAL" ) {
 	} elsif ( -x "$CMD_LSPCI" ) {
 		siprtt( "h2", "PCI Devices" );
 		siprtttt( "tabborder", "lp{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}l", "PCI Devices", 7 );
@@ -2960,6 +3012,17 @@ sub si_run_sitar() {
 }
 # MAIN
 {
+	GetOptions(
+		'f|format=s'          => \$SITAR_OPT_FORMAT,
+		'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
+		'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
+		'f|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
+		'h|help'              => \$SITAR_OPT_HELP,
+		'v|version'           => \$SITAR_OPT_VERSION
+	);
+
+print "TODO: implement '/ect/lsb-release', 'HAL'/$LSHAL, ...\n";
+
 	my @myname = split /\//, $0;
 	if ( $< != 0 ) {
 		print( "Please run sitar as user root.\n" );
