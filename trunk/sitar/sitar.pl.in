@@ -218,6 +218,7 @@ my $SITAR_COPYRIGHT   = "1999-2006 $SITAR_COPYHOLDER";
 my $SITAR_RELEASE     = "%%SITAR_RELEASE%%";
 my $SITAR_SVNVERSION  = "%%SITAR_SVNVERSION%%";
 my $SITAR_PREFIX      = "%%SITAR_PREFIX%%";
+my $SITAR_CONFIG_FILE = "/etc/sysconfig/sitar";
 my $SITAR_OPT_FORMAT  = "";
 my $SITAR_OPT_OUTFILE = "";
 my $SITAR_OPT_OUTDIR  = "";
@@ -785,20 +786,22 @@ sub si_set_on_find($$$) {
 sub si_parse_conf_file($) {
 	my $fname = shift;
 	my $dummy;
-	open( CONFIG_DATA, "$fname" ) || die "could not open \"$fname\": $!";
-	while ( my $line = <CONFIG_DATA> ) {
-		next if $line =~ /^#|^$/;
-		chomp( $line );
-		$SITAR_OPT_TMP      = si_set_on_find( $line, "SITAR_OPT_TMP",      $SITAR_OPT_TMP );
-		$SITAR_OPT_BASE_URL = si_set_on_find( $line, "SITAR_OPT_BASE_URL", $SITAR_OPT_BASE_URL );
-		$SITAR_OPT_REPOS    = si_set_on_find( $line, "SITAR_OPT_REPOS",    $SITAR_OPT_REPOS );
-		$SITAR_OPT_USER     = si_set_on_find( $line, "SITAR_OPT_USER",     $SITAR_OPT_USER );
-		$SITAR_OPT_PASS     = si_set_on_find( $line, "SITAR_OPT_PASS",     $SITAR_OPT_PASS );
-		$SITAR_OPT_MESSAGE  = si_set_on_find( $line, "SITAR_OPT_MESSAGE",  $SITAR_OPT_MESSAGE );
-		$SITAR_OPT_STORAGE  = si_set_on_find( $line, "SITAR_OPT_STORAGE",  $SITAR_OPT_STORAGE );
-		$SITAR_OPT_OUTFILE  = si_set_on_find( $line, "SITAR_OPT_OUTFILE",  $SITAR_OPT_OUTFILE );
+	if ( -r $fname ) {
+		open( CONFIG_DATA, "$fname" ) || die "could not open \"$fname\": $!";
+		while ( my $line = <CONFIG_DATA> ) {
+			next if $line =~ /^#|^$/;
+			chomp( $line );
+			$SITAR_OPT_TMP      = si_set_on_find( $line, "SITAR_OPT_TMP",      $SITAR_OPT_TMP );
+			$SITAR_OPT_BASE_URL = si_set_on_find( $line, "SITAR_OPT_BASE_URL", $SITAR_OPT_BASE_URL );
+			$SITAR_OPT_REPOS    = si_set_on_find( $line, "SITAR_OPT_REPOS",    $SITAR_OPT_REPOS );
+			$SITAR_OPT_USER     = si_set_on_find( $line, "SITAR_OPT_USER",     $SITAR_OPT_USER );
+			$SITAR_OPT_PASS     = si_set_on_find( $line, "SITAR_OPT_PASS",     $SITAR_OPT_PASS );
+			$SITAR_OPT_MESSAGE  = si_set_on_find( $line, "SITAR_OPT_MESSAGE",  $SITAR_OPT_MESSAGE );
+			$SITAR_OPT_STORAGE  = si_set_on_find( $line, "SITAR_OPT_STORAGE",  $SITAR_OPT_STORAGE );
+			$SITAR_OPT_OUTFILE  = si_set_on_find( $line, "SITAR_OPT_OUTFILE",  $SITAR_OPT_OUTFILE );
+		}
+		close( CONFIG_DATA );
 	}
-	close( CONFIG_DATA );
 }
 
 #
@@ -3012,6 +3015,9 @@ sub si_run_sitar() {
 }
 # MAIN
 {
+	# read configuration file
+	si_parse_conf_file( $SITAR_CONFIG_FILE );
+	# parse command line options
 	GetOptions(
 		'f|format=s'          => \$SITAR_OPT_FORMAT,
 		'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
