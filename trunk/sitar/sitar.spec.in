@@ -21,9 +21,9 @@ Vendor:		SuSE Linux, a Novell Business
 Name:		sitar
 Version:        %%SITAR_RELEASE%%
 Release:        %%SITAR_SVNVERSION%%
-Summary:	System InformaTion At Runtime
+Summary:	System InformaTion At Runtime, Check configuration changes into SCM
 Source0:	sitar-%{version}.tar.bz2
-Copyright:	GPL
+License:	GPL
 Group: 		System/Monitoring
 BuildRoot:	/tmp/root-%{name}/
 BuildArch: 	noarch
@@ -45,6 +45,9 @@ sitar.pl includes scsiinfo by Eric Youngdale, Michael Weller
 <eowmob@exp-math.uni-essen.de> and ide_info by David A. Hinds
 <dhinds@hyper.stanford.edu>.
 
+The additional tool "cfg2scm" is supplied for checking 
+configuration changes into SCM (like SVN, CVS, ... or tar file)
+
 Comment: Sitar is an ancient Indian instrument as well.
 
 Authors:
@@ -63,23 +66,23 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
    [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 fi
 make DESTDIR=${RPM_BUILD_ROOT} install
-rm -rf $RPM_BUILD_ROOT/usr/share/doc/sitar
-mkdir -p $RPM_BUILD_ROOT/var/lib/support
 %{?suse_check}
 
 %files
 %defattr(-,root,root)
-%doc sitar.html sitar.ps LICENSE
+%config(noreplace) /etc/sysconfig/sitar
+%config(noreplace) /etc/sysconfig/cfg2scm
+%doc sitar.html sitar.ps cfg2scm.html cfg2scm.ps LICENSE
 %attr(700, root, root) /usr/sbin/sitar.pl
 %attr(700, root, root) /usr/sbin/sitar
 %attr(700, root, root) /usr/sbin/support_all.pl
+%attr(700, root, root) /usr/sbin/cfg2scm.pl
 /usr/share/man/man1/sitar.1.gz
 /usr/share/man/man1/support_all.1.gz
+/usr/share/man/man1/cfg2scm.1.gz
 %dir /usr/share/sitar
-/usr/share/sitar/proc.txt
 %dir /var/lib/support
-
-# # %changelog -n sitar.changes
+/usr/share/sitar/proc.txt
 
 %clean
 if [ -n "$RPM_BUILD_ROOT" ] ; then
@@ -87,6 +90,10 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Mon Jan 16 2006 - mge@suse.de
+- sitar-1.0.0:
+  - merge cfg2scm into sitar
+  - add initial HAL support to sitar
 * Thu Dec 08 2005 - mge@suse.de
 - short man-page entry for "--find-unpacked"
 - add /var/lib/support to file-list

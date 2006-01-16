@@ -1,4 +1,4 @@
-SITAR coding style					Matthias G. Eckermann
+Coding Style for "sitar.pl" and "cfg2scm.pl"		Matthias G. Eckermann
 -----------------------------------------------------------------------------
 
 To avoid formatting nightmare, I suggest following this rules of formatting

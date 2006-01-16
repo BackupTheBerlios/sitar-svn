@@ -1,0 +1,49 @@
+#
+# see 'man cfg2scm' for more information
+# 
+#
+
+#
+#
+#
+# CFG2SCM_OPT_TMP     = "/tmp/cfg2scm.co"
+
+#
+# type of storage, either "svn", "cvs", "tar", "tar.gz" or "tar.bz2"
+#
+CFG2SCM_OPT_STORAGE = "svn"
+
+#
+# main path to subversion repositories (mandatory)
+#
+CFG2SCM_OPT_BASE_URL= ""
+
+#
+# name of the one repository to be used (mandatory)
+#
+CFG2SCM_OPT_REPOS   = ""
+
+#
+# username for access to SVN
+#
+CFG2SCM_OPT_USER    = ""
+
+#
+# password for access to SVN
+#
+CFG2SCM_OPT_PASS    = ""
+
+#
+#
+#
+CFG2SCM_OPT_MESSAGE = "autocommit by cfg2scm"
+
+#
+# file size limit
+#
+CFG2SCM_OPT_LIMIT = 0
+
+#
+# EOF
+#
+
