@@ -284,10 +284,10 @@ sub si_prepare_config() {
 	}
 }
 
-sub si_check_consistency() {
+sub si_check_consistency() { 
+	chomp( my ( $consconfdir, $consfile, $consdebug ) = @_ );
 	my %configfiles = ();
-	print( "Checking consistency of configuration files. This might need a long time...\n" );
-	if ( !$CFG2SCM_OPT_DEBUG ) {
+	if ( !$consdebug ) {
 		open( SAVEERR, ">&STDERR" );
 		open( STDERR,  ">/dev/null" );
 	}
@@ -310,19 +310,49 @@ sub si_check_consistency() {
 		}
 	}
 	close( CONFIGFILES );
-	if ( !-d "$CFG2SCM_CONFIG_DIR" ) {
-		mkdir $CFG2SCM_CONFIG_DIR;
+	if ( !-d "$consconfdir" ) {
+		mkdir $consconfdir;
 	}
-	open( CONSISTENCY, ">$CFG2SCM_CONFIG_DIR/$CFG2SCM_CONSISTENCY_FILENAME" );
+	open( CONSISTENCY, ">$consconfdir/$consfile" );
 	print CONSISTENCY "\n\@files = (\n";
 	foreach my $kkk ( sort keys %configfiles ) {
 		print CONSISTENCY "\"", $kkk, "\",\n";
 	}
 	print CONSISTENCY ");\n\n";
 	close( CONSISTENCY );
-	if ( !$CFG2SCM_OPT_DEBUG ) {
+	if ( !$consdebug ) {
 		open( STDERR, ">&SAVEERR" );
 	}
+}
+
+sub si_find_unpacked($$$$) {
+	chomp( my ( $funpconfdir, $funpfile, $ddd, $ignore_binary ) = @_ );
+	my %configfiles = ();
+	for $NN ( `$CMD_FIND $ddd -type f` ) {
+		chomp $NN;
+		chomp( my $res = `$CMD_RPM -qf $NN` );
+		if ( $res =~ /is not owned by any package$/ ) {
+			if ( ( $NN !~ /~$/ ) && ( -r $NN ) ) {
+				chomp( $type = `$CMD_FILE -p -b $NN` );
+				if ( $ignore_binary && ( ( $type =~ /^Berkeley DB/ ) || ( $type =~ /data/ ) ) ) {
+					si_debug( sprintf "---\t", $type, "\t", $NN );
+				} else {
+					si_debug( sprintf "\t", $type, "\t", $NN );
+					$configfiles{ $NN } = 1;
+				}
+			}
+		}
+	}
+	if ( !-d "$funpconfdir" ) {
+		mkdir $funpconfdir;
+	}
+	open( FINDUNPACKED, ">$funpconfdir/$funpfile" );
+	print FINDUNPACKED "\n\@files = (\n";
+	foreach my $kkk ( sort keys %configfiles ) {
+		print FINDUNPACKED "\"", $kkk, "\",\n";
+	}
+	print FINDUNPACKED ");\n\n";
+	close( FINDUNPACKED );
 }
 
 sub si_prepare() {
@@ -357,37 +387,6 @@ sub si_add($) {
 	if ( !$CFG2SCM_OPT_DEBUG ) {
 		open( STDERR, ">&SAVEERR" );
 	}
-}
-
-sub si_find_unpacked($$) {
-	chomp( my ( $ddd, $ignore_binary ) = @_ );
-	print( "Finding unpackaged files below $ddd. This might need a long time...\n" );
-	my %configfiles = ();
-	for $NN ( `$CMD_FIND $ddd -type f` ) {
-		chomp $NN;
-		chomp( my $res = `$CMD_RPM -qf $NN` );
-		if ( $res =~ /is not owned by any package$/ ) {
-			if ( ( $NN !~ /~$/ ) && ( -r $NN ) ) {
-				chomp( $type = `$CMD_FILE -p -b $NN` );
-				if ( $ignore_binary && ( ( $type =~ /^Berkeley DB/ ) || ( $type =~ /data/ ) ) ) {
-					si_debug( sprintf "---\t", $type, "\t", $NN );
-				} else {
-					si_debug( sprintf "\t", $type, "\t", $NN );
-					$configfiles{ $NN } = 1;
-				}
-			}
-		}
-	}
-	if ( !-d "$CFG2SCM_CONFIG_DIR" ) {
-		mkdir $CFG2SCM_CONFIG_DIR;
-	}
-	open( FINDUNPACKED, ">$CFG2SCM_CONFIG_DIR/$CFG2SCM_FINDUNPACKED_FILENAME" );
-	print FINDUNPACKED "\n\@files = (\n";
-	foreach my $kkk ( sort keys %configfiles ) {
-		print FINDUNPACKED "\"", $kkk, "\",\n";
-	}
-	print FINDUNPACKED ");\n\n";
-	close( FINDUNPACKED );
 }
 
 sub si_attention_no_filelists() {
@@ -538,10 +537,12 @@ sub si_attention_no_config() {
 	} else {
 		si_prepare();
 		if ( $CFG2SCM_OPT_CONSISTENCY ) {
-			si_check_consistency();
+			print( "Checking consistency of configuration files. This might need a long time...\n" );
+			si_check_consistency( $CFG2SCM_CONFIG_DIR, $CFG2SCM_CONSISTENCY_FILENAME, $CFG2SCM_OPT_DEBUG );
 		}
 		if ( $CFG2SCM_OPT_FINDUNPACKED ) {
-			si_find_unpacked( "/etc/", 1 );
+			print( "Finding unpackaged files below /etc/. This might need a long time...\n" );
+			si_find_unpacked( $CFG2SCM_CONFIG_DIR, $CFG2SCM_FINDUNPACKED_FILENAME, "/etc/", 1 );
 		}
 		if ( !si_read_and_eval_includes() ) {
 			if ( $CFG2SCM_OPT_STORAGE eq "svn" ) {

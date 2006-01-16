@@ -2838,10 +2838,13 @@ sub si_selection_yast2( ) {
 sub si_getopts($) {
 }
 
-sub si_check_consistency() {
+sub si_check_consistency() { 
+	chomp( my ( $consconfdir, $consfile, $consdebug ) = @_ );
 	my %configfiles = ();
-	open( SAVEERR,     ">&STDERR" );
-	open( STDERR,      ">/dev/null" );
+	if ( !$consdebug ) {
+		open( SAVEERR, ">&STDERR" );
+		open( STDERR,  ">/dev/null" );
+	}
 	open( CONFIGFILES, "$CMD_RPM -qca |" );
 	while ( <CONFIGFILES> ) {
 		chomp();
@@ -2861,26 +2864,23 @@ sub si_check_consistency() {
 		}
 	}
 	close( CONFIGFILES );
-	#
-	#
-	# /var/lib/support/Configuration_Consistency.include
-	#
-	if ( !-d "$SITAR_CONFIG_DIR" ) {
-		mkdir $SITAR_CONFIG_DIR;
+	if ( !-d "$consconfdir" ) {
+		mkdir $consconfdir;
 	}
-	open( CONSISTENCY, ">$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" );
+	open( CONSISTENCY, ">$consconfdir/$consfile" );
 	print CONSISTENCY "\n\@files = (\n";
 	foreach my $kkk ( sort keys %configfiles ) {
 		print CONSISTENCY "\"", $kkk, "\",\n";
 	}
 	print CONSISTENCY ");\n\n";
 	close( CONSISTENCY );
-	open( STDERR, ">&SAVEERR" );
+	if ( !$consdebug ) {
+		open( STDERR, ">&SAVEERR" );
+	}
 }
 
-sub si_find_unpacked($$) {
-	chomp( my ( $ddd, $ignore_binary ) = @_ );
-	print( "Finding unpackaged files below $ddd. This might need a long time...\n" );
+sub si_find_unpacked($$$$) {
+	chomp( my ( $funpconfdir, $funpfile, $ddd, $ignore_binary ) = @_ );
 	my %configfiles = ();
 	for $NN ( `$CMD_FIND $ddd -type f` ) {
 		chomp $NN;
@@ -2889,18 +2889,18 @@ sub si_find_unpacked($$) {
 			if ( ( $NN !~ /~$/ ) && ( -r $NN ) ) {
 				chomp( $type = `$CMD_FILE -p -b $NN` );
 				if ( $ignore_binary && ( ( $type =~ /^Berkeley DB/ ) || ( $type =~ /data/ ) ) ) {
-					# si_debug( sprintf "---\t", $type, "\t", $NN );
+					si_debug( sprintf "---\t", $type, "\t", $NN );
 				} else {
-					# si_debug( sprintf "\t", $type, "\t", $NN );
+					si_debug( sprintf "\t", $type, "\t", $NN );
 					$configfiles{ $NN } = 1;
 				}
 			}
 		}
 	}
-	if ( !-d "$SITAR_CONFIG_DIR" ) {
-		mkdir $SITAR_CONFIG_DIR;
+	if ( !-d "$funpconfdir" ) {
+		mkdir $funpconfdir;
 	}
-	open( FINDUNPACKED, ">$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" );
+	open( FINDUNPACKED, ">$funpconfdir/$funpfile" );
 	print FINDUNPACKED "\n\@files = (\n";
 	foreach my $kkk ( sort keys %configfiles ) {
 		print FINDUNPACKED "\"", $kkk, "\",\n";
@@ -3031,11 +3031,13 @@ sub si_run_sitar() {
 		exit;
 	}
 	if ( $SITAR_OPT_FINDUNPACKED ) {
-		si_find_unpacked( "/etc/", 1 );
+		print( "Finding unpackaged files below /etc/. This might need a long time...\n" );
+		si_find_unpacked( $SITAR_CONFIG_DIR, $SITAR_UNPACKED_FN, "/etc/", 1 );
 	}
 	if ( $SITAR_OPT_CONSISTENCY ) {
 		print( "Checking consistency of configuration files. This might need a long time...\n" );
-		si_check_consistency();
+		si_check_consistency( $SITAR_CONFIG_DIR, $SITAR_CONSIST_FN, 1 );
+		
 	}
 	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_FORMAT ) && ( !$SITAR_OPT_OUTFILE ) && ( !$SITAR_OPT_VERSION ) ) {
 		@SITAR_OPT_FORMATs = ( "html", "tex", "sdocbook", "yast1", "yast2" );
