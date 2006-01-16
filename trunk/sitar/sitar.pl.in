@@ -2838,7 +2838,7 @@ sub si_selection_yast2( ) {
 sub si_getopts($) {
 }
 
-sub si_check_consistency() { 
+sub si_check_consistency($$$) {
 	chomp( my ( $consconfdir, $consfile, $consdebug ) = @_ );
 	my %configfiles = ();
 	if ( !$consdebug ) {
@@ -3037,7 +3037,6 @@ sub si_run_sitar() {
 	if ( $SITAR_OPT_CONSISTENCY ) {
 		print( "Checking consistency of configuration files. This might need a long time...\n" );
 		si_check_consistency( $SITAR_CONFIG_DIR, $SITAR_CONSIST_FN, 1 );
-		
 	}
 	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_FORMAT ) && ( !$SITAR_OPT_OUTFILE ) && ( !$SITAR_OPT_VERSION ) ) {
 		@SITAR_OPT_FORMATs = ( "html", "tex", "sdocbook", "yast1", "yast2" );

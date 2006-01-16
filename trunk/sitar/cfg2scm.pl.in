@@ -284,7 +284,7 @@ sub si_prepare_config() {
 	}
 }
 
-sub si_check_consistency() { 
+sub si_check_consistency($$$) {
 	chomp( my ( $consconfdir, $consfile, $consdebug ) = @_ );
 	my %configfiles = ();
 	if ( !$consdebug ) {
