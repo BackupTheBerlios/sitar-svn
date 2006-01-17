@@ -1,8 +1,50 @@
+## Path:        System/Monitoring/sitar
+## Description: sitar - System InformaTion At Runtime
+## Type:        yesno
+## Default:     no
+#
+# Explanation
 #
 # see 'man sitar' for more information
-# 
-# DUMMY
 #
+
+## Type:	list("","html","tex","sdocbook","yast1",yast2)
+## Default:	""
+#
+# Explanation...
+# "" means all formats
+#
+SITAR_OPT_FORMAT=""
+
+## Type:	string
+## Default:	""
+#
+# directory for yast config files
+# mandatory, if SITAR_OPT_FORMAT==yast2
+#
+SITAR_OPT_OUTDIR=""
+
+## Type:	string
+## Default:	""
+#
+# name of the one output-file for SITAR_OPT_FORMAT=="html","tex","sdocbook","yast1"
+#
+SITAR_OPT_OUTFILE=""
+
+## Type:	yesno
+## Default:	No
+#
+# Explanation...
+# 
+#
+SITAR_OPT_GNOME=No
+
+## Type:	integer(0:)
+## Default:	500000
+#
+# file size limit (byte) for files to recognize; 0=no limits.
+#
+SITAR_OPT_LIMIT=500000
 
 #
 # EOF

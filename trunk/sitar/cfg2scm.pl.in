@@ -541,7 +541,7 @@ sub si_attention_no_config() {
 		si_print_version();
 	} elsif ( $CFG2SCM_OPT_HELP ) {
 		si_print_help();
-	} elsif ( ( !$CFG2SCM_OPT_BASE_URL ) || ( !$CFG2SCM_OPT_REPOS ) || (!$CFG2SCM_OPT_STORAGE) ) {
+	} elsif ( ( !$CFG2SCM_OPT_BASE_URL ) || ( !$CFG2SCM_OPT_REPOS ) || ( !$CFG2SCM_OPT_STORAGE ) ) {
 		si_attention_no_config();
 		si_print_help();
 	} else {

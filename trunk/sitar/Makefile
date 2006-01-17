@@ -21,7 +21,7 @@
 PREFIX		:=	/usr
 DOCDIR		:=	${PREFIX}/share/doc/packages
 PERL		:=	/usr/bin/perl
-RELEASE		:=	1.0.0
+RELEASE		:=	1.0.1
 SVNVERSION      :=      $(shell svnversion -n . | sed "s/:/./" )
 RELDATE         :=      $(shell date +"%Y%m%d")
 

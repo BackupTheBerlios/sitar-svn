@@ -790,14 +790,11 @@ sub si_parse_conf_file($) {
 		while ( my $line = <CONFIG_DATA> ) {
 			next if $line =~ /^#|^$/;
 			chomp( $line );
-			$SITAR_OPT_TMP      = si_set_on_find( $line, "SITAR_OPT_TMP",      $SITAR_OPT_TMP );
-			$SITAR_OPT_BASE_URL = si_set_on_find( $line, "SITAR_OPT_BASE_URL", $SITAR_OPT_BASE_URL );
-			$SITAR_OPT_REPOS    = si_set_on_find( $line, "SITAR_OPT_REPOS",    $SITAR_OPT_REPOS );
-			$SITAR_OPT_USER     = si_set_on_find( $line, "SITAR_OPT_USER",     $SITAR_OPT_USER );
-			$SITAR_OPT_PASS     = si_set_on_find( $line, "SITAR_OPT_PASS",     $SITAR_OPT_PASS );
-			$SITAR_OPT_MESSAGE  = si_set_on_find( $line, "SITAR_OPT_MESSAGE",  $SITAR_OPT_MESSAGE );
-			$SITAR_OPT_STORAGE  = si_set_on_find( $line, "SITAR_OPT_STORAGE",  $SITAR_OPT_STORAGE );
-			$SITAR_OPT_OUTFILE  = si_set_on_find( $line, "SITAR_OPT_OUTFILE",  $SITAR_OPT_OUTFILE );
+			$SITAR_OPT_FORMAT  = si_set_on_find( $line, "SITAR_OPT_FORMAT",  $SITAR_OPT_FORMAT );
+			$SITAR_OPT_OUTDIR  = si_set_on_find( $line, "SITAR_OPT_OUTDIR",  $SITAR_OPT_OUTDIR );
+			$SITAR_OPT_OUTFILE = si_set_on_find( $line, "SITAR_OPT_OUTFILE", $SITAR_OPT_OUTFILE );
+			$SITAR_OPT_LIMIT   = si_set_on_find( $line, "SITAR_OPT_LIMIT",   $SITAR_OPT_LIMIT );
+			$SITAR_OPT_GNOME   = si_set_on_find( $line, "SITAR_OPT_GNOME",   $SITAR_OPT_GNOME );
 		}
 		close( CONFIG_DATA );
 	}

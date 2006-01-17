@@ -1,47 +1,68 @@
+## Path:        System/Monitoring/cfg2scm
+## Description: cfg2scm - Check configuration changes into SCM
+## Type:        yesno
+## Default:     no
+#
+# Explanation
 #
 # see 'man cfg2scm' for more information
-# 
 #
 
+## Type:	string
+## Default:	"/tmp/cfg2scm.co"
 #
+# Explanation
 #
-#
-# CFG2SCM_OPT_TMP     = "/tmp/cfg2scm.co"
+CFG2SCM_OPT_TMP="/tmp/cfg2scm.co"
 
+## Type:	list("svn","cvs","tar","tar.gz","tar.bz2")
+## Default:	""
 #
-# type of storage, either "svn", "cvs", "tar", "tar.gz" or "tar.bz2"
+# Explanation...
 #
-CFG2SCM_OPT_STORAGE = "svn"
+CFG2SCM_OPT_STORAGE="svn"
 
+## Type:	string
+## Default:	""
 #
-# main path to subversion repositories (mandatory)
+# main path to subversion repositories (mandatory with svn and cvs)
 #
 CFG2SCM_OPT_BASE_URL= ""
 
+## Type:	string
+## Default:	""
 #
-# name of the one repository to be used (mandatory)
+# name of the one repository to be used (mandatory with svn and cvs)
 #
-CFG2SCM_OPT_REPOS   = ""
+CFG2SCM_OPT_REPOS=""
 
+## Type:	string
+## Default:	""
 #
 # username for access to SVN
 #
-CFG2SCM_OPT_USER    = ""
+CFG2SCM_OPT_USER=""
 
+## Type:	string
+## Default:	""
 #
 # password for access to SVN
 #
-CFG2SCM_OPT_PASS    = ""
+CFG2SCM_OPT_PASS=""
 
+## Type:	string
+## Default:	"autocommit by cfg2scm"
 #
+# Explanation...
 #
-#
-CFG2SCM_OPT_MESSAGE = "autocommit by cfg2scm"
+CFG2SCM_OPT_MESSAGE="autocommit by cfg2scm"
 
+## Type:	integer(0:)
+## Default:	500000
 #
-# file size limit
+# file size limit (byte) for files to recognize; 0=no limits.
 #
-CFG2SCM_OPT_LIMIT = 0
+CFG2SCM_OPT_LIMIT=500000
 
 #
 # EOF
