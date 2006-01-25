@@ -46,6 +46,27 @@ SITAR_OPT_GNOME=No
 #
 SITAR_OPT_LIMIT=500000
 
+## Type:	list("On","Off","Auto")
+## Default:	""
+#
+# Explanation...
+#
+SITAR_OPT_ALLCONFIGFILES="Auto";
+
+## Type:	list("On","Off","Auto")
+## Default:	""
+#
+# Explanation...
+#
+SITAR_OPT_ALLSUBDOMAIN="Auto";
+
+## Type:	list("On","Off","Auto")
+## Default:	""
+#
+# Explanation...
+#
+SITAR_OPT_ALLSYSCONFIG="Auto";
+
 #
 # EOF
 #

@@ -213,20 +213,23 @@ use Fcntl;
 #
 # sitar options and globals
 #
-my $SITAR_COPYHOLDER  = "SuSE Linux, a Novell Business";
-my $SITAR_COPYRIGHT   = "1999-2006 $SITAR_COPYHOLDER";
-my $SITAR_RELEASE     = "%%SITAR_RELEASE%%";
-my $SITAR_SVNVERSION  = "%%SITAR_SVNVERSION%%";
-my $SITAR_PREFIX      = "%%SITAR_PREFIX%%";
-my $SITAR_CONFIG_FILE = "/etc/sysconfig/sitar";
-my $SITAR_OPT_FORMAT  = "";
-my $SITAR_OPT_OUTFILE = "";
-my $SITAR_OPT_OUTDIR  = "";
-my $SITAR_OPT_LIMIT   = 700000;
-my $SITAR_OPT_GNOME   = "No";
-my $SITAR_CONFIG_DIR  = "/var/lib/support";
-my $SITAR_CONSIST_FN  = "Configuration_Consistency.include";
-my $SITAR_UNPACKED_FN = "Find_Unpacked.include";
+my $SITAR_COPYHOLDER         = "SuSE Linux, a Novell Business";
+my $SITAR_COPYRIGHT          = "1999-2006 $SITAR_COPYHOLDER";
+my $SITAR_RELEASE            = "%%SITAR_RELEASE%%";
+my $SITAR_SVNVERSION         = "%%SITAR_SVNVERSION%%";
+my $SITAR_PREFIX             = "%%SITAR_PREFIX%%";
+my $SITAR_CONFIG_FILE        = "/etc/sysconfig/sitar";
+my $SITAR_OPT_FORMAT         = "";
+my $SITAR_OPT_OUTFILE        = "";
+my $SITAR_OPT_OUTDIR         = "";
+my $SITAR_OPT_LIMIT          = 700000;
+my $SITAR_OPT_GNOME          = "No";
+my $SITAR_CONFIG_DIR         = "/var/lib/support";
+my $SITAR_CONSIST_FN         = "Configuration_Consistency.include";
+my $SITAR_UNPACKED_FN        = "Find_Unpacked.include";
+my $SITAR_OPT_ALLSUBDOMAIN   = "Auto";
+my $SITAR_OPT_ALLCONFIGFILES = "Auto";
+my $SITAR_OPT_ALLSYSCONFIG   = "Auto";
 my ( $SITAR_OPT_HELP, $SITAR_OPT_VERSION, $SITAR_OPT_CONSISTENCY );
 #
 # commands
@@ -790,11 +793,14 @@ sub si_parse_conf_file($) {
 		while ( my $line = <CONFIG_DATA> ) {
 			next if $line =~ /^#|^$/;
 			chomp( $line );
-			$SITAR_OPT_FORMAT  = si_set_on_find( $line, "SITAR_OPT_FORMAT",  $SITAR_OPT_FORMAT );
-			$SITAR_OPT_OUTDIR  = si_set_on_find( $line, "SITAR_OPT_OUTDIR",  $SITAR_OPT_OUTDIR );
-			$SITAR_OPT_OUTFILE = si_set_on_find( $line, "SITAR_OPT_OUTFILE", $SITAR_OPT_OUTFILE );
-			$SITAR_OPT_LIMIT   = si_set_on_find( $line, "SITAR_OPT_LIMIT",   $SITAR_OPT_LIMIT );
-			$SITAR_OPT_GNOME   = si_set_on_find( $line, "SITAR_OPT_GNOME",   $SITAR_OPT_GNOME );
+			$SITAR_OPT_FORMAT         = si_set_on_find( $line, "SITAR_OPT_FORMAT",         $SITAR_OPT_FORMAT );
+			$SITAR_OPT_OUTDIR         = si_set_on_find( $line, "SITAR_OPT_OUTDIR",         $SITAR_OPT_OUTDIR );
+			$SITAR_OPT_OUTFILE        = si_set_on_find( $line, "SITAR_OPT_OUTFILE",        $SITAR_OPT_OUTFILE );
+			$SITAR_OPT_LIMIT          = si_set_on_find( $line, "SITAR_OPT_LIMIT",          $SITAR_OPT_LIMIT );
+			$SITAR_OPT_GNOME          = si_set_on_find( $line, "SITAR_OPT_GNOME",          $SITAR_OPT_GNOME );
+			$SITAR_OPT_ALLCONFIGFILES = si_set_on_find( $line, "SITAR_OPT_ALLCONFIGFILES", $SITAR_OPT_ALLCONFIGFILES );
+			$SITAR_OPT_ALLSUBDOMAIN   = si_set_on_find( $line, "SITAR_OPT_ALLSUBDOMAIN",   $SITAR_OPT_ALLSUBDOMAIN );
+			$SITAR_OPT_ALLSYSCONFIG   = si_set_on_find( $line, "SITAR_OPT_ALLSYSCONFIG",   $SITAR_OPT_ALLSYSCONFIG );
 		}
 		close( CONFIG_DATA );
 	}
@@ -2385,10 +2391,14 @@ sub si_immunix_apparmor () {
 				si_conf( $NN, $NN, "\#" );
 			}
 		}
-		siprtt( "h2", "Profiles" );
-		for $NN ( `$CMD_FIND $apparmor_profiles_path -type f` ) {
-			chomp $NN;
-			si_conf( $NN, $NN, "" );
+		$SITAR_OPT_ALLSUBDOMAIN =~ tr/A-Z/a-z/;
+		if (       ( $SITAR_OPT_ALLSUBDOMAIN eq "on" )
+			|| ( ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) && ( $SITAR_OPT_ALLSUBDOMAIN eq "auto" ) ) ) {
+			siprtt( "h2", "Profiles" );
+			for $NN ( `$CMD_FIND $apparmor_profiles_path -type f` ) {
+				chomp $NN;
+				si_conf( $NN, $NN, "" );
+			}
 		}
 	}
 }
@@ -2438,20 +2448,6 @@ sub si_etc() {
 	foreach $file ( @ldapconf ) {
 		if ( -r $file ) { si_conf( "OpenLDAP Client", $file, "\#" ); }
 	}
-	# some more services/programs
-	my %myfiles = ();
-	foreach ( @allconfigfiless ) {
-		$myfiles{ $_ } = 0;
-	}
-	foreach $mm ( sort keys %myfiles ) {
-		if ( $mm !~ /proc/ ) {
-			if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
-				if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
-			} else {
-				if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
-			}
-		}
-	}
 	# Postfix
 	if ( ( -d "/etc/postfix/" ) && ( -x "$CMD_POSTCONF" ) ) {
 		siprtt( "h2", "Postfix (postconf -n)" );
@@ -2464,6 +2460,24 @@ sub si_etc() {
 		close( CONFIG );
 		siprt( "endpre" );
 		if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "/etc/aliases", "\#" ); }
+	}
+	# some more services/programs
+	$SITAR_OPT_ALLCONFIGFILES =~ tr/A-Z/a-z/;
+	if (       ( $SITAR_OPT_ALLCONFIGFILES eq "on" )
+		|| ( ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) && ( $SITAR_OPT_ALLCONFIGFILES eq "auto" ) ) ) {
+		my %myfiles = ();
+		foreach ( @allconfigfiless ) {
+			$myfiles{ $_ } = 0;
+		}
+		foreach $mm ( sort keys %myfiles ) {
+			if ( $mm !~ /proc/ ) {
+				if ( ( $mm eq "/etc/pppoed.conf" ) || ( $mm eq "/etc/grub.conf" ) || ( $mm eq "/boot/grub/menu.lst" ) || ( $mm eq "/etc/lilo.conf" ) ) {
+					if ( -r $mm ) { si_conf_secure( $mm, "\#", "[Pp]assword" ); }
+				} else {
+					if ( -r $mm ) { si_conf( $mm, $mm, "\#" ); }
+				}
+			}
+		}
 	}
 	#
 	# some more services/programs
@@ -2515,12 +2529,16 @@ sub si_etc_redhat() {
 }
 
 sub si_etc_united() {
-	if ( -r "/etc/sysconfig" ) {
-		siprtt( "h2", "Sysconfig" );
-		for $NN ( `$CMD_FIND /etc/sysconfig -type f` ) {
-			chomp $NN;
-			if ( `$CMD_FILE -b $NN | $CMD_GREP -i -e text | $CMD_GREP -i -v "shell script"` ) {
-				si_conf( $NN, $NN, "\#" );
+	$SITAR_OPT_ALLSYSCONFIG =~ tr/A-Z/a-z/;
+	if (       ( $SITAR_OPT_ALLSYSCONFIG eq "on" )
+		|| ( ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) && ( $SITAR_OPT_ALLSYSCONFIG eq "auto" ) ) ) {
+		if ( -r "/etc/sysconfig" ) {
+			siprtt( "h2", "Sysconfig" );
+			for $NN ( `$CMD_FIND /etc/sysconfig -type f` ) {
+				chomp $NN;
+				if ( `$CMD_FILE -b $NN | $CMD_GREP -i -e text | $CMD_GREP -i -v "shell script"` ) {
+					si_conf( $NN, $NN, "\#" );
+				}
 			}
 		}
 	}
@@ -2932,6 +2950,7 @@ sub si_print_help () {
 }
 
 sub si_run_sitar() {
+	$SITAR_OPT_FORMAT =~ tr/A-Z/a-z/;
 	if ( $SITAR_OPT_FORMAT ne "yast2" ) {
 		open( TESTFILE, ">$SITAR_OPT_OUTFILE" )
 		  || die "ERROR:\tThe output-file:\n\t$SITAR_OPT_OUTFILE\n\tcan not be opened for writing. Probably the parent-directory\n\tdoes not exist. - Exiting ...";
