@@ -188,6 +188,7 @@ my $CFG2SCM_OPT_OUTFILE  = "/tmp/cfg2scm.$HOSTNAME.$NOW";
 my $CFG2SCM_OPT_LIMIT    = 0;
 my $CFG2SCM_OPT_NON_ROOT = "No";
 my $CFG2SCM_OPT_GCONF    = "No";
+my $CFG2SCM_SVN_AUTH     = "";
 #
 # static globals
 #
@@ -275,7 +276,6 @@ sub si_prepare_config() {
 		'v|version'           => \$CFG2SCM_OPT_VERSION
 	);
 	# subversion authentication string
-	my $CFG2SCM_SVN_AUTH = "";
 	if ( ( $CFG2SCM_OPT_USER ) && ( $CFG2SCM_OPT_USER ne "" ) ) {
 		$CFG2SCM_SVN_AUTH = "--username $CFG2SCM_OPT_USER";
 		if ( ( $CFG2SCM_OPT_PASS ) && ( $CFG2SCM_OPT_PASS ne "" ) ) {
