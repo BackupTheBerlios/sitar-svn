@@ -381,7 +381,7 @@ sub si_add($) {
 	$CFG2SCM_OPT_GCONF      =~ tr/A-Z/a-z/;
 	my ( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $fname );
 	if ( ( $CFG2SCM_OPT_LVMARCHIVE eq "no" ) && ( $fname =~ /etc\/lvm\/archive/ ) ) {
-		print "file  below /etc/opt/gnome/gconf/ found; skipped $fname\n";
+		print "file  below /etc/lvm/archive/ found; skipped $fname\n";
 	} elsif ( ( $CFG2SCM_OPT_GCONF eq "no" ) && ( $fname =~ /etc\/opt\/gnome/ ) ) {
 		print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
 	} elsif ( ( $CFG2SCM_OPT_LIMIT > 0 ) && ( $ff_size > $CFG2SCM_OPT_LIMIT ) ) {
