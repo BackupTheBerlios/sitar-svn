@@ -245,17 +245,17 @@ sub si_parse_conf_file($) {
 	while ( my $line = <CONFIG_DATA> ) {
 		next if $line =~ /^#|^$/;
 		chomp( $line );
-		$CFG2SCM_OPT_TMP        = si_set_on_find( $line, "CFG2SCM_OPT_TMP",      $CFG2SCM_OPT_TMP );
-		$CFG2SCM_OPT_BASE_URL   = si_set_on_find( $line, "CFG2SCM_OPT_BASE_URL", $CFG2SCM_OPT_BASE_URL );
-		$CFG2SCM_OPT_REPOS      = si_set_on_find( $line, "CFG2SCM_OPT_REPOS",    $CFG2SCM_OPT_REPOS );
-		$CFG2SCM_OPT_USER       = si_set_on_find( $line, "CFG2SCM_OPT_USER",     $CFG2SCM_OPT_USER );
-		$CFG2SCM_OPT_PASS       = si_set_on_find( $line, "CFG2SCM_OPT_PASS",     $CFG2SCM_OPT_PASS );
-		$CFG2SCM_OPT_MESSAGE    = si_set_on_find( $line, "CFG2SCM_OPT_MESSAGE",  $CFG2SCM_OPT_MESSAGE );
-		$CFG2SCM_OPT_STORAGE    = si_set_on_find( $line, "CFG2SCM_OPT_STORAGE",  $CFG2SCM_OPT_STORAGE );
-		$CFG2SCM_OPT_OUTFILE    = si_set_on_find( $line, "CFG2SCM_OPT_OUTFILE",  $CFG2SCM_OPT_OUTFILE );
-		$CFG2SCM_OPT_LIMIT      = si_set_on_find( $line, "CFG2SCM_OPT_LIMIT",  $CFG2SCM_OPT_LIMIT );
-		$CFG2SCM_OPT_GCONF      = si_set_on_find( $line, "CFG2SCM_OPT_GCONF",  $CFG2SCM_OPT_GCONF );
-		$CFG2SCM_OPT_LVMARCHIVE = si_set_on_find( $line, "CFG2SCM_OPT_LVMARCHIVE",  $CFG2SCM_OPT_LVMARCHIVE );
+		$CFG2SCM_OPT_TMP        = si_set_on_find( $line, "CFG2SCM_OPT_TMP",        $CFG2SCM_OPT_TMP );
+		$CFG2SCM_OPT_BASE_URL   = si_set_on_find( $line, "CFG2SCM_OPT_BASE_URL",   $CFG2SCM_OPT_BASE_URL );
+		$CFG2SCM_OPT_REPOS      = si_set_on_find( $line, "CFG2SCM_OPT_REPOS",      $CFG2SCM_OPT_REPOS );
+		$CFG2SCM_OPT_USER       = si_set_on_find( $line, "CFG2SCM_OPT_USER",       $CFG2SCM_OPT_USER );
+		$CFG2SCM_OPT_PASS       = si_set_on_find( $line, "CFG2SCM_OPT_PASS",       $CFG2SCM_OPT_PASS );
+		$CFG2SCM_OPT_MESSAGE    = si_set_on_find( $line, "CFG2SCM_OPT_MESSAGE",    $CFG2SCM_OPT_MESSAGE );
+		$CFG2SCM_OPT_STORAGE    = si_set_on_find( $line, "CFG2SCM_OPT_STORAGE",    $CFG2SCM_OPT_STORAGE );
+		$CFG2SCM_OPT_OUTFILE    = si_set_on_find( $line, "CFG2SCM_OPT_OUTFILE",    $CFG2SCM_OPT_OUTFILE );
+		$CFG2SCM_OPT_LIMIT      = si_set_on_find( $line, "CFG2SCM_OPT_LIMIT",      $CFG2SCM_OPT_LIMIT );
+		$CFG2SCM_OPT_GCONF      = si_set_on_find( $line, "CFG2SCM_OPT_GCONF",      $CFG2SCM_OPT_GCONF );
+		$CFG2SCM_OPT_LVMARCHIVE = si_set_on_find( $line, "CFG2SCM_OPT_LVMARCHIVE", $CFG2SCM_OPT_LVMARCHIVE );
 	}
 	close( CONFIG_DATA );
 }
@@ -378,7 +378,7 @@ sub si_add($) {
 		open( STDERR,  ">/dev/null" );
 	}
 	$CFG2SCM_OPT_LVMARCHIVE =~ tr/A-Z/a-z/;
-	$CFG2SCM_OPT_GCONF =~ tr/A-Z/a-z/;
+	$CFG2SCM_OPT_GCONF      =~ tr/A-Z/a-z/;
 	my ( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $fname );
 	if ( ( $CFG2SCM_OPT_LVMARCHIVE eq "no" ) && ( $fname =~ /etc\/lvm\/archive/ ) ) {
 		print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
@@ -568,4 +568,3 @@ sub si_attention_no_config() {
 		}
 	}
 }
-

@@ -802,7 +802,7 @@ sub si_parse_conf_file($) {
 			$SITAR_OPT_ALLCONFIGFILES = si_set_on_find( $line, "SITAR_OPT_ALLCONFIGFILES", $SITAR_OPT_ALLCONFIGFILES );
 			$SITAR_OPT_ALLSUBDOMAIN   = si_set_on_find( $line, "SITAR_OPT_ALLSUBDOMAIN",   $SITAR_OPT_ALLSUBDOMAIN );
 			$SITAR_OPT_ALLSYSCONFIG   = si_set_on_find( $line, "SITAR_OPT_ALLSYSCONFIG",   $SITAR_OPT_ALLSYSCONFIG );
-			$SITAR_OPT_LVMARCHIVE     = si_set_on_find( $line, "SITAR_OPT_LVMARCHIVE",   $SITAR_OPT_LVMARCHIVE );
+			$SITAR_OPT_LVMARCHIVE     = si_set_on_find( $line, "SITAR_OPT_LVMARCHIVE",     $SITAR_OPT_LVMARCHIVE );
 		}
 		close( CONFIG_DATA );
 	}
@@ -2238,7 +2238,7 @@ sub si_conf($$$) {
 	( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
 		$SITAR_OPT_LVMARCHIVE =~ tr/A-Z/a-z/;
-		$SITAR_OPT_GCONF =~ tr/A-Z/a-z/;
+		$SITAR_OPT_GCONF      =~ tr/A-Z/a-z/;
 		if ( exists( $ignoreconfigfiles{ $filename } ) ) {
 			# debug
 		} elsif ( ( $SITAR_OPT_LVMARCHIVE eq "no" ) && ( $filename =~ /etc\/lvm\/archive/ ) ) {
