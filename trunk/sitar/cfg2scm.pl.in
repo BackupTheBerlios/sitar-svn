@@ -182,7 +182,7 @@ my $CFG2SCM_OPT_BASE_URL   = "";
 my $CFG2SCM_OPT_REPOS      = "";
 my $CFG2SCM_OPT_USER       = "";
 my $CFG2SCM_OPT_PASS       = "";
-my $CFG2SCM_OPT_STORAGE    = "svn";
+my $CFG2SCM_OPT_STORAGE    = "tar.bz2";
 my $CFG2SCM_OPT_MESSAGE    = "autocommit by cfg2scm";
 my $CFG2SCM_OPT_OUTFILE    = "/tmp/cfg2scm.$HOSTNAME.$NOW";
 my $CFG2SCM_OPT_LIMIT      = 0;
@@ -210,6 +210,7 @@ my $CFG2SCM_CONFIG_FILE           = "/etc/sysconfig/cfg2scm";
 sub si_now_gmt() {
 	my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday ) = gmtime( time );
 	$year += 1900;
+	$mon  += 1;
 	$mon  = sprintf( "%02d", $mon );
 	$mday = sprintf( "%02d", $mday );
 	$hour = sprintf( "%02d", $hour );
@@ -381,7 +382,7 @@ sub si_add($) {
 	my ( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $fname );
 	if ( ( $CFG2SCM_OPT_LVMARCHIVE eq "no" ) && ( $fname =~ /etc\/lvm\/archive/ ) ) {
 		print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
-	if ( ( $CFG2SCM_OPT_GCONF eq "no" ) && ( $fname =~ /etc\/opt\/gnome/ ) ) {
+	} elsif ( ( $CFG2SCM_OPT_GCONF eq "no" ) && ( $fname =~ /etc\/opt\/gnome/ ) ) {
 		print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
 	} elsif ( ( $CFG2SCM_OPT_LIMIT > 0 ) && ( $ff_size > $CFG2SCM_OPT_LIMIT ) ) {
 		print "LIMIT exceed; skipped $fname\n";
@@ -567,3 +568,4 @@ sub si_attention_no_config() {
 		}
 	}
 }
+

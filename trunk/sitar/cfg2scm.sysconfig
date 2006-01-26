@@ -16,11 +16,11 @@
 CFG2SCM_OPT_TMP="/tmp/cfg2scm.co"
 
 ## Type:	list("svn","cvs","tar","tar.gz","tar.bz2")
-## Default:	""
+## Default:	"tar.bz2"
 #
 # Explanation...
 #
-CFG2SCM_OPT_STORAGE="svn"
+CFG2SCM_OPT_STORAGE="tar.bz2"
 
 ## Type:	string
 ## Default:	""
