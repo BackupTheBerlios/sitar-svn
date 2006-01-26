@@ -37,7 +37,7 @@ SITAR_OPT_OUTFILE=""
 # Explanation...
 # 
 #
-SITAR_OPT_GNOME=No
+SITAR_OPT_GCONF=No
 
 ## Type:	integer(0:)
 ## Default:	500000
@@ -66,6 +66,16 @@ SITAR_OPT_ALLSUBDOMAIN="Auto";
 # Explanation...
 #
 SITAR_OPT_ALLSYSCONFIG="Auto";
+
+## Type:	yesno
+## Default:	No
+#
+SITAR_OPT_GCONF=No
+
+## Type:	yesno
+## Default:	No
+#
+SITAR_OPT_LVMARCHIVE=No
 
 #
 # EOF

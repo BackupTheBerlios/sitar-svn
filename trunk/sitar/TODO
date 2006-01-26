@@ -1,6 +1,5 @@
 SITAR:
 - implement '/etc/lsb-release'
-- implement 'HAL'  support
-- make including /etc/subdomain.d optional (default=yes)
+- better 'HAL'  support
 - avoid including /etc/lvm/archive, optional (default=no)
 

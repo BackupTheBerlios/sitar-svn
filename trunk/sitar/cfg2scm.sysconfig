@@ -50,6 +50,16 @@ CFG2SCM_OPT_USER=""
 #
 CFG2SCM_OPT_PASS=""
 
+## Type:	yesno
+## Default:	No
+#
+CFG2SCM_OPT_GCONF=No
+
+## Type:	yesno
+## Default:	No
+#
+CFG2SCM_OPT_LVMARCHIVE=No
+
 ## Type:	string
 ## Default:	"autocommit by cfg2scm"
 #

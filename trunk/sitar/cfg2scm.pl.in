@@ -177,18 +177,19 @@ $ENV{ PATH } = '/bin:/usr/bin';
 sub si_now_gmt();
 my $NOW = si_now_gmt();
 chomp( my $HOSTNAME = `$CMD_HOSTNAME -f` );
-my $CFG2SCM_OPT_TMP      = "/tmp/cfg2scm.$HOSTNAME.$NOW";
-my $CFG2SCM_OPT_BASE_URL = "";
-my $CFG2SCM_OPT_REPOS    = "";
-my $CFG2SCM_OPT_USER     = "";
-my $CFG2SCM_OPT_PASS     = "";
-my $CFG2SCM_OPT_STORAGE  = "svn";
-my $CFG2SCM_OPT_MESSAGE  = "autocommit by cfg2scm";
-my $CFG2SCM_OPT_OUTFILE  = "/tmp/cfg2scm.$HOSTNAME.$NOW";
-my $CFG2SCM_OPT_LIMIT    = 0;
-my $CFG2SCM_OPT_NON_ROOT = "No";
-my $CFG2SCM_OPT_GCONF    = "No";
-my $CFG2SCM_SVN_AUTH     = "";
+my $CFG2SCM_OPT_TMP        = "/tmp/cfg2scm.$HOSTNAME.$NOW";
+my $CFG2SCM_OPT_BASE_URL   = "";
+my $CFG2SCM_OPT_REPOS      = "";
+my $CFG2SCM_OPT_USER       = "";
+my $CFG2SCM_OPT_PASS       = "";
+my $CFG2SCM_OPT_STORAGE    = "svn";
+my $CFG2SCM_OPT_MESSAGE    = "autocommit by cfg2scm";
+my $CFG2SCM_OPT_OUTFILE    = "/tmp/cfg2scm.$HOSTNAME.$NOW";
+my $CFG2SCM_OPT_LIMIT      = 0;
+my $CFG2SCM_OPT_NON_ROOT   = "No";
+my $CFG2SCM_OPT_GCONF      = "No";
+my $CFG2SCM_OPT_LVMARCHIVE = "No";
+my $CFG2SCM_SVN_AUTH       = "";
 #
 # static globals
 #
@@ -243,14 +244,17 @@ sub si_parse_conf_file($) {
 	while ( my $line = <CONFIG_DATA> ) {
 		next if $line =~ /^#|^$/;
 		chomp( $line );
-		$CFG2SCM_OPT_TMP      = si_set_on_find( $line, "CFG2SCM_OPT_TMP",      $CFG2SCM_OPT_TMP );
-		$CFG2SCM_OPT_BASE_URL = si_set_on_find( $line, "CFG2SCM_OPT_BASE_URL", $CFG2SCM_OPT_BASE_URL );
-		$CFG2SCM_OPT_REPOS    = si_set_on_find( $line, "CFG2SCM_OPT_REPOS",    $CFG2SCM_OPT_REPOS );
-		$CFG2SCM_OPT_USER     = si_set_on_find( $line, "CFG2SCM_OPT_USER",     $CFG2SCM_OPT_USER );
-		$CFG2SCM_OPT_PASS     = si_set_on_find( $line, "CFG2SCM_OPT_PASS",     $CFG2SCM_OPT_PASS );
-		$CFG2SCM_OPT_MESSAGE  = si_set_on_find( $line, "CFG2SCM_OPT_MESSAGE",  $CFG2SCM_OPT_MESSAGE );
-		$CFG2SCM_OPT_STORAGE  = si_set_on_find( $line, "CFG2SCM_OPT_STORAGE",  $CFG2SCM_OPT_STORAGE );
-		$CFG2SCM_OPT_OUTFILE  = si_set_on_find( $line, "CFG2SCM_OPT_OUTFILE",  $CFG2SCM_OPT_OUTFILE );
+		$CFG2SCM_OPT_TMP        = si_set_on_find( $line, "CFG2SCM_OPT_TMP",      $CFG2SCM_OPT_TMP );
+		$CFG2SCM_OPT_BASE_URL   = si_set_on_find( $line, "CFG2SCM_OPT_BASE_URL", $CFG2SCM_OPT_BASE_URL );
+		$CFG2SCM_OPT_REPOS      = si_set_on_find( $line, "CFG2SCM_OPT_REPOS",    $CFG2SCM_OPT_REPOS );
+		$CFG2SCM_OPT_USER       = si_set_on_find( $line, "CFG2SCM_OPT_USER",     $CFG2SCM_OPT_USER );
+		$CFG2SCM_OPT_PASS       = si_set_on_find( $line, "CFG2SCM_OPT_PASS",     $CFG2SCM_OPT_PASS );
+		$CFG2SCM_OPT_MESSAGE    = si_set_on_find( $line, "CFG2SCM_OPT_MESSAGE",  $CFG2SCM_OPT_MESSAGE );
+		$CFG2SCM_OPT_STORAGE    = si_set_on_find( $line, "CFG2SCM_OPT_STORAGE",  $CFG2SCM_OPT_STORAGE );
+		$CFG2SCM_OPT_OUTFILE    = si_set_on_find( $line, "CFG2SCM_OPT_OUTFILE",  $CFG2SCM_OPT_OUTFILE );
+		$CFG2SCM_OPT_LIMIT      = si_set_on_find( $line, "CFG2SCM_OPT_LIMIT",  $CFG2SCM_OPT_LIMIT );
+		$CFG2SCM_OPT_GCONF      = si_set_on_find( $line, "CFG2SCM_OPT_GCONF",  $CFG2SCM_OPT_GCONF );
+		$CFG2SCM_OPT_LVMARCHIVE = si_set_on_find( $line, "CFG2SCM_OPT_LVMARCHIVE",  $CFG2SCM_OPT_LVMARCHIVE );
 	}
 	close( CONFIG_DATA );
 }
@@ -372,8 +376,12 @@ sub si_add($) {
 		open( SAVEERR, ">&STDERR" );
 		open( STDERR,  ">/dev/null" );
 	}
+	$CFG2SCM_OPT_LVMARCHIVE =~ tr/A-Z/a-z/;
+	$CFG2SCM_OPT_GCONF =~ tr/A-Z/a-z/;
 	my ( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $fname );
-	if ( ( $CFG2SCM_OPT_GCONF eq "No" ) && ( $fname =~ /etc\/opt\/gnome\/gconf/ ) ) {
+	if ( ( $CFG2SCM_OPT_LVMARCHIVE eq "no" ) && ( $fname =~ /etc\/lvm\/archive/ ) ) {
+		print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
+	if ( ( $CFG2SCM_OPT_GCONF eq "no" ) && ( $fname =~ /etc\/opt\/gnome/ ) ) {
 		print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
 	} elsif ( ( $CFG2SCM_OPT_LIMIT > 0 ) && ( $ff_size > $CFG2SCM_OPT_LIMIT ) ) {
 		print "LIMIT exceed; skipped $fname\n";

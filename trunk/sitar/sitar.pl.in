@@ -223,13 +223,14 @@ my $SITAR_OPT_FORMAT         = "";
 my $SITAR_OPT_OUTFILE        = "";
 my $SITAR_OPT_OUTDIR         = "";
 my $SITAR_OPT_LIMIT          = 700000;
-my $SITAR_OPT_GNOME          = "No";
+my $SITAR_OPT_GCONF          = "No";
 my $SITAR_CONFIG_DIR         = "/var/lib/support";
 my $SITAR_CONSIST_FN         = "Configuration_Consistency.include";
 my $SITAR_UNPACKED_FN        = "Find_Unpacked.include";
 my $SITAR_OPT_ALLSUBDOMAIN   = "Auto";
 my $SITAR_OPT_ALLCONFIGFILES = "Auto";
 my $SITAR_OPT_ALLSYSCONFIG   = "Auto";
+my $SITAR_OPT_LVMARCHIVE     = "No";
 my ( $SITAR_OPT_HELP, $SITAR_OPT_VERSION, $SITAR_OPT_CONSISTENCY );
 #
 # commands
@@ -797,10 +798,11 @@ sub si_parse_conf_file($) {
 			$SITAR_OPT_OUTDIR         = si_set_on_find( $line, "SITAR_OPT_OUTDIR",         $SITAR_OPT_OUTDIR );
 			$SITAR_OPT_OUTFILE        = si_set_on_find( $line, "SITAR_OPT_OUTFILE",        $SITAR_OPT_OUTFILE );
 			$SITAR_OPT_LIMIT          = si_set_on_find( $line, "SITAR_OPT_LIMIT",          $SITAR_OPT_LIMIT );
-			$SITAR_OPT_GNOME          = si_set_on_find( $line, "SITAR_OPT_GNOME",          $SITAR_OPT_GNOME );
+			$SITAR_OPT_GCONF          = si_set_on_find( $line, "SITAR_OPT_GCONF",          $SITAR_OPT_GCONF );
 			$SITAR_OPT_ALLCONFIGFILES = si_set_on_find( $line, "SITAR_OPT_ALLCONFIGFILES", $SITAR_OPT_ALLCONFIGFILES );
 			$SITAR_OPT_ALLSUBDOMAIN   = si_set_on_find( $line, "SITAR_OPT_ALLSUBDOMAIN",   $SITAR_OPT_ALLSUBDOMAIN );
 			$SITAR_OPT_ALLSYSCONFIG   = si_set_on_find( $line, "SITAR_OPT_ALLSYSCONFIG",   $SITAR_OPT_ALLSYSCONFIG );
+			$SITAR_OPT_LVMARCHIVE     = si_set_on_find( $line, "SITAR_OPT_LVMARCHIVE",   $SITAR_OPT_LVMARCHIVE );
 		}
 		close( CONFIG_DATA );
 	}
@@ -2235,9 +2237,13 @@ sub si_conf($$$) {
 	my ( $title, $filename, $comment ) = @_;
 	( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
+		$SITAR_OPT_LVMARCHIVE =~ tr/A-Z/a-z/;
+		$SITAR_OPT_GCONF =~ tr/A-Z/a-z/;
 		if ( exists( $ignoreconfigfiles{ $filename } ) ) {
 			# debug
-		} elsif ( ( $SITAR_OPT_GNOME eq "No" ) && ( $filename =~ /etc\/opt\/gnome/ ) ) {
+		} elsif ( ( $SITAR_OPT_LVMARCHIVE eq "no" ) && ( $filename =~ /etc\/lvm\/archive/ ) ) {
+			# print "file below /etc/lvm/archive/ found; skipped $fname\n";
+		} elsif ( ( $SITAR_OPT_GCONF eq "no" ) && ( $filename =~ /etc\/opt\/gnome/ ) ) {
 			# print "GCONF below /etc/opt/gnome/gconf/ found; skipped $fname\n";
 		} elsif ( ( $SITAR_OPT_LIMIT > 0 ) && ( $ff_size > $SITAR_OPT_LIMIT ) ) {
 			# print "LIMIT exceed; skipped $fname\n";
