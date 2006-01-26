@@ -1,7 +1,5 @@
 ## Path:        System/Monitoring/cfg2scm
 ## Description: cfg2scm - Check configuration changes into SCM
-## Type:        yesno
-## Default:     no
 #
 # Explanation
 #

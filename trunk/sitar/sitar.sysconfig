@@ -1,7 +1,5 @@
 ## Path:        System/Monitoring/sitar
 ## Description: sitar - System InformaTion At Runtime
-## Type:        yesno
-## Default:     no
 #
 # Explanation
 #
