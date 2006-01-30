@@ -1,5 +1,8 @@
 SITAR:
-- implement '/etc/lsb-release'
 - better 'HAL'  support
-- avoid including /etc/lvm/archive, optional (default=no)
+- enhance manual-page and comments in sitar.sysconfig
+- implement '/etc/lsb-release'
+
+CFG2SCM
+- enhance manual-page and comments in cfg2scm.sysconfig
 
