@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
-#  cfg2scm.pl - Check configuration changes into SCM
-#  Copyright (C) 2005-2006 SuSE Linux, a Novell Business
+#  SITAR - System InformaTion At Runtime
+#  Copyright (C) 1999-2006 SuSE Linux, a Novell Business
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,14 @@
 #
 #  Authors/Contributors:
 #		Matthias G. Eckermann
-#		Günther Deschner	Manfred Hollstein
+#		Stephan Müller		Janto Trappe
+#		Waldemar Brodkorb	Björn Jacke
+#		Bernhard Thoni		Pascal Fuckerieder
+#		Andreas Rother		Uwe Hering
+#		Jan Jensen		Falko Trojahn
+#		Stephan Martin		Holger Dopp
+#		Seth Arnold		Manfred Hollstein
+#		Stefan Werden		Robert Heinzmann
+#		Martin Spill
 #
 
