@@ -26,14 +26,6 @@ RELEASE		=	1.0.1
 
 SVNVERSION      :=      $(shell svnversion -n . | sed "s/:/./" )
 RELDATE         :=      $(shell date +"%Y%m%d")
-
-.PHONY:		default
-default:	sitar.pl sitar.1 sitar.html sitar.ps cfg2scm.pl		\
-		cfg2scm.1 cfg2scm.html cfg2scm.ps sitar.spec
-
-.PHONY:		dist
-dist:		sitar-${RELEASE}.tar.bz2
-
 CFG_SNIPPETS	= 	snippets/cfg2scm.header				\
 			snippets/cfg2scm.manpage 			\
 			snippets/cfg2scm.globals 			\
@@ -46,80 +38,104 @@ SITAR_SNIPPETS	=	snippets/sitar.header 				\
 			snippets/sitar.functions 			\
 			snippets/sitar.main
 
-.PHONY:	.clean
+#-----------------------------------------------------------------------
+
+.PHONY:		default
+default:	sitar.pl sitar.1 sitar.html sitar.ps cfg2scm.pl		\
+		cfg2scm.1 cfg2scm.html cfg2scm.ps sitar.spec
+
+.PHONY:		dist
+dist:		sitar-${RELEASE}.tar.bz2
+
+.PHONY:		clean
 clean:
 	rm -f	*.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel pod2htm*	\
 		*.part *.html *.sql *~ *-selections support_all.pl	\
 		sitar.pl sitar.1 sitar.html sitar.ps sitar.spec		\
-		cfg2scm.pl.in sitar.pl.in				\
 		cfg2scm.pl cfg2scm.1 cfg2scm.html cfg2scm.ps cfg2scm.spec
 
 #-----------------------------------------------------------------------
 
-sitar.pl.in: ${SITAR_SNIPPETS}
-	cat ${SITAR_SNIPPETS} > $@
+sitar.pl: ${SITAR_SNIPPETS}
+	cat ${SITAR_SNIPPETS} |						\
+	${PERL} -p -e '$$pre="${PREFIX}";'				\
+		-e 's/%%SITAR_PREFIX%%/$$pre/; '			\
+		-e 's/%%SITAR_RELEASE%%/${RELEASE}/;' 			\
+		-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' > $@
+	chmod 755 sitar.pl
 
-cfg2scm.pl.in: ${CFG_SNIPPETS}
-	cat ${CFG_SNIPPETS} > $@
+cfg2scm.pl: ${CFG_SNIPPETS}
+	cat ${CFG_SNIPPETS} |						\
+	${PERL} -p -e '$$pre="${PREFIX}";'				\
+		-e 's/%%CFG2SCM_PREFIX%%/$$pre/; '			\
+		-e 's/%%CFG2SCM_RELEASE%%/${RELEASE}/;'			\
+		-e 's/%%CFG2SCM_SVNVERSION%%/${SVNVERSION}/;' > $@
+	chmod 755 cfg2scm.pl
 
-sitar-${RELEASE}.tar.bz2:	clean sitar.spec
-	rm -f $@ ; rm -rf /tmp/sitar-${RELEASE} ; mkdir /tmp/sitar-${RELEASE}
-	tar -C ../sitar -cSf - . --exclude=.svn | tar -C /tmp/sitar-${RELEASE} -xBSpf -
-	cd /tmp/sitar-${RELEASE} ; cp -a sitar.pl.in sitar.pl.in.pre ; ${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.pl.in.pre > sitar.pl.in ; rm -f sitar.pl.in.pre
-	cd /tmp/sitar-${RELEASE} ; cp -a cfg2scm.pl.in cfg2scm.pl.in.pre ; ${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%CFG2SCM_PREFIX%%/$$pre/; ' -e 's/%%CFG2SCM_RELEASE%%/${RELEASE}/;' -e 's/%%CFG2SCM_SVNVERSION%%/${SVNVERSION}/;' cfg2scm.pl.in.pre > cfg2scm.pl.in ; rm -f cfg2scm.pl.in.pre 
-	cd /tmp/ ; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -rf /tmp/sitar-${RELEASE} 
+#-----------------------------------------------------------------------
 
-sitar.spec:   sitar.spec.in
-	${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.spec.in > sitar.spec
+sitar-${RELEASE}.tar.bz2: clean sitar.spec sitar.pl cfg2scm.pl
+	rm -f $@ ; rm -rf /tmp/sitar-${RELEASE} ;			\
+	mkdir /tmp/sitar-${RELEASE} ; 					\
+	tar -C ../sitar -cSf - . --exclude=.svn --exclude=snippets |	\
+		tar -C /tmp/sitar-${RELEASE} -xBSpf -;			\
+	tar -cvspjf /tmp/sitar-${RELEASE}.tar.bz2 /tmp/sitar-${RELEASE};\
+	rm -rf /tmp/sitar-${RELEASE} 
 
 rpm:	/tmp/sitar-${RELEASE}.tar.bz2
-	- (pushd /tmp/ ; rpmbuild -ta sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
-	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
+	rpmbuild -ta /tmp/sitar-${RELEASE}.tar.bz2
+	rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
 signed:	/tmp/sitar-${RELEASE}.tar.bz2
-	- (pushd /tmp/ ; rpmbuild -ta --sign sitar-${RELEASE}.tar.bz2 ; chmod 777 /tmp/sitar-${RELEASE}.tar.bz2 ; popd)
-	- rm -f /tmp/sitar-${RELEASE}.tar.bz2
+	rpmbuild -ta --sign /tmp/sitar-${RELEASE}.tar.bz2
+	rm -f /tmp/sitar-${RELEASE}.tar.bz2
 
-sitar.pl:	sitar.pl.in Makefile
-	${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.pl.in > sitar.pl
-	chmod 755 sitar.pl
-	ln -fs sitar.pl support_all.pl
+#-----------------------------------------------------------------------
+
+sitar.spec:   sitar.spec.in
+	${PERL} -p -e '$$pre="${PREFIX}";'				\
+		-e 's/%%SITAR_PREFIX%%/$$pre/; '			\
+		-e 's/%%SITAR_RELEASE%%/${RELEASE}/;'			\
+		-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;'		\
+		sitar.spec.in > sitar.spec
 
 sitar.1:	sitar.pl
-	pod2man --center=" " --release="${RELEASE}-${SVNVERSION}" --date=${RELDATE} sitar.pl > sitar.01
-	${PERL} -p	-e 's/.if n .na/.\\\".if n .na/;'\
-			sitar.01 > sitar.1
+	pod2man --center=" " --release="${RELEASE}-${SVNVERSION}"	\
+		--date=${RELDATE} sitar.pl > sitar.01
+	${PERL} -p -e 's/.if n .na/.\\\".if n .na/;' sitar.01 > sitar.1
 	rm sitar.01
 
 sitar.html:	sitar.pl
-	pod2html  --infile=sitar.pl --outfile=sitar.html\
-	--title "SITAR - System InformaTion At Runtime"
+	pod2html --infile=sitar.pl --outfile=sitar.html			\
+		 --title "SITAR - System InformaTion At Runtime"
 
 sitar.ps:	sitar.1
 	groff -man -Tps sitar.1 > sitar.ps
 
-cfg2scm.pl:	cfg2scm.pl.in Makefile
-	${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%CFG2SCM_PREFIX%%/$$pre/; ' -e 's/%%CFG2SCM_RELEASE%%/${RELEASE}/;' -e 's/%%CFG2SCM_SVNVERSION%%/${SVNVERSION}/;' cfg2scm.pl.in > cfg2scm.pl
-	chmod 755 cfg2scm.pl
+#-----------------------------------------------------------------------
 
 cfg2scm.1:	cfg2scm.pl
-	pod2man --center=" " --release="${RELEASE}-${SVNVERSION}" --date=${RELDATE} cfg2scm.pl > cfg2scm.01
-	${PERL} -p	-e 's/.if n .na/.\\\".if n .na/;' cfg2scm.01 > cfg2scm.1
-	-rm cfg2scm.01
-	-rm pod2*.tmp
+	pod2man --center=" " --release="${RELEASE}-${SVNVERSION}"	\
+		--date=${RELDATE} cfg2scm.pl > cfg2scm.01
+	${PERL} -p -e 's/.if n .na/.\\\".if n .na/;' cfg2scm.01 > cfg2scm.1
+	rm cfg2scm.01
+	rm pod2*.tmp
 
 cfg2scm.html:	cfg2scm.pl
-	pod2html --infile=cfg2scm.pl --outfile=cfg2scm.html --title "CFG2SCM - Check configuration changes into SCM"
-	-rm pod2*.tmp
+	pod2html --infile=cfg2scm.pl --outfile=cfg2scm.html		\
+		 --title "CFG2SCM - Check configuration changes into SCM"
+	rm pod2*.tmp
 
 cfg2scm.ps:	cfg2scm.1
 	groff -man -Tps cfg2scm.1 > cfg2scm.ps
 
+#-----------------------------------------------------------------------
+
 test_cvs:	cfg2scm.pl
+	rm -rf /tmp/testcvs*
 	cvs -d /tmp/testcvs init
-	./cfg2scm.pl --storage="cvs" --non-root="Yes" --debug --base-url="/tmp/testcvs"
-	./cfg2scm.pl --storage="cvs" --non-root="Yes" --debug --base-url="/tmp/testcvs"
-	./cfg2scm.pl --storage="cvs" --non-root="Yes" --debug --base-url="/tmp/testcvs"
+	./cfg2scm.pl --storage="cvs" --non-root="Yes" --debug		\
+		     --base-url="/tmp/testcvs"
 	rm -rf /tmp/testcvs*
 
 test_tar:	cfg2scm.pl
@@ -167,9 +183,11 @@ doc-install-cfg2scm:	cfg2scm.ps cfg2scm.html
 	install	-m 644	cfg2scm.ps	${DESTDIR}/${DOCDIR}/cfg2scm/cfg2scm.ps
 	install	-m 644	LICENSE		${DESTDIR}/${DOCDIR}/cfg2scm/LICENSE
 
-perltidy:	cfg2scm.pl.in sitar.pl.in
+perltidy:	cfg2scm.pl sitar.pl
 	perltidy -i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob	\
-			-ce -sbt=0 -bt=0 -pt=0 -nola cfg2scm.pl.in
+			-ce -sbt=0 -bt=0 -pt=0 -nola cfg2scm.pl
 	perltidy -i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob	\
-			-ce -sbt=0 -bt=0 -pt=0 -nola sitar.pl.in
+			-ce -sbt=0 -bt=0 -pt=0 -nola sitar.pl
+
+#-----------------------------------------------------------------------
 
