@@ -56,24 +56,6 @@ clean:
 
 #-----------------------------------------------------------------------
 
-sitar.pl: ${SITAR_SNIPPETS}
-	cat ${SITAR_SNIPPETS} |						\
-	${PERL} -p -e '$$pre="${PREFIX}";'				\
-		-e 's/%%SITAR_PREFIX%%/$$pre/; '			\
-		-e 's/%%SITAR_RELEASE%%/${RELEASE}/;' 			\
-		-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' > $@
-	chmod 755 sitar.pl
-
-cfg2scm.pl: ${CFG_SNIPPETS}
-	cat ${CFG_SNIPPETS} |						\
-	${PERL} -p -e '$$pre="${PREFIX}";'				\
-		-e 's/%%CFG2SCM_PREFIX%%/$$pre/; '			\
-		-e 's/%%CFG2SCM_RELEASE%%/${RELEASE}/;'			\
-		-e 's/%%CFG2SCM_SVNVERSION%%/${SVNVERSION}/;' > $@
-	chmod 755 cfg2scm.pl
-
-#-----------------------------------------------------------------------
-
 /tmp/sitar-${RELEASE}.tar.bz2: clean sitar.spec sitar.pl cfg2scm.pl
 	rm -f $@ ; rm -rf /tmp/sitar-${RELEASE} ;			\
 	mkdir /tmp/sitar-${RELEASE} ; 					\
@@ -82,6 +64,13 @@ cfg2scm.pl: ${CFG_SNIPPETS}
 	tar -C /tmp -cvspjf 	/tmp/sitar-${RELEASE}.tar.bz2		\
 				sitar-${RELEASE};			\
 	rm -rf /tmp/sitar-${RELEASE} 
+
+sitar.spec:   sitar.spec.in
+	${PERL} -p -e '$$pre="${PREFIX}";'				\
+		-e 's/%%SITAR_PREFIX%%/$$pre/; '			\
+		-e 's/%%SITAR_RELEASE%%/${RELEASE}/;'			\
+		-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;'		\
+		sitar.spec.in > sitar.spec
 
 rpm:	/tmp/sitar-${RELEASE}.tar.bz2
 	rpmbuild -ta /tmp/sitar-${RELEASE}.tar.bz2
@@ -93,12 +82,13 @@ signed:	/tmp/sitar-${RELEASE}.tar.bz2
 
 #-----------------------------------------------------------------------
 
-sitar.spec:   sitar.spec.in
+sitar.pl: ${SITAR_SNIPPETS}
+	cat ${SITAR_SNIPPETS} |						\
 	${PERL} -p -e '$$pre="${PREFIX}";'				\
 		-e 's/%%SITAR_PREFIX%%/$$pre/; '			\
-		-e 's/%%SITAR_RELEASE%%/${RELEASE}/;'			\
-		-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;'		\
-		sitar.spec.in > sitar.spec
+		-e 's/%%SITAR_RELEASE%%/${RELEASE}/;' 			\
+		-e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' > $@
+	chmod 755 sitar.pl
 
 sitar.1:	sitar.pl
 	pod2man --center=" " --release="${RELEASE}-${SVNVERSION}"	\
@@ -114,6 +104,14 @@ sitar.ps:	sitar.1
 	groff -man -Tps sitar.1 > sitar.ps
 
 #-----------------------------------------------------------------------
+
+cfg2scm.pl: ${CFG_SNIPPETS}
+	cat ${CFG_SNIPPETS} |						\
+	${PERL} -p -e '$$pre="${PREFIX}";'				\
+		-e 's/%%CFG2SCM_PREFIX%%/$$pre/; '			\
+		-e 's/%%CFG2SCM_RELEASE%%/${RELEASE}/;'			\
+		-e 's/%%CFG2SCM_SVNVERSION%%/${SVNVERSION}/;' > $@
+	chmod 755 cfg2scm.pl
 
 cfg2scm.1:	cfg2scm.pl
 	pod2man --center=" " --release="${RELEASE}-${SVNVERSION}"	\
@@ -146,43 +144,34 @@ test_tar:	cfg2scm.pl
 
 #-----------------------------------------------------------------------
 
-install:	install-sitar install-cfg2scm 
-	install -d			${DESTDIR}/var/lib/support
-
-install-sitar:	sitar.1 sitar.ps sitar.html
-	install	-d -m 755		${DESTDIR}/${PREFIX}/sbin	\
+install: sitar.1 sitar.ps sitar.html sitar.pl cfg2scm.1 cfg2scm.pl cfg2scm.ps cfg2scm.html
+	install -d -m 755		${DESTDIR}/var/lib/support	\
+					${DESTDIR}/${PREFIX}/sbin	\
 					${DESTDIR}/${MANDIR}		\
 					${DESTDIR}/${DOCDIR}/sitar/	\
 					${DESTDIR}/etc/sysconfig	\
 					${DESTDIR}/${PREFIX}/share/sitar
+#
 	install -m 644 	sitar.sysconfig	${DESTDIR}/etc/sysconfig/sitar
 	install -m 700 	sitar.pl	${DESTDIR}/${PREFIX}/sbin/sitar.pl
-	ln -sf ${PREFIX}/sbin/sitar.pl	${DESTDIR}/${PREFIX}/sbin/support_all.pl
 	ln -sf ${PREFIX}/sbin/sitar.pl	${DESTDIR}/${PREFIX}/sbin/sitar
+	install -m 644 	proc.txt	${DESTDIR}/${PREFIX}/share/sitar/proc.txt
+#
+	install -m 700 	cfg2scm.pl	${DESTDIR}/${PREFIX}/sbin/cfg2scm.pl
+	install -m 644 	cfg2scm.sysconfig ${DESTDIR}/etc/sysconfig/cfg2scm
+#
 	install -m 644 	sitar.1		${DESTDIR}/${MANDIR}/sitar.1
 	gzip				${DESTDIR}/${MANDIR}/sitar.1
-	ln -sf ${MANDIR}/sitar.1.gz	${DESTDIR}/${MANDIR}/support_all.1.gz
+	install -m 644 	cfg2scm.1	${DESTDIR}/${MANDIR}/cfg2scm.1
+	gzip				${DESTDIR}/${MANDIR}/cfg2scm.1
+#
 	install	-m 644	sitar.html	${DESTDIR}/${DOCDIR}/sitar/sitar.html
 	install	-m 644	sitar.ps	${DESTDIR}/${DOCDIR}/sitar/sitar.ps
 	install	-m 644	LICENSE		${DESTDIR}/${DOCDIR}/sitar/LICENSE
-	install -m 644 	proc.txt	${DESTDIR}/${PREFIX}/share/sitar/proc.txt
-
-install-cfg2scm: cfg2scm.1
-	install	-d			${DESTDIR}/${PREFIX}/sbin	\
-					${DESTDIR}/${MANDIR}		\
-					${DESTDIR}/etc/sysconfig	\
-					${DESTDIR}/${PREFIX}/share/cfg2scm
-	install -m 700 	cfg2scm.pl	${DESTDIR}/${PREFIX}/sbin/cfg2scm.pl
-	install -m 644 	cfg2scm.1	${DESTDIR}/${MANDIR}/cfg2scm.1
-	install -m 644 	cfg2scm.sysconfig				\
-					${DESTDIR}/etc/sysconfig/cfg2scm
-	gzip				${DESTDIR}/${MANDIR}/cfg2scm.1
-
-doc-install-cfg2scm:	cfg2scm.ps cfg2scm.html
-	install	-d			${DESTDIR}/${DOCDIR}/cfg2scm/
-	install	-m 644	cfg2scm.html	${DESTDIR}/${DOCDIR}/cfg2scm/cfg2scm.html
-	install	-m 644	cfg2scm.ps	${DESTDIR}/${DOCDIR}/cfg2scm/cfg2scm.ps
-	install	-m 644	LICENSE		${DESTDIR}/${DOCDIR}/cfg2scm/LICENSE
+	install	-m 644	cfg2scm.html	${DESTDIR}/${DOCDIR}/sitar/cfg2scm.html
+	install	-m 644	cfg2scm.ps	${DESTDIR}/${DOCDIR}/sitar/cfg2scm.ps
+# ln -sf ${PREFIX}/sbin/sitar.pl ${DESTDIR}/${PREFIX}/sbin/support_all.pl
+# ln -sf ${MANDIR}/sitar.1.gz ${DESTDIR}/${MANDIR}/support_all.1.gz
 
 perltidy:	cfg2scm.pl sitar.pl
 	perltidy -i=8 -t -l=0 -nbbc -nbbb -bbs -mbl=1 -nbl -bar -sob	\

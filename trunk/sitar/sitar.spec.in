@@ -75,14 +75,14 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 %doc sitar.html sitar.ps cfg2scm.html cfg2scm.ps LICENSE
 %attr(700, root, root) /usr/sbin/sitar.pl
 %attr(700, root, root) /usr/sbin/sitar
-%attr(700, root, root) /usr/sbin/support_all.pl
 %attr(700, root, root) /usr/sbin/cfg2scm.pl
 /usr/share/man/man1/sitar.1.gz
-/usr/share/man/man1/support_all.1.gz
 /usr/share/man/man1/cfg2scm.1.gz
 %dir /usr/share/sitar
 %dir /var/lib/support
 /usr/share/sitar/proc.txt
+# /usr/share/man/man1/support_all.1.gz
+# %attr(700, root, root) /usr/sbin/support_all.pl
 
 %clean
 if [ -n "$RPM_BUILD_ROOT" ] ; then

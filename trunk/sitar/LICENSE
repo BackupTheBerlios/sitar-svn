@@ -2,6 +2,9 @@
  SITAR - System InformaTion At Runtime 
  is Copyright (C) 1999-2006 SuSE Linux, a Novell Business
 
+ cfg2scm.pl - Check configuration changes into SCM
+ is Copyright (C) 2005-2006 SuSE Linux, a Novell Business
+
 	You may use, distribute and copy SITAR under the terms of
 	GNU General Public License version 2, which is displayed below.
 
