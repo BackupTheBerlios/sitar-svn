@@ -26,17 +26,17 @@ RELEASE		=	1.0.2
 
 SVNVERSION      :=      $(shell svnversion -n . | sed "s/:/./" )
 RELDATE         :=      $(shell date +"%Y%m%d")
-CFG_SNIPPETS	= 	snippets/cfg2scm.header				\
-			snippets/cfg2scm.manpage 			\
-			snippets/cfg2scm.globals 			\
-			snippets/cfg2scm.functions 			\
-			snippets/cfg2scm.main
+CFG_SNIPPETS	= 	snippets/cfg2scm.header.pl			\
+			snippets/cfg2scm.manpage.pl			\
+			snippets/cfg2scm.globals.pl			\
+			snippets/cfg2scm.functions.pl			\
+			snippets/cfg2scm.main.pl
 
-SITAR_SNIPPETS	=	snippets/sitar.header 				\
-			snippets/sitar.manpage 				\
-			snippets/sitar.globals 				\
-			snippets/sitar.functions 			\
-			snippets/sitar.main
+SITAR_SNIPPETS	=	snippets/sitar.header.pl			\
+			snippets/sitar.manpage.pl			\
+			snippets/sitar.globals.pl			\
+			snippets/sitar.functions.pl			\
+			snippets/sitar.main.pl
 
 #-----------------------------------------------------------------------
 
