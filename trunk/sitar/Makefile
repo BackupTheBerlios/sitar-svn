@@ -64,7 +64,7 @@ cfg2scm.pl.in: ${CFG_SNIPPETS}
 
 sitar-${RELEASE}.tar.bz2:	clean sitar.spec
 	rm -f $@ ; rm -rf /tmp/sitar-${RELEASE} ; mkdir /tmp/sitar-${RELEASE}
-	tar -C ../sitar -cSf . --exclude=.svn | tar -C /tmp/sitar-${RELEASE} -xBSpf -
+	tar -C ../sitar -cSf - . --exclude=.svn | tar -C /tmp/sitar-${RELEASE} -xBSpf -
 	cd /tmp/sitar-${RELEASE} ; cp -a sitar.pl.in sitar.pl.in.pre ; ${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%SITAR_PREFIX%%/$$pre/; ' -e 's/%%SITAR_RELEASE%%/${RELEASE}/;' -e 's/%%SITAR_SVNVERSION%%/${SVNVERSION}/;' sitar.pl.in.pre > sitar.pl.in ; rm -f sitar.pl.in.pre
 	cd /tmp/sitar-${RELEASE} ; cp -a cfg2scm.pl.in cfg2scm.pl.in.pre ; ${PERL} -p -e '$$pre="${PREFIX}";' -e 's/%%CFG2SCM_PREFIX%%/$$pre/; ' -e 's/%%CFG2SCM_RELEASE%%/${RELEASE}/;' -e 's/%%CFG2SCM_SVNVERSION%%/${SVNVERSION}/;' cfg2scm.pl.in.pre > cfg2scm.pl.in ; rm -f cfg2scm.pl.in.pre 
 	cd /tmp/ ; tar cvSjpf /tmp/sitar-${RELEASE}.tar.bz2 sitar-${RELEASE}/* ; rm -rf /tmp/sitar-${RELEASE} 
