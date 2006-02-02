@@ -41,7 +41,7 @@ SITAR_SNIPPETS	=	snippets/sitar.header.pl			\
 #-----------------------------------------------------------------------
 
 .PHONY:		default
-default:	sitar.1 sitar.html sitar.ps 				\
+default:	sitar.pl cfg2scm.pl sitar.1 sitar.html sitar.ps		\
 		cfg2scm.1 cfg2scm.html cfg2scm.ps sitar.spec
 
 .PHONY:		dist
