@@ -18,20 +18,28 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-PREFIX		:=	/usr
-DOCDIR		:=	${PREFIX}/share/doc/packages
-PERL		:=	/usr/bin/perl
-RELEASE		:=	1.0.1
+PREFIX		=	/usr
+DOCDIR		=	${PREFIX}/share/doc/packages
+PERL		=	/usr/bin/perl
+RELEASE		=	1.0.1
+
 SVNVERSION      :=      $(shell svnversion -n . | sed "s/:/./" )
 RELDATE         :=      $(shell date +"%Y%m%d")
 
-
 default	:	sitar.pl sitar.1 sitar.html sitar.ps cfg2scm.pl cfg2scm.1 cfg2scm.html cfg2scm.ps sitar.spec
-
 tar:		/tmp/sitar-${RELEASE}.tar.bz2
+
+cfg_snippets	= snippets/cfg2scm.header snippets/cfg2scm.manpage snippets/cfg2scm.globals snippets/cfg2scm.functions snippets/cfg2scm.main
+sitar_snippets	= snippets/sitar.header   snippets/sitar.manpage   snippets/sitar.globals   snippets/sitar.functions   snippets/sitar.main
 
 clean:
 	-rm -f *.ps *.dvi *.log *.toc *.pdf *.aux *.tex *.sel *.part *.html *.sql *~ sitar.pl support_all.pl sitar.1 sitar.html sitar.ps cfg2scm.pl cfg2scm.1 cfg2scm.html cfg2scm.ps cfg2scm.spec pod2htm* *-selections sitar.spec
+
+sitar.pl.in: $(sitar_snippets)
+	- cat $(sitar_snippets) > $@
+
+cfg2scm.pl.in: $(cfg_snippets)
+	- cat $(cfg_snippets) > $@
 
 /tmp/sitar-${RELEASE}.tar.bz2:	clean sitar.spec
 	- ( pushd ..; cp -a sitar /tmp/sitar-${RELEASE} ; rm -rf /tmp/sitar-${RELEASE}/.svn ;  popd )
