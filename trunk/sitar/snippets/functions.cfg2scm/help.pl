@@ -29,6 +29,16 @@ sub si_warn_no_root() {
 \tthis is for testing purposes only.\n"
 }
 
+sub si_attention_no_filelists() {
+	print "Attention:
+\tno file-lists have been found. Please write your own
+\tand put it as $CFG2SCM_CONFIG_DIR/<name>.include
+\tor let CFG2SCM produce some with
+\t--check-consistency
+\t\tand/or
+\t--find-unpacked\n";
+}
+
 sub si_attention_no_config() {
 	print "Attention:
 \tyou have to set at least the 'storage' type,

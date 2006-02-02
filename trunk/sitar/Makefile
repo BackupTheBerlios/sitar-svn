@@ -30,11 +30,11 @@ CFG_SNIPPETS	=  snippets/cfg2scm.header.pl				\
 		   snippets/cfg2scm.manpage.pl				\
 		   snippets/cfg2scm.globals.pl				\
 		   snippets/functions.cfg2scm/minor.pl			\
+		   snippets/functions.cfg2scm/help.pl			\
 		   snippets/functions.cfg2scm/configfile.pl		\
 		   snippets/functions.common/si_check_consistency.pl	\
 		   snippets/functions.common/si_find_unpacked.pl	\
 		   snippets/functions.cfg2scm/core.pl			\
-		   snippets/functions.cfg2scm/help.pl			\
 		   snippets/cfg2scm.main.pl
 
 SITAR_SNIPPETS	=	snippets/sitar.header.pl			\
