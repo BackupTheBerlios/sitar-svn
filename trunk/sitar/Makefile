@@ -18,19 +18,24 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-PREFIX		=	/usr
-DOCDIR		=	${PREFIX}/share/doc/packages
-MANDIR		=	${PREFIX}/share/man/man1
-PERL		=	/usr/bin/perl
-RELEASE		=	1.0.2
+PREFIX		=  /usr
+DOCDIR		=  ${PREFIX}/share/doc/packages
+MANDIR		=  ${PREFIX}/share/man/man1
+PERL		=  /usr/bin/perl
+RELEASE		=  1.0.2
 
-SVNVERSION      :=      $(shell svnversion -n . | sed "s/:/./" )
-RELDATE         :=      $(shell date +"%Y%m%d")
-CFG_SNIPPETS	= 	snippets/cfg2scm.header.pl			\
-			snippets/cfg2scm.manpage.pl			\
-			snippets/cfg2scm.globals.pl			\
-			snippets/cfg2scm.functions.pl			\
-			snippets/cfg2scm.main.pl
+SVNVERSION      := $(shell svnversion -n . | sed "s/:/./" )
+RELDATE         := $(shell date +"%Y%m%d")
+CFG_SNIPPETS	=  snippets/cfg2scm.header.pl				\
+		   snippets/cfg2scm.manpage.pl				\
+		   snippets/cfg2scm.globals.pl				\
+		   snippets/functions.cfg2scm/minor.pl			\
+		   snippets/functions.cfg2scm/configfile.pl		\
+		   snippets/functions.common/si_check_consistency.pl	\
+		   snippets/functions.common/si_find_unpacked.pl	\
+		   snippets/functions.cfg2scm/core.pl			\
+		   snippets/functions.cfg2scm/help.pl			\
+		   snippets/cfg2scm.main.pl
 
 SITAR_SNIPPETS	=	snippets/sitar.header.pl			\
 			snippets/sitar.manpage.pl			\
