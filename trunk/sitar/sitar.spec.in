@@ -59,7 +59,7 @@ Authors:
 %setup
 
 %build
-## make
+make
 
 %install
 if [ -n "$RPM_BUILD_ROOT" ] ; then

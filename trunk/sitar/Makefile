@@ -41,11 +41,11 @@ SITAR_SNIPPETS	=	snippets/sitar.header 				\
 #-----------------------------------------------------------------------
 
 .PHONY:		default
-default:	sitar.pl sitar.1 sitar.html sitar.ps cfg2scm.pl		\
+default:	sitar.1 sitar.html sitar.ps 				\
 		cfg2scm.1 cfg2scm.html cfg2scm.ps sitar.spec
 
 .PHONY:		dist
-dist:		sitar-${RELEASE}.tar.bz2
+dist:		/tmp/sitar-${RELEASE}.tar.bz2
 
 .PHONY:		clean
 clean:
@@ -74,12 +74,13 @@ cfg2scm.pl: ${CFG_SNIPPETS}
 
 #-----------------------------------------------------------------------
 
-sitar-${RELEASE}.tar.bz2: clean sitar.spec sitar.pl cfg2scm.pl
+/tmp/sitar-${RELEASE}.tar.bz2: clean sitar.spec sitar.pl cfg2scm.pl
 	rm -f $@ ; rm -rf /tmp/sitar-${RELEASE} ;			\
 	mkdir /tmp/sitar-${RELEASE} ; 					\
-	tar -C ../sitar -cSf - . --exclude=.svn --exclude=snippets |	\
+	tar -C ../sitar -cSf - . --exclude=.svn |			\
 		tar -C /tmp/sitar-${RELEASE} -xBSpf -;			\
-	tar -cvspjf /tmp/sitar-${RELEASE}.tar.bz2 /tmp/sitar-${RELEASE};\
+	tar -C /tmp -cvspjf 	/tmp/sitar-${RELEASE}.tar.bz2		\
+				sitar-${RELEASE};			\
 	rm -rf /tmp/sitar-${RELEASE} 
 
 rpm:	/tmp/sitar-${RELEASE}.tar.bz2
@@ -148,7 +149,7 @@ test_tar:	cfg2scm.pl
 install:	install-sitar install-cfg2scm 
 	install -d			${DESTDIR}/var/lib/support
 
-install-sitar:	sitar.pl sitar.1 sitar.ps sitar.html
+install-sitar:	sitar.1 sitar.ps sitar.html
 	install	-d -m 755		${DESTDIR}/${PREFIX}/sbin	\
 					${DESTDIR}/${MANDIR}		\
 					${DESTDIR}/${DOCDIR}/sitar/	\
@@ -166,7 +167,7 @@ install-sitar:	sitar.pl sitar.1 sitar.ps sitar.html
 	install	-m 644	LICENSE		${DESTDIR}/${DOCDIR}/sitar/LICENSE
 	install -m 644 	proc.txt	${DESTDIR}/${PREFIX}/share/sitar/proc.txt
 
-install-cfg2scm: cfg2scm.pl cfg2scm.1
+install-cfg2scm: cfg2scm.1
 	install	-d			${DESTDIR}/${PREFIX}/sbin	\
 					${DESTDIR}/${MANDIR}		\
 					${DESTDIR}/etc/sysconfig	\
