@@ -69,7 +69,7 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 %{?suse_check}
 
 %files
-%defattr(-,root,root)
+%defattr(644,root,root)
 %config(noreplace) /etc/sysconfig/sitar
 %config(noreplace) /etc/sysconfig/cfg2scm
 %doc sitar.html sitar.ps cfg2scm.html cfg2scm.ps LICENSE
