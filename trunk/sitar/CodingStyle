@@ -4,7 +4,7 @@ Coding Style for "sitar.pl" and "cfg2scm.pl"		Matthias G. Eckermann
 To avoid formatting nightmare, I suggest following this rules of formatting
 the code of sitar and associated tools:
 
-1. read /usr/src/linux/Documentation/CodingStyle carefully
+1. read /usr/src/linux/Documentation/CodingStyle (Kernel-2.4.x) carefully
 
 2. most rules apply, with first an exception to chapter 2:
    even on functions, please "put the opening brace last on the line,
@@ -55,6 +55,15 @@ the code of sitar and associated tools:
 	man pod2man
 	man perlsyn  /PODs
 
+10. Modules:
+   Use of (external) Perl-Modules, "use", "require", ... is not permitted,
+   as sitar must be able to run as a standalone program without anything
+   but a very basic perl-interpreter-installation.
+
+-----------------------------------------------------------------------------
+
 so short
 		MgE
+
+-----------------------------------------------------------------------------
 
