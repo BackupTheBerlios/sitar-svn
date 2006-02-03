@@ -2,17 +2,7 @@
 #	MAIN
 #
 {
-	# read configuration file
-	si_parse_conf_file( $SITAR_CONFIG_FILE );
-	# parse command line options
-	GetOptions(
-		'f|format=s'          => \$SITAR_OPT_FORMAT,
-		'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
-		'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
-		'f|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
-		'h|help'              => \$SITAR_OPT_HELP,
-		'v|version'           => \$SITAR_OPT_VERSION
-	);
+	si_prepare_config();
 	my @myname = split /\//, $0;
 	if ( $< != 0 ) {
 		print( "Please run sitar as user root.\n" );
