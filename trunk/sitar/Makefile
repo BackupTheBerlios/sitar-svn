@@ -27,58 +27,58 @@ RELEASE		= 1.0.2
 
 SVNVERSION     := $(shell svnversion -n . | sed "s/:/./" )
 RELDATE        := $(shell date +"%Y%m%d")
-CFG_SNIPPETS	= snippets/cfg2scm.header.pl				\
-		  snippets/cfg2scm.manpage.pl 				\
-		  snippets/cfg2scm.globals.pl 				\
-		  snippets/functions.cfg2scm/group_minor.pl		\
-		  snippets/functions.cfg2scm/group_help.pl		\
-		  snippets/functions.cfg2scm/group_read_configfile.pl	\
-		  snippets/functions.common/si_check_consistency.pl	\
-		  snippets/functions.common/si_find_unpacked.pl		\
-		  snippets/functions.cfg2scm/group_core.pl		\
-		  snippets/cfg2scm.main.pl
+CFG_PFRAGS	= pfrags/cfg2scm.header.pl				\
+		  pfrags/cfg2scm.manpage.pl 				\
+		  pfrags/cfg2scm.globals.pl 				\
+		  pfrags/functions.cfg2scm/group_minor.pl		\
+		  pfrags/functions.cfg2scm/group_help.pl		\
+		  pfrags/functions.cfg2scm/group_read_configfile.pl	\
+		  pfrags/functions.common/si_check_consistency.pl	\
+		  pfrags/functions.common/si_find_unpacked.pl		\
+		  pfrags/functions.cfg2scm/group_core.pl		\
+		  pfrags/cfg2scm.main.pl
 
-SITAR_SNIPPETS	= snippets/sitar.header.pl 				\
-		  snippets/sitar.manpage.pl 				\
-		  snippets/sitar.globals.pl 				\
-		  snippets/functions.sitar/group_output_xml.pl		\
-		  snippets/functions.sitar/group_output_html.pl		\
-		  snippets/functions.sitar/group_output_tex.pl		\
-		  snippets/functions.sitar/group_output_dispatcher.pl	\
-		  snippets/functions.sitar/group_minor.pl		\
-		  snippets/functions.sitar/group_read_configfile.pl	\
-		  snippets/functions.sitar/si_cpuinfo.pl		\
-		  snippets/functions.sitar/si_general_sys.pl		\
-		  snippets/functions.sitar/si_proc_kernel.pl		\
-		  snippets/functions.sitar/group_swraid.pl		\
-		  snippets/functions.sitar/si_pnp.pl			\
-		  snippets/functions.sitar/si_proc_modules.pl		\
-		  snippets/functions.sitar/si_pci.pl			\
-		  snippets/functions.sitar/si_lsdev.pl			\
-		  snippets/functions.sitar/si_ide.pl			\
-		  snippets/functions.sitar/si_dac960.pl			\
-		  snippets/functions.sitar/si_compaq_smart.pl		\
-		  snippets/functions.sitar/si_gdth.pl			\
-		  snippets/functions.sitar/si_ips.pl			\
-		  snippets/functions.sitar/si_scsi.pl			\
-		  snippets/functions.sitar/si_df.pl			\
-		  snippets/functions.sitar/si_mount.pl			\
-		  snippets/functions.sitar/si_ifconfig.pl		\
-		  snippets/functions.sitar/si_route.pl			\
-		  snippets/functions.sitar/group_firewalling.pl		\
-		  snippets/functions.sitar/si_chkconfig.pl		\
-		  snippets/functions.sitar/group_configurations.pl	\
-		  snippets/functions.sitar/group_proc_fs.pl		\
-		  snippets/functions.sitar/si_immunix_apparmor.pl	\
-		  snippets/functions.sitar/group_etc_analysis.pl	\
-		  snippets/functions.sitar/group_kernel.pl		\
-		  snippets/functions.sitar/group_packagelists.pl	\
-		  snippets/functions.sitar/si_selection_yast2.pl	\
-		  snippets/functions.common/si_check_consistency.pl	\
-		  snippets/functions.common/si_find_unpacked.pl		\
-		  snippets/functions.sitar/group_help.pl		\
-		  snippets/functions.sitar/si_run_sitar.pl		\
-		  snippets/sitar.main.pl
+SITAR_PFRAGS	= pfrags/sitar.header.pl 				\
+		  pfrags/sitar.manpage.pl 				\
+		  pfrags/sitar.globals.pl 				\
+		  pfrags/functions.sitar/group_output_xml.pl		\
+		  pfrags/functions.sitar/group_output_html.pl		\
+		  pfrags/functions.sitar/group_output_tex.pl		\
+		  pfrags/functions.sitar/group_output_dispatcher.pl	\
+		  pfrags/functions.sitar/group_minor.pl			\
+		  pfrags/functions.sitar/group_read_configfile.pl	\
+		  pfrags/functions.sitar/si_cpuinfo.pl			\
+		  pfrags/functions.sitar/si_general_sys.pl		\
+		  pfrags/functions.sitar/si_proc_kernel.pl		\
+		  pfrags/functions.sitar/group_swraid.pl		\
+		  pfrags/functions.sitar/si_pnp.pl			\
+		  pfrags/functions.sitar/si_proc_modules.pl		\
+		  pfrags/functions.sitar/si_pci.pl			\
+		  pfrags/functions.sitar/si_lsdev.pl			\
+		  pfrags/functions.sitar/si_ide.pl			\
+		  pfrags/functions.sitar/si_dac960.pl			\
+		  pfrags/functions.sitar/si_compaq_smart.pl		\
+		  pfrags/functions.sitar/si_gdth.pl			\
+		  pfrags/functions.sitar/si_ips.pl			\
+		  pfrags/functions.sitar/si_scsi.pl			\
+		  pfrags/functions.sitar/si_df.pl			\
+		  pfrags/functions.sitar/si_mount.pl			\
+		  pfrags/functions.sitar/si_ifconfig.pl			\
+		  pfrags/functions.sitar/si_route.pl			\
+		  pfrags/functions.sitar/group_firewalling.pl		\
+		  pfrags/functions.sitar/si_chkconfig.pl		\
+		  pfrags/functions.sitar/group_configurations.pl	\
+		  pfrags/functions.sitar/group_proc_fs.pl		\
+		  pfrags/functions.sitar/si_immunix_apparmor.pl		\
+		  pfrags/functions.sitar/group_etc_analysis.pl		\
+		  pfrags/functions.sitar/group_kernel.pl		\
+		  pfrags/functions.sitar/group_packagelists.pl		\
+		  pfrags/functions.sitar/si_selection_yast2.pl		\
+		  pfrags/functions.common/si_check_consistency.pl	\
+		  pfrags/functions.common/si_find_unpacked.pl		\
+		  pfrags/functions.sitar/group_help.pl			\
+		  pfrags/functions.sitar/si_run_sitar.pl		\
+		  pfrags/sitar.main.pl
 
 #-----------------------------------------------------------------------
 
@@ -128,8 +128,8 @@ signed:	sitar-$(RELEASE).tar.bz2
 
 #-----------------------------------------------------------------------
 
-sitar.pl: $(SITAR_SNIPPETS)
-	cat $(SITAR_SNIPPETS) |						\
+sitar.pl: $(SITAR_PFRAGS)
+	cat $(SITAR_PFRAGS) |						\
 	$(PERL) -p -e '$$pre="$(PREFIX)";'				\
 		-e 's/%%SITAR_PREFIX%%/$$pre/; '			\
 		-e 's/%%SITAR_RELEASE%%/$(RELEASE)/;' 			\
@@ -151,8 +151,8 @@ sitar.ps:	sitar.1
 
 #-----------------------------------------------------------------------
 
-cfg2scm.pl: $(CFG_SNIPPETS)
-	cat $(CFG_SNIPPETS) |						\
+cfg2scm.pl: $(CFG_PFRAGS)
+	cat $(CFG_PFRAGS) |						\
 	$(PERL) -p -e '$$pre="$(PREFIX)";'				\
 		-e 's/%%CFG2SCM_PREFIX%%/$$pre/; '			\
 		-e 's/%%CFG2SCM_RELEASE%%/$(RELEASE)/;'			\
