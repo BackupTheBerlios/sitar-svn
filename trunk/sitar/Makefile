@@ -32,7 +32,7 @@ CFG_SNIPPETS	= snippets/cfg2scm.header.pl				\
 		  snippets/cfg2scm.globals.pl 				\
 		  snippets/functions.cfg2scm/group_minor.pl		\
 		  snippets/functions.cfg2scm/group_help.pl		\
-		  snippets/functions.cfg2scm/group_configfile.pl	\
+		  snippets/functions.cfg2scm/group_read_configfile.pl	\
 		  snippets/functions.common/si_check_consistency.pl	\
 		  snippets/functions.common/si_find_unpacked.pl		\
 		  snippets/functions.cfg2scm/group_core.pl		\
@@ -46,7 +46,7 @@ SITAR_SNIPPETS	= snippets/sitar.header.pl 				\
 		  snippets/functions.sitar/group_output_tex.pl		\
 		  snippets/functions.sitar/group_output_dispatcher.pl	\
 		  snippets/functions.sitar/group_minor.pl		\
-		  snippets/functions.sitar/group_configfile.pl		\
+		  snippets/functions.sitar/group_read_configfile.pl	\
 		  snippets/functions.sitar/si_cpuinfo.pl		\
 		  snippets/functions.sitar/si_general_sys.pl		\
 		  snippets/functions.sitar/si_proc_kernel.pl		\
