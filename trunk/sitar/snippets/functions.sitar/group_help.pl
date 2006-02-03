@@ -1,4 +1,3 @@
-
 #
 #	help
 #
@@ -16,4 +15,3 @@ sub si_print_help () {
 \t--help\t\t\tthis page
 \t--version\t\tprintout SITAR version";
 }
-

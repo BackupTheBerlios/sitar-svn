@@ -1,7 +1,6 @@
 #
 #	GLOBALS
 #
-
 use Getopt::Long;
 #
 # commands
@@ -63,4 +62,3 @@ my $CFG2SCM_CONSISTENCY_FILENAME  = "Configuration_Consistency.include";
 my $CFG2SCM_FINDUNPACKED_FILENAME = "Find_Unpacked.include";
 my $CFG2SCM_CONFIG_DIR            = "/var/lib/support";
 my $CFG2SCM_CONFIG_FILE           = "/etc/sysconfig/cfg2scm";
-

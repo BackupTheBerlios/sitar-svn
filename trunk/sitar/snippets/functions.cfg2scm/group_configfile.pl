@@ -1,7 +1,6 @@
 #
 # configfile
 #
-
 sub si_set_on_find($$$) {
 	my ( $line, $parm, $VAR ) = @_;
 	if ( $line =~ /$parm/ ) {
@@ -63,4 +62,3 @@ sub si_prepare_config() {
 		}
 	}
 }
-

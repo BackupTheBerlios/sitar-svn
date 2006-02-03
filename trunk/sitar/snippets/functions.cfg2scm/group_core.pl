@@ -1,7 +1,6 @@
 #
 # core
 #
-
 sub si_prepare() {
 	mkdir( "$CFG2SCM_OPT_TMP" );
 	chdir( "$CFG2SCM_OPT_TMP" );
@@ -120,4 +119,3 @@ sub si_commit_svn() {
 	}
 	system( "$CMD_SVN commit $CFG2SCM_SVN_AUTH -m '$CFG2SCM_OPT_MESSAGE' " );
 }
-

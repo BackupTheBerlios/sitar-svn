@@ -1,4 +1,3 @@
-
 sub si_find_unpacked($$$$) {
 	chomp( my ( $funpconfdir, $funpfile, $ddd, $ignore_binary ) = @_ );
 	my %configfiles = ();
@@ -28,4 +27,3 @@ sub si_find_unpacked($$$$) {
 	print FINDUNPACKED ");\n\n";
 	close( FINDUNPACKED );
 }
-

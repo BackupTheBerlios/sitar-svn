@@ -43,4 +43,3 @@ my $old_tex_footer = "\n
 \\par\\noindent
 \\textsf{SITAR is \\textcopyright{} $SITAR_COPYRIGHT}\\par
 \\end\{document\}\n";
-

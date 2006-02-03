@@ -46,4 +46,3 @@ sub si_cpuinfo() {
 	close( IN );
 	siprt( "endtab" );
 }
-

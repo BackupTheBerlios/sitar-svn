@@ -1,7 +1,6 @@
 #
 #	GLOBALS
 #
-
 use Getopt::Long;
 use Fcntl;
 #
@@ -186,4 +185,3 @@ my @allconfigfiless = qw (
   /var/spool/fax/etc/config
   /var/spool/fax/etc/config.modem
 );
-

@@ -54,4 +54,3 @@ sub si_scsi() {
 		siprt( "endtab" );
 	}
 }
-

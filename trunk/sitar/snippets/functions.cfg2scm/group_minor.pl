@@ -22,4 +22,3 @@ sub si_debug($) {
 		print $text, "\n";
 	}
 }
-

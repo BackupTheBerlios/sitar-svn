@@ -73,4 +73,3 @@ sub si_lsdev() {
 	}
 	siprt( "endtab" );
 }
-

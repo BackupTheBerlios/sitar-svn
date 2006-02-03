@@ -63,4 +63,3 @@ sub si_selection_yast2( ) {
 		}
 	}
 }
-

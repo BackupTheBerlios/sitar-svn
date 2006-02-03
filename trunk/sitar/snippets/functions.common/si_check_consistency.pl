@@ -1,4 +1,3 @@
-
 sub si_check_consistency($$$) {
 	chomp( my ( $consconfdir, $consfile, $consdebug ) = @_ );
 	my %configfiles = ();
@@ -39,4 +38,3 @@ sub si_check_consistency($$$) {
 		open( STDERR, ">&SAVEERR" );
 	}
 }
-

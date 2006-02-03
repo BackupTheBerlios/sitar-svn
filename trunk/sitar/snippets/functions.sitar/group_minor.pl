@@ -1,4 +1,3 @@
-
 #
 # si_now_gmt()
 #
@@ -20,11 +19,8 @@ sub si_debug($) {
 		print $text, "\n";
 	}
 }
-
 #
 #
 #
 sub si_getopts($) {
 }
-
-

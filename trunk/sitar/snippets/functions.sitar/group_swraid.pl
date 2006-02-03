@@ -126,4 +126,3 @@ sub si_software_raid_details() {
 		close( IN1 );
 	}
 }
-

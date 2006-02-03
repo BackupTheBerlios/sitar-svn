@@ -9,7 +9,6 @@ sub si_ipfwadm() {
 	siprtt( "verb", "ipfwadm is not supported." );
 	siprt( "endpre" );
 }
-
 #
 #
 #
@@ -152,4 +151,3 @@ sub si_packetfilter() {
 		siprt( "endpre" );
 	}
 }
-

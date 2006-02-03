@@ -1,4 +1,3 @@
-
 #
 # read config file
 #

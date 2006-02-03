@@ -56,4 +56,3 @@ sub si_compaq_smart() {
 		}
 	}
 }
-

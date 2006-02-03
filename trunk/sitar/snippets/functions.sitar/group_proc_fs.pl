@@ -65,4 +65,3 @@ sub si_proc () {
 	si_proc_sys_net();
 	si_proc_modules();
 }
-

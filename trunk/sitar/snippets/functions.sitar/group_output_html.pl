@@ -1,7 +1,7 @@
 #
 #	output-HTML
 #
-my $html_header     = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"
+my $html_header = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"
   \"http://www.w3.org/TR/REC-html40/loose.dtd\">
 <html>
   <head>
@@ -49,4 +49,3 @@ my $html_header     = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional
 my $html_footer = "<hr />
 <address>SITAR $SITAR_RELEASE-$SITAR_SVNVERSION is &copy; $SITAR_COPYRIGHT</address>
 </html>\n";
-

@@ -156,4 +156,3 @@ sub si_etc_suse() {
 		}
 	}
 }
-

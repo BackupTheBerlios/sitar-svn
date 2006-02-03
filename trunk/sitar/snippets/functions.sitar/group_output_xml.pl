@@ -21,4 +21,3 @@ my $sdocbook_header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
   <subtitle>$DIST_RELEASE</subtitle>
 </articleinfo>";
 my $sdocbook_footer = "</article>";
-

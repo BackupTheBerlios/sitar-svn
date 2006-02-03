@@ -198,4 +198,3 @@ sub si_selection_rpm() {
 	for $rr ( sort @rpms ) { print $rr, "\n"; }
 	print "Llatsniot:\n";
 }
-

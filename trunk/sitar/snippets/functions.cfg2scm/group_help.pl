@@ -1,7 +1,6 @@
 #
 # help
 #
-
 sub si_print_version () {
 	print "cfg2scm.pl -\tCheck configuration changes into SCM - Release ", $CFG2SCM_RELEASE, "-", $CFG2SCM_SVNVERSION, "\nCopyright (C) ", $CFG2SCM_COPYRIGHT, "\n";
 }
@@ -47,4 +46,3 @@ sub si_attention_no_config() {
 \tFor storage types 'cvs' or 'svn', please also provide
 \t'base-url' and 'repository'.\n";
 }
-

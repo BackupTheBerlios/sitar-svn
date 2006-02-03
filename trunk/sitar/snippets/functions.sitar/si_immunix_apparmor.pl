@@ -62,4 +62,3 @@ sub si_immunix_apparmor () {
 		}
 	}
 }
-

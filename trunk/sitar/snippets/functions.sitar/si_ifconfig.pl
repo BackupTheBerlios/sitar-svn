@@ -49,4 +49,3 @@ sub si_ifconfig() {
 	siprt( "endtab" );
 	close( IFCONFIG );
 }
-

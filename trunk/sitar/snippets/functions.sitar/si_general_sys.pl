@@ -66,4 +66,3 @@ sub si_general_sys() {
 	close( IN );
 	siprt( "endtab" );
 }
-

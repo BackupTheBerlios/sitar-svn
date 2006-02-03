@@ -21,4 +21,3 @@ sub si_proc_kernel() {
 	}
 	siprt( "endtab" );
 }
-

@@ -1,4 +1,3 @@
-
 #
 #	si_run_sitar (main loop)
 #
@@ -90,4 +89,3 @@ sub si_run_sitar() {
 		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
 	}
 }
-

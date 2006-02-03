@@ -32,4 +32,3 @@ sub si_df() {
 	siprt( "endtab" );
 	close( DF );
 }
-
