@@ -90,6 +90,8 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Fri Feb 03 2006 - Matthias G. Eckermann <mge@suse.de> [1.0.2-204]
+- rename "snippets" to "pfrags"
 * Fri Feb 03 2006 - Matthias G. Eckermann <mge@suse.de> [1.0.2-202]
 - nice, beautiful Makefile by Manfred Hollstein <mh@novell.com> - Thanks!
 - split *.pl.in to several files: one per function or
