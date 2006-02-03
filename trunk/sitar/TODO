@@ -2,6 +2,7 @@ SITAR:
 - better 'HAL'  support
 - enhance manual-page and comments in sitar.sysconfig
 - implement '/etc/lsb-release'
+- add "ip ..." in addition to ifconfig
 
 CFG2SCM
 - enhance manual-page and comments in cfg2scm.sysconfig

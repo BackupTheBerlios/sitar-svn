@@ -23,7 +23,7 @@ PREFIX		= /usr
 DOCDIR		= $(PREFIX)/share/doc/packages
 MANDIR		= $(PREFIX)/share/man/man1
 PERL		= /usr/bin/perl
-RELEASE		= 1.0.1
+RELEASE		= 1.0.2
 
 SVNVERSION     := $(shell svnversion -n . | sed "s/:/./" )
 RELDATE        := $(shell date +"%Y%m%d")
@@ -41,7 +41,43 @@ CFG_SNIPPETS	= snippets/cfg2scm.header.pl				\
 SITAR_SNIPPETS	= snippets/sitar.header.pl 				\
 		  snippets/sitar.manpage.pl 				\
 		  snippets/sitar.globals.pl 				\
-		  snippets/sitar.functions.pl	 			\
+		  snippets/functions.sitar/group_output_xml.pl		\
+		  snippets/functions.sitar/group_output_html.pl		\
+		  snippets/functions.sitar/group_output_tex.pl		\
+		  snippets/functions.sitar/group_output_dispatcher.pl	\
+		  snippets/functions.sitar/group_minor.pl		\
+		  snippets/functions.sitar/group_configfile.pl		\
+		  snippets/functions.sitar/si_cpuinfo.pl		\
+		  snippets/functions.sitar/si_general_sys.pl		\
+		  snippets/functions.sitar/si_proc_kernel.pl		\
+		  snippets/functions.sitar/group_swraid.pl		\
+		  snippets/functions.sitar/si_pnp.pl			\
+		  snippets/functions.sitar/si_proc_modules.pl		\
+		  snippets/functions.sitar/si_pci.pl			\
+		  snippets/functions.sitar/si_lsdev.pl			\
+		  snippets/functions.sitar/si_ide.pl			\
+		  snippets/functions.sitar/si_dac960.pl			\
+		  snippets/functions.sitar/si_compaq_smart.pl		\
+		  snippets/functions.sitar/si_gdth.pl			\
+		  snippets/functions.sitar/si_ips.pl			\
+		  snippets/functions.sitar/si_scsi.pl			\
+		  snippets/functions.sitar/si_df.pl			\
+		  snippets/functions.sitar/si_mount.pl			\
+		  snippets/functions.sitar/si_ifconfig.pl		\
+		  snippets/functions.sitar/si_route.pl			\
+		  snippets/functions.sitar/group_firewalling.pl		\
+		  snippets/functions.sitar/si_chkconfig.pl		\
+		  snippets/functions.sitar/group_configurations.pl	\
+		  snippets/functions.sitar/group_proc_fs.pl		\
+		  snippets/functions.sitar/si_immunix_apparmor.pl	\
+		  snippets/functions.sitar/group_etc_analysis.pl	\
+		  snippets/functions.sitar/group_kernel.pl		\
+		  snippets/functions.sitar/group_packagelists.pl	\
+		  snippets/functions.sitar/si_selection_yast2.pl	\
+		  snippets/functions.common/si_check_consistency.pl	\
+		  snippets/functions.common/si_find_unpacked.pl		\
+		  snippets/functions.sitar/group_help.pl		\
+		  snippets/functions.sitar/si_run_sitar.pl		\
 		  snippets/sitar.main.pl
 
 #-----------------------------------------------------------------------
