@@ -9,6 +9,7 @@ sub si_set_on_find($$$) {
 		$FOUND_VAR =~ s/\"$//;
 		return $FOUND_VAR;
 	}
+	chomp $VAR;
 	return $VAR;
 }
 

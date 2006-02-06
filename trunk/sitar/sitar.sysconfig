@@ -45,7 +45,7 @@ SITAR_OPT_LIMIT=500000
 #	/var/lib/support/ AND	/var/lib/support
 # exist, it is like "On", else like "Off"
 #
-SITAR_OPT_ALLCONFIGFILES="Auto";
+SITAR_OPT_ALLCONFIGFILES="Auto"
 
 ## Type:	list("On","Off","Auto")
 ## Default:	""
@@ -56,7 +56,7 @@ SITAR_OPT_ALLCONFIGFILES="Auto";
 #	/var/lib/support/ AND /var/lib/support
 # exist, it is like "On", else like "Off"
 #
-SITAR_OPT_ALLSUBDOMAIN="Auto";
+SITAR_OPT_ALLSUBDOMAIN="Auto"
 
 ## Type:	list("On","Off","Auto")
 ## Default:	""
@@ -67,7 +67,7 @@ SITAR_OPT_ALLSUBDOMAIN="Auto";
 #	/var/lib/support/  AND	/var/lib/support
 # exist, it is like "On", else like "Off"
 #
-SITAR_OPT_ALLSYSCONFIG="Auto";
+SITAR_OPT_ALLSYSCONFIG="Auto"
 
 ## Type:	yesno
 ## Default:	No
