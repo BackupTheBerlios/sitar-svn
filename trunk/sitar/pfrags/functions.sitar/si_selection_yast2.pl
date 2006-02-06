@@ -2,11 +2,11 @@
 #	si_selection_yast2
 #
 sub si_selection_yast2( ) {
-	my %total = ( ul => 0, sles => 0, addon => 0, suse => 0 );
-	my %num   = ( ul => 0, sles => 0, addon => 0, suse => 0 );
-	my %rpms = ( ul => (), sles => (), addon => (), suse => () );
-	my %ords = ( ul => 1, sles => 2, addon => 4, suse => 3 );
-	my @alltypes = qw ( addon sles suse ul );
+	my %total = ( ul => 0, sles => 0, addon => 0, suse => 0, opensuse => 0 );
+	my %num   = ( ul => 0, sles => 0, addon => 0, suse => 0, opensuse => 0 );
+	my %rpms = ( ul => (), sles => (), addon => (), suse => (), opensuse => () );
+	my %ords = ( ul => 1, sles => 2, addon => 5, suse => 3, opensuse => 4 );
+	my @alltypes = qw ( addon sles suse ul opensuse );
 	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{SIZE}::%{PACKAGER}::%{DISTRIBUTION}\n' |" );
 	while ( <RPMS> ) {
 		my ( $name, $size, $mypack, $distri ) = split /::/;
@@ -16,7 +16,7 @@ sub si_selection_yast2( ) {
 			push @{ $rpms{ 'ul' } }, $name;
 			$total{ 'ul' } += $size;
 			$num{ 'ul' }++;
-		} elsif ( $mypack eq $SUSEPACK_RAW_NAME ) {
+		} elsif ( $mypack =~ $SUSEPACK_RAW_NAME ) {
 			if ( $distri =~ "SLES" ) {
 				push @{ $rpms{ 'sles' } }, $name;
 				$total{ 'sles' } += $size;
@@ -26,6 +26,10 @@ sub si_selection_yast2( ) {
 				$total{ 'suse' } += $size;
 				$num{ 'suse' }++;
 			}
+		} elsif ( $mypack =~ $OPENSUSEPACK_NAME ) {
+				push @{ $rpms{ 'opensuse' } }, $name;
+				$total{ 'opensuse' } += $size;
+				$num{ 'opensuse' }++;
 		} else {
 			push @{ $rpms{ 'addon' } }, $name;
 			$total{ 'addon' } += $size;

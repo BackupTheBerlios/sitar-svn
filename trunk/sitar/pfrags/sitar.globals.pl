@@ -107,7 +107,8 @@ chomp $DIST_RELEASE;
 #
 my $ULPACK_RAW_NAME    = "http://www.unitedlinux.com/feedback";
 my $ULPACK_NICE_NAME   = "United Linux";
-my $SUSEPACK_RAW_NAME  = "http://www.suse.de/feedback";
+my $SUSEPACK_RAW_NAME  = "www.suse.*/feedback";
+my $OPENSUSEPACK_NAME  = "bugs.opensuse.org";
 my $SUSEPACK_NICE_NAME = "SuSE Linux";
 #
 # global vars

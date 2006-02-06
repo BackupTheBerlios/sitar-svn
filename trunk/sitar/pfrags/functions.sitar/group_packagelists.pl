@@ -82,7 +82,7 @@ sub si_installed_sles() {
 		if ( $mypack eq $ULPACK_RAW_NAME ) {
 			siprtt( "h2", "$mydist" );
 			siprtttt( "tabborder", "lllp{.5\\textwidth}", "Installed Packages: $mydist", 4 );
-		} elsif ( $mypack eq $SUSEPACK_RAW_NAME ) {
+		} elsif ( $mypack =~ $SUSEPACK_RAW_NAME ) {
 			siprtt( "h2", "$mydist" );
 			siprtttt( "tabborder", "lllp{.5\\textwidth}", "Installed Packages: $mydist", 4 );
 		} elsif ( $mydist eq "(none)" ) {
