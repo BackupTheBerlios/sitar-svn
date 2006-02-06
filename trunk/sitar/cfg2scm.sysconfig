@@ -1,7 +1,7 @@
 ## Path:        System/Monitoring/cfg2scm
 ## Description: cfg2scm - Check configuration changes into SCM
 #
-# Explanation
+# Explanation ...
 #
 # see 'man cfg2scm' for more information
 #
@@ -16,7 +16,10 @@ CFG2SCM_OPT_TMP="/tmp/cfg2scm.co"
 ## Type:	list("svn","cvs","tar","tar.gz","tar.bz2")
 ## Default:	"tar.bz2"
 #
-# Explanation...
+# Define, which storage-format you want:
+# - either a local file (tar, tar.gz, tar.bz2)
+# - or a versioning system: this requires vc-tools installed,
+#   e.g. "svn" or "cvs"
 #
 CFG2SCM_OPT_STORAGE="tar.bz2"
 
@@ -51,17 +54,21 @@ CFG2SCM_OPT_PASS=""
 ## Type:	yesno
 ## Default:	No
 #
+# Include the many small config files below /etc/opt/gnome?
+#
 CFG2SCM_OPT_GCONF=No
 
 ## Type:	yesno
 ## Default:	No
+#
+# Include /etc/lvm/archive/*?
 #
 CFG2SCM_OPT_LVMARCHIVE=No
 
 ## Type:	string
 ## Default:	"autocommit by cfg2scm"
 #
-# Explanation...
+# The log-message for the versioning-system (if used)
 #
 CFG2SCM_OPT_MESSAGE="autocommit by cfg2scm"
 

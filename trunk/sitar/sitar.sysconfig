@@ -1,7 +1,7 @@
 ## Path:        System/Monitoring/sitar
 ## Description: sitar - System InformaTion At Runtime
 #
-# Explanation
+# Explanation ...
 #
 # see 'man sitar' for more information
 #
@@ -9,8 +9,8 @@
 ## Type:	list("","html","tex","sdocbook","yast1",yast2)
 ## Default:	""
 #
-# Explanation...
-# "" means all formats
+# Which output-format to produce.
+# The default: "" means all formats
 #
 SITAR_OPT_FORMAT=""
 
@@ -29,14 +29,6 @@ SITAR_OPT_OUTDIR=""
 #
 SITAR_OPT_OUTFILE=""
 
-## Type:	yesno
-## Default:	No
-#
-# Explanation...
-# 
-#
-SITAR_OPT_GCONF=No
-
 ## Type:	integer(0:)
 ## Default:	500000
 #
@@ -47,31 +39,47 @@ SITAR_OPT_LIMIT=500000
 ## Type:	list("On","Off","Auto")
 ## Default:	""
 #
-# Explanation...
+# If "On", the hardcoded list of config-files is used
+# If "Off", the list is not used
+# If "Auto", and no files 
+#	/var/lib/support/ AND	/var/lib/support
+# exist, it is like "On", else like "Off"
 #
 SITAR_OPT_ALLCONFIGFILES="Auto";
 
 ## Type:	list("On","Off","Auto")
 ## Default:	""
 #
-# Explanation...
+# If "On", all files below /etc/subdomain.d | /etc/apparmor.d are scanned
+# If "Off", the files are not scanned by default
+# If "Auto", and no files 
+#	/var/lib/support/ AND /var/lib/support
+# exist, it is like "On", else like "Off"
 #
 SITAR_OPT_ALLSUBDOMAIN="Auto";
 
 ## Type:	list("On","Off","Auto")
 ## Default:	""
 #
-# Explanation...
+# If "On", all files below /etc/sysconfig/ are scanned
+# If "Off", the files are not scanned by default
+# If "Auto", and no files 
+#	/var/lib/support/  AND	/var/lib/support
+# exist, it is like "On", else like "Off"
 #
 SITAR_OPT_ALLSYSCONFIG="Auto";
 
 ## Type:	yesno
 ## Default:	No
 #
+# Include the many small config files below /etc/opt/gnome?
+#
 SITAR_OPT_GCONF=No
 
 ## Type:	yesno
 ## Default:	No
+#
+# Include /etc/lvm/archive/*?
 #
 SITAR_OPT_LVMARCHIVE=No
 
