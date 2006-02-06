@@ -42,22 +42,26 @@ sub si_immunix_apparmor () {
 		}
 		open( STDERR, ">&SAVEERR" );
 		siprt( "endtab" );
-		if ( -f "$apparmor_config_path" ) {
-			si_conf( $apparmor_config_path, $apparmor_config_path, "\#" );
+		if ( -f "$apparmor_config_log" ) {
+			si_conf( $apparmor_config_log, $apparmor_config_log, "\#" );
 		}
-		if ( -d "$apparmor_config_directory" ) {
-			for $NN ( `$CMD_FIND $apparmor_config_directory -type f` ) {
-				chomp $NN;
-				si_conf( $NN, $NN, "\#" );
+		for $ppp ( @apparmor_config_path ) { 
+			if ( -d "$ppp" ) {
+				for $NN ( `$CMD_FIND $ppp -type f` ) {
+					chomp $NN;
+					si_conf( $NN, $NN, "\#" );
+				}
 			}
 		}
 		$SITAR_OPT_ALLSUBDOMAIN =~ tr/A-Z/a-z/;
 		if (       ( $SITAR_OPT_ALLSUBDOMAIN eq "on" )
 			|| ( ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) && ( $SITAR_OPT_ALLSUBDOMAIN eq "auto" ) ) ) {
 			siprtt( "h2", "Profiles" );
-			for $NN ( `$CMD_FIND $apparmor_profiles_path -type f` ) {
-				chomp $NN;
-				si_conf( $NN, $NN, "" );
+			for $ppp ( @apparmor_profiles_path ) {
+				for $NN ( `$CMD_FIND $ppp -type f` ) {
+					chomp $NN;
+					si_conf( $NN, $NN, "" );
+				}
 			}
 		}
 	}

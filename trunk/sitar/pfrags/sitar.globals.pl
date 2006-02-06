@@ -131,9 +131,9 @@ my $multipath_conf = "/etc/multipath.conf";
 #
 my $apparmor_verbose_name     = "AppArmor";
 my $apparmor_kernel_path      = "/subdomain";
-my $apparmor_config_path      = "/etc/logprof.conf";
-my $apparmor_config_directory = "/etc/immunix/";
-my $apparmor_profiles_path    = "/etc/subdomain.d";
+my $apparmor_config_log       = "/etc/logprof.conf";
+my @apparmor_config_path      = ("/etc/immunix/", "/etc/apparmor/ " );
+my @apparmor_profiles_path    = ("/etc/subdomain.d/", "/etc/apparmor.d/" );
 #
 # configfiles to hide/ignore
 #
