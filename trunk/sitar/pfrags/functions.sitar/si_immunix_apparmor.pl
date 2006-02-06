@@ -55,7 +55,7 @@ sub si_immunix_apparmor () {
 		}
 		$SITAR_OPT_ALLSUBDOMAIN =~ tr/A-Z/a-z/;
 		if (       ( $SITAR_OPT_ALLSUBDOMAIN eq "on" )
-			|| ( ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) && ( $SITAR_OPT_ALLSUBDOMAIN eq "auto" ) ) ) {
+			|| ( ( $SITAR_OPT_ALLSUBDOMAIN eq "auto" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) ) ) {
 			siprtt( "h2", "Profiles" );
 			for $ppp ( @apparmor_profiles_path ) {
 				if ( -d "$ppp" ) {
