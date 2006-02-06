@@ -3,6 +3,7 @@ SITAR:
 - enhance manual-page and comments in sitar.sysconfig
 - implement '/etc/lsb-release'
 - add "ip ..." in addition to ifconfig
+- add /etc/apparmor.d instead|in addition to /etc/subdomain.d
 
 CFG2SCM
 - enhance manual-page and comments in cfg2scm.sysconfig
