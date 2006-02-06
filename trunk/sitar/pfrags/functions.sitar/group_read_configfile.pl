@@ -42,7 +42,7 @@ sub si_prepare_config() {
 		'f|format=s'          => \$SITAR_OPT_FORMAT,
 		'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
 		'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
-		'f|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
+		'u|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
 		'h|help'              => \$SITAR_OPT_HELP,
 		'v|version'           => \$SITAR_OPT_VERSION
 	);

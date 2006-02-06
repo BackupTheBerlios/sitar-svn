@@ -4,6 +4,7 @@ SITAR:
 - implement '/etc/lsb-release'
 - add "ip ..." in addition to ifconfig
 - add /etc/apparmor.d instead|in addition to /etc/subdomain.d
+- .sel-output: mark obsolete/deprecated -> YaST2
 
 CFG2SCM
 - enhance manual-page and comments in cfg2scm.sysconfig
