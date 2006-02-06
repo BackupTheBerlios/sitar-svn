@@ -2,7 +2,7 @@
 #	AppArmor
 #
 sub si_immunix_apparmor () {
-	if ( ( -d "$apparmor_kernel_path" ) && ( -d "$apparmor_profiles_path" ) ) {
+	if ( -d "$apparmor_kernel_path" ) {
 		siprtt( "h1", $apparmor_verbose_name );
 		siprtt( "h2", "Current Configuration" );
 		siprtttt( "tabborder", "lll", "Configuration", 3 );
@@ -58,9 +58,11 @@ sub si_immunix_apparmor () {
 			|| ( ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) && ( $SITAR_OPT_ALLSUBDOMAIN eq "auto" ) ) ) {
 			siprtt( "h2", "Profiles" );
 			for $ppp ( @apparmor_profiles_path ) {
-				for $NN ( `$CMD_FIND $ppp -type f` ) {
-					chomp $NN;
-					si_conf( $NN, $NN, "" );
+				if ( -d "$ppp" ) {
+					for $NN ( `$CMD_FIND $ppp -type f` ) {
+						chomp $NN;
+						si_conf( $NN, $NN, "" );
+					}
 				}
 			}
 		}
