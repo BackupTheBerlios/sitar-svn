@@ -1,7 +1,8 @@
 ## Path:        System/Monitoring/sitar
 ## Description: sitar - System InformaTion At Runtime
 #
-# Explanation ...
+# Sitar prepares system information using perl and binary tools,
+# and by reading the /proc file system.
 #
 # see 'man sitar' for more information
 #

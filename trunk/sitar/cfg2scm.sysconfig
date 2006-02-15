@@ -1,7 +1,8 @@
 ## Path:        System/Monitoring/cfg2scm
 ## Description: cfg2scm - Check configuration changes into SCM
 #
-# Explanation ...
+# "cfg2scm" is used for checking configuration changes
+# into SCM (like SVN, CVS, ... or tar file)
 #
 # see 'man cfg2scm' for more information
 #
@@ -9,7 +10,8 @@
 ## Type:	string
 ## Default:	"/tmp/cfg2scm.co"
 #
-# Explanation
+# cfg2scm needs a temporary directory as "cache",
+# which may/should remain between cfg2scm-runs.
 #
 CFG2SCM_OPT_TMP="/tmp/cfg2scm.co"
 

@@ -63,13 +63,26 @@ The following standard cfg2scm.pl-run includes the file I</var/lib/support/Confi
 
 Please note, that this really might need a long time (from 5-20 minutes).
 
+=item B<--find-unpacked>
+
+Find files below /etc, that do not belong to any RPM, and for that reason should be documented.
+A file /var/lib/support/Find_Unpacked.include is written as "cache".
+
 =back
 
-=head1 FILES
+=head1 FILES file-lists in /var/lib/support/
 
 From a tool called C<PaDS> by Thorsten Wandersmann cfg2scm.pl inherited the ability, to extend the list of configuration files. To achieve that, just put a perl-snippet in the directory C</var/lib/support/>; this snippet B<must> have the extension C<.include> and may include only one perl-statement: an array-declaration for the array C<@files>, that contains the file-names with full path, see EXAMPLES below.
 
-See also B<--check-consistency> above.
+See also B<--check-consistency> and B<--find-unpacked> above.
+
+=head2 configuration files
+
+cfg2scm is able to use a configuration file, currently: /etc/sysconfig/cfg2scm. On SUSE Linux systems, this file can be changed also using YaST's sysconfig-editor (System/Monitoring/cfg2scm). The parameters in this file directly correspond global variables in cfg2scm:
+
+=over
+
+=back
 
 =head1 ERRORS
 

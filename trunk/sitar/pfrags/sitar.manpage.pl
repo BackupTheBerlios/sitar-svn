@@ -57,6 +57,7 @@ Please note, that this really might need a long time (from 5-20 minutes).
 =item B<--find-unpacked>
 
 Find files below /etc, that do not belong to any RPM, and for that reason should be documented.
+A file /var/lib/support/Find_Unpacked.include is written as "cache".
 
 Please note, that this really might need a long time (from 5-20 minutes).
 
@@ -94,9 +95,64 @@ Please note, that the format B<yast2> needs a directory given with this paramete
 
 =head1 FILES
 
+=head2 file-lists in /var/lib/support/
+
 From a tool called C<PaDS> by Thorsten Wandersmann sitar inherited the ability, to extend the list of configuration files. To achieve that, just put a perl-snippet in the directory C</var/lib/support/>; this snippet B<must> have the extension C<.include> and may include only one perl-statement: an array-declaration for the array C<@files>, that contains the file-names with full path, see EXAMPLES below.
 
-See also B<--check-consistency> above.
+See also B<--check-consistency> and B<--find-unpacked> above.
+
+=head2 configuration files
+
+sitar is able to use a configuration file, currently: /etc/sysconfig/sitar. On SUSE Linux systems, this file can be changed also using YaST's sysconfig-editor (System/Monitoring/sitar). The parameters in this file directly correspond global variables in sitar:
+
+=over
+
+=item SITAR_OPT_FORMAT
+
+Type: list("","html","tex","sdocbook","yast1",yast2). Default: "". This parameter defines, which output-format to produce. The default: "" means all formats.
+
+=item SITAR_OPT_OUTDIR
+
+Type: string. Default: "". Directory for yast config files; mandatory, if SITAR_OPT_FORMAT==yast2
+
+=item SITAR_OPT_OUTFILE
+
+Type: string. Default: "". Name of the one output-file for SITAR_OPT_FORMAT=="html","tex","sdocbook","yast1"
+
+=item SITAR_OPT_LIMIT
+
+Type: integer(0:).  Default: 500000.  File size limit (byte) for files to recognize; 0=no limits.
+
+=item SITAR_OPT_ALLCONFIGFILES
+
+Type: list("On","Off","Auto"). Default:	"Auto".  
+
+If "On", the hardcoded list of config-files is used; if "Off", the list is not used; 
+if "Auto", and no files /var/lib/support/Configuration_Consistency.include AND /var/lib/support/Find_Unpacked.include exist, it is like "On", else like "Off"
+
+=item SITAR_OPT_ALLSUBDOMAIN
+
+Type: list("On","Off","Auto"). Default:	"Auto".
+
+If "On", all files below /etc/subdomain.d | /etc/apparmor.d are scanned; if "Off", the files are not scanned by default;
+if "Auto", and no files /var/lib/support/Configuration_Consistency.include AND /var/lib/support/Find_Unpacked.include exist, it is like "On", else like "Off"
+
+=item SITAR_OPT_ALLSYSCONFIG="Auto"
+
+Type: list("On","Off","Auto"). Default:	"".
+
+If "On", all files below /etc/sysconfig/ are scanned; if "Off", the files are not scanned by default;
+if "Auto", and no files /var/lib/support/Configuration_Consistency.include AND /var/lib/support/Find_Unpacked.include exist, it is like "On", else like "Off"
+
+=item SITAR_OPT_GCONF
+
+Type: yesno. Default: No. Include the many small config files below /etc/opt/gnome?
+
+=item SITAR_OPT_LVMARCHIVE
+
+Type: yesno. Default: No. Include /etc/lvm/archive/*?
+
+=back
 
 =head1 ERRORS
 
