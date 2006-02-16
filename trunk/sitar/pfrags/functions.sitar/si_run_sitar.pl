@@ -58,6 +58,7 @@ sub si_run_sitar() {
 			si_etc();
 			si_etc_redhat();
 			si_installed_rpm();
+			si_kernel_config();
 		} elsif ( $DIST_DISTRIBUTION eq "debian" ) {
 			si_etc();
 			si_etc_debian();

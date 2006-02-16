@@ -1,8 +1,92 @@
 #
 #	group_etc_analysis.pl
 #
+
+sub si_usercrontab($) {
+	my ( $tabspath ) = shift( @_ );
+	# Crontab
+	siprtt( "h1", "Crontab" );
+	if ( -r "/etc/crontab" ) {
+		open( CRONTAB, "/etc/crontab" );
+		siprtt( "h2", "/etc/crontab" );
+		siprtttt( "tabborder", "llllllll", "/etc/crontab", 8 );
+		siprt( "tabrow" );
+		siprtt( "tabhead", "Minute" );
+		siprtt( "tabhead", "Hour" );
+		siprtt( "tabhead", "Day of month" );
+		siprtt( "tabhead", "Month" );
+		siprtt( "tabhead", "Day of week" );
+		siprtt( "tabhead", "User" );
+		siprtt( "tabhead", "Command" );
+		siprt( "endrow" );
+		while ( <CRONTAB> ) {
+			if ( m/^\d/ ) {
+				my ( $minute, $hour, $dayofmonth, $month, $dayofweek, $user, @command ) = split /\s+/;
+				siprt( "tabrow" );
+				siprtt( "cell", $minute );
+				siprtt( "cell", $hour );
+				siprtt( "cell", $dayofmonth );
+				siprtt( "cell", $month );
+				siprtt( "cell", $dayofweek );
+				siprtt( "cell", $user );
+				siprtt( "cell", "@command" );
+				siprt( "endrow" );
+			}
+		}
+		siprt( "endtab" );
+		close( CRONTAB );
+	}
+	if ( -r $tabspath ) {
+		for $NN ( `$CMD_FIND $tabspath -type f` ) {
+			chomp $NN;
+			my %rule    = ();
+			my $isbegin = 1;
+			open( CRONTAB, $NN );
+			siprtt( "h2", "$NN" );
+			siprtttt( "tabborder", "llllllll", "$NN", 8 );
+			siprt( "tabrow" );
+			siprtt( "tabhead", "Minute" );
+			siprtt( "tabhead", "Hour" );
+			siprtt( "tabhead", "Day of month" );
+			siprtt( "tabhead", "Month" );
+			siprtt( "tabhead", "Day of week" );
+			siprtt( "tabhead", "Command" );
+			siprt( "endrow" );
+			while ( <CRONTAB> ) {
+				if ( m/^\d/ ) {
+					my ( $minute, $hour, $dayofmonth, $month, $dayofweek, @command ) = split /\s+/;
+					siprt( "tabrow" );
+					siprtt( "cell", $minute );
+					siprtt( "cell", $hour );
+					siprtt( "cell", $dayofmonth );
+					siprtt( "cell", $month );
+					siprtt( "cell", $dayofweek );
+					siprtt( "cell", "@command" );
+					siprt( "endrow" );
+				}
+			}
+			siprt( "endtab" );
+			close( CRONTAB );
+		}
+	}
+}
+
 sub si_etc() {
 	siprtt( "h1", "Configuration" );
+	# Postfix
+	if ( ( -d "/etc/postfix/" ) && ( -x "$CMD_POSTCONF" ) ) {
+		siprtt( "h2", "Postfix (postconf -n)" );
+		siprt( "pre" );
+		open( CONFIG, "$CMD_POSTCONF -n |" );
+		while ( <CONFIG> ) {
+			chomp();
+			siprtt( "verb", "$_\n" );
+		}
+		close( CONFIG );
+		siprt( "endpre" );
+		if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "/etc/aliases", "\#" ); }
+	}
+	# Common
 	siprtt( "h2", "Common" );
 	# SSH/OpenSSH
 	my @sshconf = qw ( /etc/ssh/sshd_config /etc/sshd_config );
@@ -39,19 +123,6 @@ sub si_etc() {
 	foreach $file ( @ldapconf ) {
 		if ( -r $file ) { si_conf( "OpenLDAP Client", $file, "\#" ); }
 	}
-	# Postfix
-	if ( ( -d "/etc/postfix/" ) && ( -x "$CMD_POSTCONF" ) ) {
-		siprtt( "h2", "Postfix (postconf -n)" );
-		siprt( "pre" );
-		open( CONFIG, "$CMD_POSTCONF -n |" );
-		while ( <CONFIG> ) {
-			chomp();
-			siprtt( "verb", "$_\n" );
-		}
-		close( CONFIG );
-		siprt( "endpre" );
-		if ( -r "/etc/aliases" ) { si_conf( "/etc/aliases", "/etc/aliases", "\#" ); }
-	}
 	# some more services/programs
 	$SITAR_OPT_ALLCONFIGFILES =~ tr/A-Z/a-z/;
 	if (       ( $SITAR_OPT_ALLCONFIGFILES eq "on" )
@@ -70,8 +141,30 @@ sub si_etc() {
 			}
 		}
 	}
+	# /etc/sysconfig
+	$SITAR_OPT_ALLSYSCONFIG =~ tr/A-Z/a-z/;
+	if (       ( $SITAR_OPT_ALLSYSCONFIG eq "on" )
+		|| ( ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) && ( $SITAR_OPT_ALLSYSCONFIG eq "auto" ) ) ) {
+		if ( -r "/etc/sysconfig" ) {
+			siprtt( "h2", "Sysconfig" );
+			for $NN ( `$CMD_FIND /etc/sysconfig -type f` ) {
+				chomp $NN;
+				if ( `$CMD_FILE -b $NN | $CMD_GREP -i -e text | $CMD_GREP -i -v "shell script"` ) {
+					si_conf( $NN, $NN, "\#" );
+				}
+			}
+		}
+	}
+	# SuSE proxy suite
+	if ( -r "/etc/proxy-suite" ) {
+		siprtt( "h2", "SuSE Proxy Suite" );
+		for $NN ( `$CMD_FIND /etc/proxy-suite -name "*.conf"` ) {
+			chomp $NN;
+			si_conf( $NN, $NN, "\#" );
+		}
+	}
 	#
-	# some more services/programs
+	# more services/programs from ".include"-files
 	#
 	if ( -d $SITAR_CONFIG_DIR ) {
 		for $NN ( `$CMD_FIND $SITAR_CONFIG_DIR -iname "*.include" -type f` ) {
@@ -106,41 +199,11 @@ sub si_etc_debian() {
 }
 
 sub si_etc_redhat() {
-	si_usercrontab();
-	# Sysconfig
-	if ( -r "/etc/sysconfig" ) {
-		siprtt( "h2", "Sysconfig" );
-		for $NN ( `$CMD_FIND /etc/sysconfig -type f` ) {
-			chomp $NN;
-			if ( `$CMD_FILE -b $NN | $CMD_GREP -i -e text` ) {
-				si_conf( $NN, $NN, "\#" );
-			}
-		}
-	}
+	si_usercrontab("/var/spool/cron");
 }
 
 sub si_etc_united() {
-	$SITAR_OPT_ALLSYSCONFIG =~ tr/A-Z/a-z/;
-	if (       ( $SITAR_OPT_ALLSYSCONFIG eq "on" )
-		|| ( ( !-f "$SITAR_CONFIG_DIR/$SITAR_CONSIST_FN" ) && ( !-f "$SITAR_CONFIG_DIR/$SITAR_UNPACKED_FN" ) && ( $SITAR_OPT_ALLSYSCONFIG eq "auto" ) ) ) {
-		if ( -r "/etc/sysconfig" ) {
-			siprtt( "h2", "Sysconfig" );
-			for $NN ( `$CMD_FIND /etc/sysconfig -type f` ) {
-				chomp $NN;
-				if ( `$CMD_FILE -b $NN | $CMD_GREP -i -e text | $CMD_GREP -i -v "shell script"` ) {
-					si_conf( $NN, $NN, "\#" );
-				}
-			}
-		}
-	}
-	# SuSE proxy suite
-	if ( -r "/etc/proxy-suite" ) {
-		siprtt( "h2", "SuSE Proxy Suite" );
-		for $NN ( `$CMD_FIND /etc/proxy-suite -name "*.conf"` ) {
-			chomp $NN;
-			si_conf( $NN, $NN, "\#" );
-		}
-	}
+	si_usercrontab("/var/spool/cron/tabs");
 }
 
 sub si_etc_suse() {
