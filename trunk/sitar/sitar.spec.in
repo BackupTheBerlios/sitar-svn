@@ -69,7 +69,7 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 %{?suse_check}
 
 %files
-%defattr(644,root,root)
+%defattr(-,root,root)
 %config(noreplace) /etc/sysconfig/sitar
 %config(noreplace) /etc/sysconfig/cfg2scm
 %doc sitar.html sitar.ps cfg2scm.html cfg2scm.ps LICENSE
@@ -78,11 +78,9 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 %attr(700, root, root) /usr/sbin/cfg2scm.pl
 /usr/share/man/man1/sitar.1.gz
 /usr/share/man/man1/cfg2scm.1.gz
-%attr(755,root,root) %dir /usr/share/sitar
-%attr(755,root,root) %dir /var/lib/support
+%dir /usr/share/sitar
+%dir /var/lib/support
 /usr/share/sitar/proc.txt
-# /usr/share/man/man1/support_all.1.gz
-# %attr(700, root, root) /usr/sbin/support_all.pl
 
 %clean
 if [ -n "$RPM_BUILD_ROOT" ] ; then
