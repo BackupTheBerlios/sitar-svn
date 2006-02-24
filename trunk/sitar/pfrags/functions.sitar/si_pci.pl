@@ -32,17 +32,6 @@ sub si_pci() {
 		}
 		siprt( "endtab" );
 		close( IN );
-	} elsif ( -x "$CMD_LSHAL" ) {
-		push @lines, $_;
-		siprtt( "h2", "Hardware Abstraction Layer (HAL)" );
-		siprt( "pre" );
-		open( CONFIG, "$CMD_LSHAL --long |" );
-		while ( <CONFIG> ) {
-			chomp();
-			siprtt( "verb", "$_\n" );
-		}
-		close( CONFIG );
-		siprt( "endpre" );
 	} elsif ( -x "$CMD_LSPCI" ) {
 		siprtt( "h2", "PCI Devices" );
 		siprtttt( "tabborder", "lp{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}p{0.15\\textwidth}l", "PCI Devices", 7 );
@@ -91,5 +80,16 @@ sub si_pci() {
 			siprt( "endrow" );
 		}
 		siprt( "endtab" );
+	} elsif ( -x "$CMD_LSHAL" ) {
+		push @lines, $_;
+		siprtt( "h2", "Hardware Abstraction Layer (HAL)" );
+		siprt( "pre" );
+		open( CONFIG, "$CMD_LSHAL --long |" );
+		while ( <CONFIG> ) {
+			chomp();
+			siprtt( "verb", "$_\n" );
+		}
+		close( CONFIG );
+		siprt( "endpre" );
 	}
 }
