@@ -28,13 +28,10 @@ sub si_add($) {
 	} elsif ( ( $CFG2SCM_OPT_LIMIT > 0 ) && ( $ff_size > $CFG2SCM_OPT_LIMIT ) ) {
 		printf( "LIMIT of %7d Bytes exceeded; skipped %s\n", $CFG2SCM_OPT_LIMIT, $fname );
 	} else {
+		system( "$CMD_MKDIR -p ./$ddd " );
+		system( "$CMD_CP -a $fname ./$ddd/ " );
 		if ( $CFG2SCM_OPT_STORAGE eq "svn" ) {
-			system( "$CMD_SVN mkdir ./$ddd " );
-			system( "$CMD_CP -a $fname ./$ddd/ " );
-			system( "$CMD_SVN add ./$fname" );
-		} else {
-			system( "$CMD_MKDIR -p ./$ddd " );
-			system( "$CMD_CP -a $fname ./$ddd/ " );
+			system( "$CMD_SVN add ./$ddd" );
 		}
 	}
 	if ( !$CFG2SCM_OPT_DEBUG ) {
