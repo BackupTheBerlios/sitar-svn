@@ -29,7 +29,7 @@ sub si_add($) {
 		printf( "LIMIT of %7d Bytes exceeded; skipped %s\n", $CFG2SCM_OPT_LIMIT, $fname );
 	} else {
 		if ( $CFG2SCM_OPT_STORAGE eq "svn" ) {
-			system( "$CMD_SVN mkdir -p ./$ddd " );
+			system( "$CMD_SVN mkdir ./$ddd " );
 			system( "$CMD_CP -a $fname ./$ddd/ " );
 			system( "$CMD_SVN add ./$fname" );
 		} else {
