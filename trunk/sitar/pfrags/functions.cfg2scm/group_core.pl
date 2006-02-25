@@ -32,6 +32,7 @@ sub si_add($) {
 		system( "$CMD_CP -a $fname ./$ddd/ " );
 		if ( $CFG2SCM_OPT_STORAGE eq "svn" ) {
 			system( "$CMD_SVN add ./$ddd" );
+			system( "$CMD_SVN add ./$fname" );
 		}
 	}
 	if ( !$CFG2SCM_OPT_DEBUG ) {
