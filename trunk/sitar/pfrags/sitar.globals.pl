@@ -185,6 +185,9 @@ my @allconfigfiless = qw (
   /etc/squid/squid.conf
   /etc/syslog.conf
   /etc/xinetd.conf
+  /etc/X11/xorg.conf
+  /etc/X11/XF86Config,
+  /etc/X11/XF86Config4,
   /var/spool/fax/etc/config
   /var/spool/fax/etc/config.modem
 );
