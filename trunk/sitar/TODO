@@ -1,12 +1,8 @@
 SITAR:
+- add "ip ..." in addition to ifconfig
 - better 'HAL'  support
 - implement '/etc/lsb-release'
-- add "ip ..." in addition to ifconfig
 - mark .sel-output obsolete/deprecated -> YaST2
-- enhance manual-page
-
-/subdomain -> /sys/kernel/security/apparmor
 
 CFG2SCM
-- enhance manual-page
 
