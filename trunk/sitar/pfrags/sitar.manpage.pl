@@ -83,6 +83,8 @@ produces simplified docbook-xml; the format is not named B<xml>, because there a
 
 Please note, that this format needs a directory given with the parameter B<--outfile>!
 
+As it is possible, to generate a AutoYAST-file with YaST itself, this option is obsolete and may be dropped in the future.
+
 =back
 
 =item B<--outfile>=I<file|dir> 
