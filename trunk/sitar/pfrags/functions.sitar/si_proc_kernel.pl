@@ -6,7 +6,7 @@ sub si_proc_kernel() {
 	siprtttt( "tabborder", "ll", "Kernel", 2 );
 	for $NN ( sort `$CMD_FIND /proc/sys/kernel/ -type f` ) {
 		chomp $NN;
-		$value = `$CMD_CAT $NN`;
+		$value = si_readfile( "$NN" );
 		if ( $value ne "" ) {
 			my $MM = $NN;
 			$MM =~ s/\/proc\/sys\/kernel\///;

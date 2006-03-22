@@ -47,6 +47,7 @@ SITAR_PFRAGS	= pfrags/sitar.header.pl 				\
 		  pfrags/functions.sitar/group_output_dispatcher.pl	\
 		  pfrags/functions.sitar/group_minor.pl			\
 		  pfrags/functions.sitar/group_read_configfile.pl	\
+		  pfrags/functions.sitar/si_readfile.pl			\
 		  pfrags/functions.sitar/si_cpuinfo.pl			\
 		  pfrags/functions.sitar/si_general_sys.pl		\
 		  pfrags/functions.sitar/si_proc_kernel.pl		\

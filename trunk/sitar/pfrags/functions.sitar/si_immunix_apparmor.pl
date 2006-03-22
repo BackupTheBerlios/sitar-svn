@@ -11,7 +11,7 @@ sub si_immunix_apparmor () {
 			open( STDERR,  ">/dev/null" );
 			for $NN ( sort `$CMD_FIND $akpath/ -type f` ) {
 				chomp $NN;
-				$value = `$CMD_CAT $NN`;
+				$value = si_readfile( "$NN" );
 				if ( $value ne "" ) {
 					my $MM = $NN;
 					$MM =~ s/$akpath\///;

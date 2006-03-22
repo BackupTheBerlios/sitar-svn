@@ -11,7 +11,6 @@ if ( !$CFG2SCM_OPT_DEBUG ) {
 	open( STDERR,  ">/dev/null" );
 }
 chomp( my $CMD_BASENAME = `which basename` );
-chomp( my $CMD_CAT      = `which cat` );
 chomp( my $CMD_CP       = `which cp` );
 chomp( my $CMD_CVS      = `which cvs` );
 chomp( my $CMD_DIRNAME  = `which dirname` );

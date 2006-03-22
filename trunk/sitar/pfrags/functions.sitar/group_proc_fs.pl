@@ -38,7 +38,7 @@ sub si_proc_sys_net () {
 				open( STDERR,  ">/dev/null" );
 				for $NN ( sort `$CMD_FIND /proc/sys/net/$NET/ -type f` ) {
 					chomp $NN;
-					$value = `$CMD_CAT $NN`;
+					$value = si_readfile( "$NN" );
 					if ( $value ne "" ) {
 						my $MM = $NN;
 						$MM =~ s/\/proc\/sys\/net\/$NET\///;

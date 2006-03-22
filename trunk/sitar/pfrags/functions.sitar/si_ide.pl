@@ -26,17 +26,17 @@ sub si_ide() {
 			for $abc ( "a" .. "d" ) {
 				if ( -r "/proc/ide/hd$abc" ) {
 					$hddev = "/dev/hd$abc";
-					chomp( $media  = `$CMD_CAT /proc/ide/hd${abc}/media` );
-					chomp( $driver = `$CMD_CAT /proc/ide/hd${abc}/driver` );
-					chomp( $model  = `$CMD_CAT /proc/ide/hd${abc}/model` );
+					chomp( $media  = si_readfile( "/proc/ide/hd${abc}/media" ) );
+					chomp( $driver = si_readfile( "/proc/ide/hd${abc}/driver" ) );
+					chomp( $model  = si_readfile( "/proc/ide/hd${abc}/model" ) );
 					siprt( "tabrow" );
 					siprtt( "cell", "/dev/hd$abc" );
 					siprtt( "cell", $media );
 					siprtt( "cell", $model );
 					siprtt( "cell", $driver );
 					if ( $media eq "disk" ) {
-						# $capa   = `$CMD_CAT /proc/ide/hd${abc}/capacity`;
-						# $cache  = `$CMD_CAT /proc/ide/hd${abc}/cache`;
+						# $capa   = si_readfile( "/proc/ide/hd${abc}/capacity" );
+						# $cache  = si_readfile( "/proc/ide/hd${abc}/cache" );
 						open( GEO, "/proc/ide/hd${abc}/geometry " );
 						while ( <GEO> ) {
 							if ( m/^logical/g ) {
