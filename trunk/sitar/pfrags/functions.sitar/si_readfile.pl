@@ -19,19 +19,3 @@ sub si_readfile( $ ) {
 	return( $content );
 }
 
-=pod
-
-# testing
-
-{
-	print "--- si_readfile ---\n";
-	my $ttt=si_readfile( "/etc/passwd" );
-	print $ttt;
-	print "--- cat -----------\n";
-	my $sss=` cat /etc/passwd`;
-	print $sss;
-	print "-------------------\n";
-}
-
-=cut
-
