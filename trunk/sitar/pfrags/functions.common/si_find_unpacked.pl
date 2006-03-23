@@ -10,7 +10,6 @@ sub si_find_unpacked($$$$) {
 		if( $arf =~ /^$ddd/ ) {
 			$testrpmfiles{ $arf } = $arf;
 		}
-		
 	}
 	for $NN ( @allrealfiles ) {
 		chomp $NN;
