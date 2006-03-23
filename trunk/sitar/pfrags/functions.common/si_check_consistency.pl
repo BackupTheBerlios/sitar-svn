@@ -1,40 +1,49 @@
+
 sub si_check_consistency($$$) {
 	chomp( my ( $consconfdir, $consfile, $consdebug ) = @_ );
 	my %configfiles = ();
-	if ( !$consdebug ) {
-		open( SAVEERR, ">&STDERR" );
-		open( STDERR,  ">/dev/null" );
-	}
-	open( CONFIGFILES, "$CMD_RPM -qca |" );
+	my %brokenfiles = ();
+	my %packlist=();
+	my $packname="";
+	my $rrr, $ddd;
+	open( CONFIGFILES, "$CMD_RPM -qca --queryformat '%{NAME}\n'|" );
 	while ( <CONFIGFILES> ) {
-		chomp();
-		my $ccc = $_;
-		if ( $ccc =~ /^\// ) {
-			open( ONERPM, "$CMD_RPM -Vf --nodeps --noscript $ccc |" );
-			while ( <ONERPM> ) {
+		if( $_ !~ '^\(' ) {
+			if( $_ !~ '^/' ) {
 				chomp();
-				if ( $_ && ( $_ !~ /^missing/ ) ) {
-					$ddd = substr( $_, index( $_, "/" ) );
-					if ( $ddd eq $ccc ) {
-						$configfiles{ $ddd } = 1;
-					}
-				}
+				$packname=$_;
+			} else {
+				$packlist{ $packname }=1;
+				chomp();
+				$configfiles{ $_ } = $packname;
 			}
-			close( ONERPM );
 		}
 	}
 	close( CONFIGFILES );
+	for $rrr ( sort keys %packlist ) {
+		chomp( $rrr );
+		open( ONERPM, "$CMD_RPM -V --nodeps --noscript $rrr |" );
+		while ( <ONERPM> ) {
+			chomp();
+			if ( $_ && ( $_ !~ /^missing/ ) ) {
+				$ddd = substr( $_, index( $_, "/" ) );
+				chomp( $ddd );
+				if ( $configfiles{ $ddd } eq $rrr ) {
+					$brokenfiles{ $ddd } = 1;
+				}
+			}
+		}
+		close( ONERPM );
+	}
 	if ( !-d "$consconfdir" ) {
 		mkdir $consconfdir;
 	}
 	open( CONSISTENCY, ">$consconfdir/$consfile" );
 	print CONSISTENCY "\n\@files = (\n";
-	foreach my $kkk ( sort keys %configfiles ) {
+	foreach my $kkk ( sort keys %brokenfiles ) {
 		print CONSISTENCY "\"", $kkk, "\",\n";
 	}
 	print CONSISTENCY ");\n\n";
 	close( CONSISTENCY );
-	if ( !$consdebug ) {
-		open( STDERR, ">&SAVEERR" );
-	}
 }
+
