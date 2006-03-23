@@ -8,11 +8,11 @@
 		print( "Please run sitar as user root.\n" );
 		exit;
 	}
-	if ( $SITAR_OPT_FINDUNPACKED ) {
+	if ( $SITAR_OPT_FINDUNPACKED || $SITAR_OPT_ALL ) {
 		print( "Finding unpackaged files below /etc/. This might need a long time...\n" );
 		si_find_unpacked( $SITAR_CONFIG_DIR, $SITAR_UNPACKED_FN, "/etc/", 1 );
 	}
-	if ( $SITAR_OPT_CONSISTENCY ) {
+	if ( $SITAR_OPT_CONSISTENCY || $SITAR_OPT_ALL ) {
 		print( "Checking consistency of configuration files. This might need a long time...\n" );
 		si_check_consistency( $SITAR_CONFIG_DIR, $SITAR_CONSIST_FN, 1 );
 	}

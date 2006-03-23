@@ -40,10 +40,11 @@ sub si_prepare_config() {
 	si_parse_conf_file( $SITAR_CONFIG_FILE );
 	# parse command line options
 	GetOptions(
+		'a|all'               => \$SITAR_OPT_ALL,
+		'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
+		'x|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
 		'f|format=s'          => \$SITAR_OPT_FORMAT,
 		'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
-		'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
-		'u|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
 		'h|help'              => \$SITAR_OPT_HELP,
 		'v|version'           => \$SITAR_OPT_VERSION
 	);

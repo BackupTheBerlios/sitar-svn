@@ -39,10 +39,11 @@ sub si_prepare_config() {
 	si_parse_conf_file( $CFG2SCM_CONFIG_FILE );
 	# parse command line options
 	GetOptions(
+		'a|all'               => \$CFG2SCM_OPT_ALL,
 		'c|check-consistency' => \$CFG2SCM_OPT_CONSISTENCY,
+		'x|find-unpacked'     => \$CFG2SCM_OPT_FINDUNPACKED,
 		'b|base-url=s'        => \$CFG2SCM_OPT_BASE_URL,
 		'd|debug'             => \$CFG2SCM_OPT_DEBUG,
-		'f|find-unpacked'     => \$CFG2SCM_OPT_FINDUNPACKED,
 		'h|help'              => \$CFG2SCM_OPT_HELP,
 		'l|limit=i'           => \$CFG2SCM_OPT_LIMIT,
 		'm|message=s'         => \$CFG2SCM_OPT_MESSAGE,

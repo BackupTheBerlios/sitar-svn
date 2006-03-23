@@ -12,11 +12,11 @@
 			exit;
 		}
 	}
-	if ( $CFG2SCM_OPT_CONSISTENCY ) {
+	if ( $CFG2SCM_OPT_CONSISTENCY || $CFG2SCM_OPT_ALL ) {
 		print( "Checking consistency of configuration files. This might need a long time...\n" );
 		si_check_consistency( $CFG2SCM_CONFIG_DIR, $CFG2SCM_CONSISTENCY_FILENAME, $CFG2SCM_OPT_DEBUG );
 	}
-	if ( $CFG2SCM_OPT_FINDUNPACKED ) {
+	if ( $CFG2SCM_OPT_FINDUNPACKED || $CFG2SCM_OPT_ALL ) {
 		print( "Finding unpackaged files below /etc/. This might need a long time...\n" );
 		si_find_unpacked( $CFG2SCM_CONFIG_DIR, $CFG2SCM_FINDUNPACKED_FILENAME, "/etc/", 1 );
 	}

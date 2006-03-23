@@ -8,7 +8,7 @@ SITAR - System InformaTion At Runtime
 
 =head1 SYNOPSIS
 
-sitar|sitar.pl B<--check-consistency> B<--find-unpacked> B<--format>=I<format> B<--outfile>=I<file|dir> B<--help> B<--version> 
+sitar|sitar.pl B<--all> B<--check-consistency> B<--find-unpacked> B<--format>=I<format> B<--outfile>=I<file|dir> B<--help> B<--version> 
 
 Available I<format>s: html, tex, sdocbook, yast1, yast2
 
@@ -45,6 +45,10 @@ Prints a short summary of options.
 =item B<--version>
 
 Prints the sitar version
+
+=item B<--all>
+
+This is a short key for B<--check-consistency> B<--find-unpacked>
 
 =item B<--check-consistency>
 

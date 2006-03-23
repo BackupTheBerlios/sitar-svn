@@ -8,7 +8,7 @@ CFG2SCM - Check configuration changes into SCM
 
 =head1 SYNOPSIS
 
-cfg2scm.pl B<--check-consistency> B<--storage>=I<svn|cvs|tar|tar.gz|tar.bz2> B<--outfile>=I<file> B<--base-url>=I<url> B<--repository>=I<name> B<--username>=I<username> B<--password>=I<password> B<--message>=I<commit message> B<--help> B<--version>
+cfg2scm.pl B<--all> B<--check-consistency> B<--storage>=I<svn|cvs|tar|tar.gz|tar.bz2> B<--outfile>=I<file> B<--base-url>=I<url> B<--repository>=I<name> B<--username>=I<username> B<--password>=I<password> B<--message>=I<commit message> B<--help> B<--version>
 
 =head1 DESCRIPTION
 
@@ -54,6 +54,10 @@ Prints a short summary of options.
 =item B<--version>
 
 Prints the cfg2scm.pl version
+
+=item B<--all>
+
+This is a short key for B<--check-consistency> B<--find-unpacked>
 
 =item B<--check-consistency>
 

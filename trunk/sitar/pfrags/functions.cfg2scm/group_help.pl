@@ -10,6 +10,7 @@ sub si_print_help () {
 \t--base-url=<url>\tmain path to subversion repositories (mandatory)\n\t\t\t\tdefault: $CFG2SCM_OPT_BASE_URL
 \t--repository=<name>\tname of the one repository to be used (mandatory)\n\t\t\t\tdefault: $CFG2SCM_OPT_REPOS
 \t--debug
+\t--all (--check-consistency --find-unpacked)
 \t--check-consistency
 \t--find-unpacked
 \t--limit=<max filesize; 0=no limit>
