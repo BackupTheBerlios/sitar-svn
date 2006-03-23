@@ -1,16 +1,24 @@
+
 sub si_find_unpacked($$$$) {
 	chomp( my ( $funpconfdir, $funpfile, $ddd, $ignore_binary ) = @_ );
-	my %configfiles = ();
-	for $NN ( `$CMD_FIND $ddd -type f` ) {
+	my %configfiles  = ();
+	my @allrpmfiles  = `$CMD_RPM -qla`;
+	my %testrpmfiles = ();
+	my @allrealfiles = `$CMD_FIND $ddd -type f`;
+	for $arf( @allrpmfiles ) {
+		chomp( $arf );
+		if( $arf =~ /^$ddd/ ) {
+			$testrpmfiles{ $arf } = $arf;
+		}
+		
+	}
+	for $NN ( @allrealfiles ) {
 		chomp $NN;
-		chomp( my $res = `$CMD_RPM -qf $NN` );
-		if ( $res =~ /is not owned by any package$/ ) {
+		if( $testrpmfiles{ $NN } ne $NN ) {
 			if ( ( $NN !~ /~$/ ) && ( -r $NN ) ) {
 				chomp( $type = `$CMD_FILE -p -b $NN` );
 				if ( $ignore_binary && ( ( $type =~ /^Berkeley DB/ ) || ( $type =~ /data/ ) ) ) {
-					si_debug( sprintf "---\t", $type, "\t", $NN );
 				} else {
-					si_debug( sprintf "\t", $type, "\t", $NN );
 					$configfiles{ $NN } = 1;
 				}
 			}
@@ -27,3 +35,4 @@ sub si_find_unpacked($$$$) {
 	print FINDUNPACKED ");\n\n";
 	close( FINDUNPACKED );
 }
+
