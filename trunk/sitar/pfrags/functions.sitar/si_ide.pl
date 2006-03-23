@@ -2,6 +2,7 @@
 #	si_ide.pl
 #
 sub si_ide() {
+	si_debug("si_ide");
 	my $exists_ide = 0;
 	for $abc ( "a" .. "i" ) {
 		if ( -r "/proc/ide/hd$abc" ) { $exists_ide = 1; }

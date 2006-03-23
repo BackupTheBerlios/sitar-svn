@@ -2,6 +2,7 @@
 #	si_pnp.pl
 #
 sub si_pnp() {
+	si_debug("si_pnp");
 	if ( ( -x "$CMD_LSPNP" ) && ( -r "/proc/bus/pnp" ) ) {
 		open( IN, "$CMD_LSPNP | " );
 		siprtt( "h2", "PNP Devices" );

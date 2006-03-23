@@ -2,6 +2,7 @@
 #	group_kernel
 #
 sub si_kernel_config() {
+	si_debug("si_kernel_config");
 	my $comment = "\#";
 	my $config  = "/boot/config-$UNAMER";
 	if( -r $config ) {
@@ -20,6 +21,7 @@ sub si_kernel_config() {
 }
 
 sub si_proc_config() {
+	si_debug("si_proc_config");
 	my $comment = "\#";
 	if ( ( -r "/proc/config.gz" ) && ( -x "$CMD_GZIP" ) ) {
 		siprtt( "h1", "Kernel Configuration" );

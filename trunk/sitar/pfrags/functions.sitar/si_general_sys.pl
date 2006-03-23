@@ -2,6 +2,7 @@
 #	si_general_sys
 #
 sub si_general_sys() {
+	si_debug("si_general_sys");
 	siprtt( "h1", "General Information" );
 	siprtttt( "tabborder", "ll", "General Information", 2 );
 	siprt( "tabrow" );

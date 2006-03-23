@@ -2,6 +2,7 @@
 #	si_selection_yast2
 #
 sub si_selection_yast2( ) {
+	si_debug("si_selection_yast2");
 	my %total = ( ul => 0, sles => 0, addon => 0, suse => 0, opensuse => 0 );
 	my %num   = ( ul => 0, sles => 0, addon => 0, suse => 0, opensuse => 0 );
 	my %rpms = ( ul => (), sles => (), addon => (), suse => (), opensuse => () );

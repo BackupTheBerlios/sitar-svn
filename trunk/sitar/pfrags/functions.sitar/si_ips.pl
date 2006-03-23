@@ -2,6 +2,7 @@
 #	si_ips
 #
 sub si_ips() {
+	si_debug("si_ips");
 	if ( -r "/proc/scsi/ips" ) {
 		siprtt( "h1", "IBM ServeRaid" );
 		for ( $i = 0 ; $i < 16 ; $i++ ) {

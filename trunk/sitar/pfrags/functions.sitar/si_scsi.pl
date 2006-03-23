@@ -2,6 +2,7 @@
 #
 #
 sub si_scsi() {
+	si_debug("si_scsi");
 	my $header = 0;
 	if ( -r "/proc/scsi/scsi" ) {
 		open( SCSIINFO, "/proc/scsi/scsi" );

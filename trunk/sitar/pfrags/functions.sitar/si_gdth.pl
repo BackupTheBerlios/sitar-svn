@@ -2,6 +2,7 @@
 #
 #
 sub si_gdth() {
+	si_debug("si_gdth");
 	if ( -r "/proc/scsi/gdth" ) {
 		siprtt( "h1", "ICP Vortex RAID" );
 		for ( $i = 0 ; $i < 16 ; $i++ ) {

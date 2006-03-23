@@ -2,6 +2,7 @@
 #	si_pci.pl
 #
 sub si_pci() {
+	si_debug("si_pci");
 	if ( -e "/proc/pci" ) {
 		open( IN, "/proc/pci" );
 		siprtt( "h2", "PCI Devices" );

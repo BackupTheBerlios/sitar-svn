@@ -28,6 +28,7 @@ my $SITAR_OPT_LVMARCHIVE     = "No";
 my $SITAR_OPT_CONSISTENCY    = 0;
 my $SITAR_OPT_FINDUNPACKED   = 0;
 my $SITAR_OPT_ALL            = 0;
+my $SITAR_OPT_DEBUG          = 0;
 my ( $SITAR_OPT_HELP, $SITAR_OPT_VERSION );
 #
 # commands

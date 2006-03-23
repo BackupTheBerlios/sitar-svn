@@ -2,6 +2,7 @@
 #	group_proc_fs.pl
 #
 sub si_build_proc_description() {
+	si_debug("si_build_proc_description");
 	open( PROCTXT, "<$SITAR_PREFIX/share/sitar/proc.txt" );
 	#if ( -r "/usr/src/linux/Documentation/proc.txt" ) {
 	#	open( PROCTXT, "</usr/src/linux/Documentation/proc.txt" );
@@ -24,6 +25,7 @@ sub si_build_proc_description() {
 }
 
 sub si_proc_sys_net () {
+	si_debug("si_proc_sys_net");
 	my $value;
 	siprtt( "h2", "/proc/sys/net" );
 	my @nettypes = qw(802 appletalk ax25 rose x25 bridge core decnet ethernet ipv4 ipv6 irda ipx net-rom token-ring unix);
@@ -60,6 +62,7 @@ sub si_proc_sys_net () {
 }
 
 sub si_proc () {
+	si_debug("si_proc");
 	si_build_proc_description();
 	siprtt( "h1", "/proc" );
 	si_proc_sys_net();

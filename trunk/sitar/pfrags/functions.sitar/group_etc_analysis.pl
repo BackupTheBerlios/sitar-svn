@@ -4,6 +4,7 @@
 
 sub si_usercrontab($) {
 	my ( $tabspath ) = shift( @_ );
+	si_debug("si_usercrontab");
 	# Crontab
 	siprtt( "h1", "Crontab" );
 	if ( -r "/etc/crontab" ) {
@@ -73,6 +74,7 @@ sub si_usercrontab($) {
 
 sub si_etc() {
 	siprtt( "h1", "Configuration" );
+	si_debug("si_etc");
 	# Postfix
 	if ( ( -d "/etc/postfix/" ) && ( -x "$CMD_POSTCONF" ) ) {
 		siprtt( "h2", "Postfix (postconf -n)" );
@@ -194,20 +196,24 @@ sub si_etc() {
 }
 
 sub si_etc_debian() {
+	si_debug("si_etc_debian");
 	# special function for debian specific configuration
 	#siprtt( "h1", "Configuration" );
 }
 
 sub si_etc_redhat() {
+	si_debug("si_etc_redhat");
 	si_usercrontab("/var/spool/cron");
 }
 
 sub si_etc_united() {
+	si_debug("si_etc_united");
 	si_usercrontab("/var/spool/cron/tabs");
 }
 
 sub si_etc_suse() {
 	# special function for suse specific configuration
+	si_debug("si_etc_suse");
 	if ( -d "/etc/rc.config.d" || -r "/etc/rc.config" ) {
 		siprtt( "h2", "/etc/rc.config*" );
 		si_conf( "/etc/rc.config", "/etc/rc.config", "\#" );

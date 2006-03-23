@@ -36,6 +36,7 @@ sub si_parse_conf_file($) {
 }
 
 sub si_prepare_config() {
+	si_debug("si_prepare_config");
 	# read configuration file
 	si_parse_conf_file( $SITAR_CONFIG_FILE );
 	# parse command line options

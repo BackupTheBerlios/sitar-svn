@@ -2,6 +2,7 @@
 #	si_lsdev.pl
 #
 sub si_lsdev() {
+	si_debug("si_lsdev");
 	#	lsdev.pl
 	#	Created by Sander van Malssen <svm@ava.kozmix.cistron.nl>
 	#	Date:        1996-01-22 19:06:22

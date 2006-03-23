@@ -2,6 +2,7 @@
 #
 #
 sub si_mount() {
+	si_debug("si_mount");
 	%fsystem   = ();
 	%mountp    = ();
 	%blocks    = ();

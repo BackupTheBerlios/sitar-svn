@@ -14,6 +14,7 @@ sub si_ipfwadm() {
 #
 sub si_ipchains () {
 	my @protocols = ();
+	si_debug("si_ipchains");
 	open( PROTO, "/etc/protocols" );
 	while ( <PROTO> ) {
 		if ( !m/^#/ ) {
@@ -111,6 +112,7 @@ sub si_ipchains () {
 }
 
 sub si_iptables () {
+	si_debug("si_iptables");
 	if ( -x "$CMD_IPTABLES" ) {
 		push @lines, $_;
 		open( TABLES, "/proc/net/ip_tables_names" );
@@ -135,6 +137,7 @@ sub si_iptables () {
 }
 
 sub si_packetfilter() {
+	si_debug("si_packetfilter");
 	if ( -r "/proc/net/ip_input" ) {
 		siprtt( "h1", "Packet Filter (ipfwadm)" );
 		si_ipfwadm();

@@ -2,6 +2,7 @@
 #	si_cpuinfo
 #
 sub si_cpuinfo() {
+	si_debug("si_cpuinfo");
 	siprtt( "h1", "CPU" );
 	siprtttt( "tabborder", "ll", "CPU", 2 );
 	open( IN, "/proc/cpuinfo" );

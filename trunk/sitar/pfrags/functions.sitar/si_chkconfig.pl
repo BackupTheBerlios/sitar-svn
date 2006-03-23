@@ -2,6 +2,7 @@
 #	si_chkconfig.pl
 #
 sub si_chkconfig () {
+	si_debug("si_chkconfig");
 	if ( -x "$CMD_CHKCONF" ) {
 		push @lines, $_;
 		siprtt( "h1", "Automatic Startup (chkconfig -l)" );

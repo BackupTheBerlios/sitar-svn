@@ -2,6 +2,7 @@
 #	si_run_sitar (main loop)
 #
 sub si_run_sitar() {
+	si_debug("si_run_sitar");
 	$SITAR_OPT_FORMAT =~ tr/A-Z/a-z/;
 	if ( $SITAR_OPT_FORMAT ne "yast2" ) {
 		open( TESTFILE, ">$SITAR_OPT_OUTFILE" )

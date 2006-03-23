@@ -2,6 +2,7 @@
 #	si_route.pl
 #
 sub si_route() {
+	si_debug("si_route");
 	my %rule    = ();
 	my $isbegin = 1;
 	open( ROUTE, "$CMD_ROUTE -n |" );

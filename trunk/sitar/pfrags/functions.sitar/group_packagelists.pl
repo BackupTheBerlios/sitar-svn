@@ -2,6 +2,7 @@
 #	group_packagelists
 #
 sub si_installed_deb() {
+	si_debug("si_installed_deb");
 	siprtt( "h1", "Installed Packages" );
 	siprtttt( "tabborder", "llllp{.5\\textwidth}", "Installed Packages", 5 );
 	siprt( "tabrow" );
@@ -49,6 +50,7 @@ sub si_installed_deb() {
 }
 
 sub si_installed_sles() {
+	si_debug("si_installed_sles");
 	siprtt( "h1", "Installed Packages" );
 	if ( -x $CMD_INSTSRC ) {
 		siprtt( "h2", "Installation Sources" );
@@ -130,6 +132,7 @@ sub si_installed_sles() {
 }
 
 sub si_installed_rpm() {
+	si_debug("si_installed_rpm");
 	siprtt( "h1", "Installed Packages" );
 	siprtttt( "tabborder", "lllp{.5\\textwidth}", "Installed Packages", 4 );
 	siprt( "tabrow" );
@@ -166,6 +169,7 @@ sub si_installed_rpm() {
 }
 
 sub si_selection_deb() {
+	si_debug("si_selection_deb");
 	my $deb_sel = "sitar-$HOSTNAME-deb-selections";
 	sysopen( DEBSEL, "$deb_sel", O_CREAT | O_EXCL | O_WRONLY ) || die "can't create '$deb_sel'!";
 	open( IN, "$CMD_DPKG --get-selections |" );
@@ -177,6 +181,7 @@ sub si_selection_deb() {
 }
 
 sub si_selection_rpm() {
+	si_debug("si_selection_rpm");
 	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{SIZE}\n' |" );
 	my $total = 0;
 	my $num   = 0;

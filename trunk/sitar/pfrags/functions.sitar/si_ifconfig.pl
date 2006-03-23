@@ -2,6 +2,7 @@
 #	si_ifconfig.pl
 #
 sub si_ifconfig() {
+	si_debug("si_ifconfig");
 	my %rule    = ();
 	my $isbegin = 1;
 	open( IFCONFIG, "$CMD_IFCONF -v |" );

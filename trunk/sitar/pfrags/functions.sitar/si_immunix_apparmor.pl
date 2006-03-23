@@ -2,6 +2,7 @@
 #	AppArmor
 #
 sub si_immunix_apparmor () {
+	si_debug("si_immunix_apparmor");
 	for $akpath ( @apparmor_kernel_path ) {
 		if ( -d "$akpath/control" ) {
 			siprtt( "h1", $apparmor_verbose_name );

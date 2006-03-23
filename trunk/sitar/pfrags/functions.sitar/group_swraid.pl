@@ -2,6 +2,7 @@
 #	group-sw-raid
 #
 sub si_software_raid() {
+	si_debug("si_software_raid");
 	my $MDSTAT  = "/proc/mdstat";
 	my $RAIDTAB = "/etc/raidtab";
 	chomp( $UNAMER );
@@ -17,6 +18,7 @@ sub si_software_raid() {
 }
 
 sub si_software_raid_details() {
+	si_debug("si_software_raid_details");
 	my $MDSTAT  = "/proc/mdstat";
 	my $RAIDTAB = "/etc/raidtab";
 	if ( -r $MDSTAT ) {

@@ -2,6 +2,7 @@
 #	si_dac960.pl
 #
 sub si_dac960() {
+	si_debug("si_dac960");
 	if ( -r "/proc/rd" ) {
 		siprtt( "h1", "Mylex ('DAC 960') RAID" );
 		for ( $i = 0 ; $i < 8 ; $i++ ) {

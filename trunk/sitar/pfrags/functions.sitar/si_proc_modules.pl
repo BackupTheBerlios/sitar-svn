@@ -2,6 +2,7 @@
 #	si_proc_modules.pl
 #
 sub si_proc_modules () {
+	si_debug("si_proc_modules");
 	if ( -r "/proc/modules" ) {
 		siprtt( "h2", "Kernel Modules" );
 		siprtttt( "tabborder", "llll", "Kernel Modules", 4 );

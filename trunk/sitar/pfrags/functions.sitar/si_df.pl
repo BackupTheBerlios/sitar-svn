@@ -2,6 +2,7 @@
 #
 #
 sub si_df() {
+	si_debug("si_df");
 	my %rule    = ();
 	my $isbegin = 1;
 	open( DF, "$CMD_DF |" );

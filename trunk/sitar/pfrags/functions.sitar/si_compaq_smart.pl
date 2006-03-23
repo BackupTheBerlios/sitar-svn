@@ -2,6 +2,7 @@
 #	si_compaq_smart.pl
 #
 sub si_compaq_smart() {
+	si_debug("si_compaq_smart");
 	my $cparray = "/proc/array";
 	if ( -r $cparray ) {
 		siprtt( "h1", "COMPAQ Smart Array" );
