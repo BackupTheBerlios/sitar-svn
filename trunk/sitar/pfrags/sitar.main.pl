@@ -5,15 +5,15 @@
 	si_prepare_config();
 	my @myname = split /\//, $0;
 	if ( $< != 0 ) {
-		print( "Please run sitar as user root.\n" );
+		print( STDERR "Please run sitar as user root.\n" );
 		exit;
 	}
 	if ( $SITAR_OPT_FINDUNPACKED || $SITAR_OPT_ALL ) {
-		print( "Finding unpackaged files below /etc/. This might need a long time...\n" );
+		print( STDERR "Finding unpackaged files below /etc/...\n" );
 		si_find_unpacked( $SITAR_CONFIG_DIR, $SITAR_UNPACKED_FN, "/etc/", 1 );
 	}
 	if ( $SITAR_OPT_CONSISTENCY || $SITAR_OPT_ALL ) {
-		print( "Checking consistency of configuration files. This might need a long time...\n" );
+		print( STDERR "Checking consistency of configuration files...\n" );
 		si_check_consistency( $SITAR_CONFIG_DIR, $SITAR_CONSIST_FN, 1 );
 	}
 	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_FORMAT ) && ( !$SITAR_OPT_OUTFILE ) && ( !$SITAR_OPT_VERSION ) ) {

@@ -14,6 +14,7 @@ sub si_run_sitar() {
 		if ( $SITAR_OPT_OUTFILE ne "" ) {
 			open( STDOUT, ">$SITAR_OPT_OUTFILE" );
 		}
+		print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
 		siprt( "header" );
 		si_general_sys();
 		si_cpuinfo();
@@ -78,10 +79,12 @@ sub si_run_sitar() {
 		if ( $SITAR_OPT_OUTFILE ne "" ) {
 			open( STDOUT, ">$SITAR_OPT_OUTFILE" );
 		}
+		print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
 		si_selection_rpm();
 		open( STDOUT, ">&SAVEOUT" );
 	} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
 		open( SAVEOUT, ">&STDOUT" );
+		print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
 		si_selection_yast2();
 		open( STDOUT, ">&SAVEOUT" );
 	} elsif ( $SITAR_OPT_FORMAT eq "pci" ) {
