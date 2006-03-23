@@ -63,14 +63,8 @@ sub si_installed_sles() {
 	}
 	my $total = 0;
 	my $num   = 0;
-	my @packagers;
-	open( PACKS, "$CMD_RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $CMD_SORT | $CMD_UNIQ |" );
-	while ( <PACKS> ) { push @packagers, $_; }
-	close( PACKS );
-	my @rpms;
-	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::a\n' |" );
-	while ( <RPMS> ) { push @rpms, $_; }
-	close( RPMS );
+	my @packagers = `$CMD_RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $CMD_SORT | $CMD_UNIQ`;
+	my @rpms      = `$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::a\n'`;
 	for $pack ( sort @packagers ) {
 		chomp $pack;
 		my ( $mydist, $mypack ) = split /::/, $pack;
