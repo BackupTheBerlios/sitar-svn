@@ -22,9 +22,7 @@ sub si_run_sitar() {
 		si_lsdev();
 		si_pci();
 		si_pnp();
-		if ( $mm eq "tex" ) {
-			print "\n\\par\\begingroup\\tiny\\par\n";
-		}
+		# if ( $mm eq "tex" ) { print "\n\\par\\begingroup\\tiny\\par\n"; }
 		# si_df();
 		si_software_raid();
 		si_mount();
@@ -37,9 +35,7 @@ sub si_run_sitar() {
 		si_ifconfig();
 		si_route();
 		si_packetfilter();
-		if ( $mm eq "tex" ) {
-			print "\n\\par\\endgroup\\par\n";
-		}
+		# if ( $mm eq "tex" ) { print "\n\\par\\endgroup\\par\n"; }
 		si_immunix_apparmor();
 		si_proc();
 		if ( $DIST_DISTRIBUTION eq "unitedlinux" ) {
