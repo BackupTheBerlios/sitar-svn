@@ -1,4 +1,92 @@
 #
+#	si_run_structured()
+#
+sub si_run_structured() {
+	si_debug("si_run_structured");
+	siprt( "header" );
+	si_general_sys();
+	si_cpuinfo();
+	si_proc_kernel();
+	si_lsdev();
+	si_pci();
+	si_pnp();
+	# if ( $mm eq "tex" ) { print "\n\\par\\begingroup\\tiny\\par\n"; }
+	# si_df();
+	si_software_raid();
+	si_mount();
+	si_ide();
+	si_scsi();
+	si_gdth();
+	si_ips();
+	si_compaq_smart();
+	si_dac960();
+	si_ifconfig();
+	si_route();
+	si_packetfilter();
+	# if ( $mm eq "tex" ) { print "\n\\par\\endgroup\\par\n"; }
+	si_immunix_apparmor();
+	si_proc();
+	if ( $DIST_DISTRIBUTION eq "unitedlinux" ) {
+		si_chkconfig();
+		si_etc();
+		si_etc_united();
+		si_installed_sles();
+		si_proc_config();
+	} elsif ( $DIST_DISTRIBUTION eq "suse" || $DIST_DISTRIBUTION eq "sles" ) {
+		si_chkconfig();
+		si_etc();
+		si_etc_united();
+		si_etc_suse();
+		si_installed_sles();
+		si_proc_config();
+	} elsif ( $DIST_DISTRIBUTION eq "redhat" ) {
+		si_chkconfig();
+		si_etc();
+		si_etc_redhat();
+		si_installed_rpm();
+		si_kernel_config();
+	} elsif ( $DIST_DISTRIBUTION eq "debian" ) {
+		si_etc();
+		si_etc_debian();
+		si_installed_deb();
+		si_kernel_config();
+		#si_selection_deb ();
+	} else {
+		si_etc();
+	}
+	siprt( "toc" );
+	siprt( "body" );
+	siprt( "footer" );
+	si_shipout();
+}
+
+#
+#	si_run_selfiles ()
+#
+sub si_run_selfiles() {
+	si_debug("si_run_selfiles");
+	$SITAR_OPT_FORMAT =~ tr/A-Z/a-z/;
+	if ( $SITAR_OPT_FORMAT eq "yast1" ) {
+		open( SAVEOUT, ">&STDOUT" );
+		if ( $SITAR_OPT_OUTFILE ne "" ) {
+			open( STDOUT, ">$SITAR_OPT_OUTFILE" );
+		}
+		print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
+		si_selection_rpm();
+		open( STDOUT, ">&SAVEOUT" );
+	} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
+		open( SAVEOUT, ">&STDOUT" );
+		print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
+		si_selection_yast2();
+		open( STDOUT, ">&SAVEOUT" );
+	} elsif ( $SITAR_OPT_FORMAT eq "pci" ) {
+		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.pci");
+		# si_lspci();
+		# open (STDOUT,  ">&SAVEOUT");
+		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
+	}
+}
+#
 #	si_run_sitar (main loop)
 #
 sub si_run_sitar() {
