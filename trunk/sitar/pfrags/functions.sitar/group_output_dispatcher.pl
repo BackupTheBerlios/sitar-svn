@@ -272,10 +272,10 @@ sub si_shipout_single( ) {
 	open( SAVEOUT, ">&STDOUT" );
 	print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
 	open( STDOUT, ">$SITAR_OPT_OUTFILE" );
-	siprt( "header" );
-	siprt( "toc" );
-	siprt( "body" );
-	siprt( "footer" );
+	siprint_single( "header", "", "", 0 );
+	siprint_single( "toc", "", "", 0 );
+	siprint_single( "body", "", "", 0 );
+	siprint_single( "footer", "", "", 0 );
 	open( STDOUT, ">&SAVEOUT" );
 }
 
