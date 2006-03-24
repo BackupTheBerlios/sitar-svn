@@ -13,6 +13,9 @@ my $SITAR_SVNVERSION         = "%%SITAR_SVNVERSION%%";
 my $SITAR_PREFIX             = "%%SITAR_PREFIX%%";
 my $SITAR_READFILE_LIMIT     = 32767;
 my $SITAR_CONFIG_FILE        = "/etc/sysconfig/sitar";
+my @SITAR_STRUCTURED         = ( "html", "tex", "sdocbook" );
+my @SITAR_SELFILES           = ( "yast1", "yast2" );
+my @SITAR_ALLFORMATS         = ( "html", "tex", "sdocbook", "yast1", "yast2" );
 my $SITAR_OPT_FORMAT         = "";
 my $SITAR_OPT_OUTFILE        = "";
 my $SITAR_OPT_OUTDIR         = "";
@@ -28,7 +31,7 @@ my $SITAR_OPT_LVMARCHIVE     = "No";
 my $SITAR_OPT_CONSISTENCY    = 0;
 my $SITAR_OPT_FINDUNPACKED   = 0;
 my $SITAR_OPT_ALL            = 0;
-my $SITAR_OPT_DEBUG          = 0;
+my $SITAR_OPT_DEBUG          = 1;
 my ( $SITAR_OPT_HELP, $SITAR_OPT_VERSION );
 #
 # commands

@@ -1,9 +1,9 @@
 #
 #	si_run_structured()
 #
-sub si_run_structured() {
+sub si_run_structured( ) {
 	si_debug("si_run_structured");
-	siprt( "header" );
+	si_output_start();
 	si_general_sys();
 	si_cpuinfo();
 	si_proc_kernel();
@@ -54,9 +54,6 @@ sub si_run_structured() {
 	} else {
 		si_etc();
 	}
-	siprt( "toc" );
-	siprt( "body" );
-	siprt( "footer" );
 	si_shipout();
 }
 
@@ -79,11 +76,6 @@ sub si_run_selfiles() {
 		print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
 		si_selection_yast2();
 		open( STDOUT, ">&SAVEOUT" );
-	} elsif ( $SITAR_OPT_FORMAT eq "pci" ) {
-		# open (STDOUT,  ">/tmp/sitar-$HOSTNAME.pci");
-		# si_lspci();
-		# open (STDOUT,  ">&SAVEOUT");
-		# print "\t/tmp/sitar-$HOSTNAME.pci\n";
 	}
 }
 #

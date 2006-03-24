@@ -35,6 +35,7 @@ sub si_conf_filename_stat($$$) {
 sub si_conf_secure($$$) {
 	my ( $filename, $comment, $blankout ) = @_;
 	( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
+	si_debug("si_conf_secure($filename)");
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
 		siprtt( "h3", $filename );
 		# print STDERR $filename, ": ", $comment, "\n";
@@ -71,6 +72,7 @@ sub si_conf_secure($$$) {
 sub si_conf($$$) {
 	my ( $title, $filename, $comment ) = @_;
 	( $ff_dev, $ff_ino, $ff_mode, $ff_nlink, $ff_uid, $ff_gid, $ff_rdev, $ff_size, $ff_atime, $ff_mtime, $ff_ctime, $ff_blksize, $ff_blocks ) = stat( $filename );
+	si_debug("si_conf($filename)");
 	if ( $NN !~ /(\w*\.orig$)|(\w*\.org$)|(\w*\.ori$)|(\w*\.bak$)|(\w*\.bac$)|(\w*\~)|(\#\w*)/ ) {
 		$SITAR_OPT_LVMARCHIVE =~ tr/A-Z/a-z/;
 		$SITAR_OPT_GCONF      =~ tr/A-Z/a-z/;
