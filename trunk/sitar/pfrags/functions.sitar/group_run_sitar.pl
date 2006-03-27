@@ -60,20 +60,23 @@ sub si_run_structured( ) {
 #
 #	si_run_selfiles ()
 #
-sub si_run_selfiles() {
-	si_debug("si_run_selfiles");
-	$SITAR_OPT_FORMAT =~ tr/A-Z/a-z/;
-	if ( $SITAR_OPT_FORMAT eq "yast1" ) {
+sub si_run_selfiles( $ ) {
+	my ( $ff ) = shift( @_ );
+	$ff =~ tr/A-Z/a-z/;
+	if ( $ff eq "yast1" ) {
+		$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME-yast1.sel";
+si_debug("si_run_selfiles $SITAR_OPT_OUTFILE");
 		open( SAVEOUT, ">&STDOUT" );
 		if ( $SITAR_OPT_OUTFILE ne "" ) {
 			open( STDOUT, ">$SITAR_OPT_OUTFILE" );
 		}
-		print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
+		print( STDERR "Generating $SITAR_OPT_OUTFILE\n" );
 		si_selection_rpm();
 		open( STDOUT, ">&SAVEOUT" );
-	} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
+	} elsif ( $ff eq "yast2" ) {
+si_debug("si_run_selfiles $SITAR_OPT_OUTDIR");
 		open( SAVEOUT, ">&STDOUT" );
-		print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
+		print( STDERR "Generating YaST2 files in $SITAR_OPT_OUTDIR/\n" );
 		si_selection_yast2();
 		open( STDOUT, ">&SAVEOUT" );
 	}

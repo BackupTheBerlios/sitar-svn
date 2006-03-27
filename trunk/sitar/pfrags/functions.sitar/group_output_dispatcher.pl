@@ -278,10 +278,6 @@ sub si_shipout_single( ) {
 }
 
 sub si_shipout() {
-	( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime( time );
-	$SITAR_OPT_OUTDIR = join "", "/tmp/sitar-", $HOSTNAME, "-", $year + 1900, sprintf( "%02d", $mon + 1 ), sprintf( "%02d", $mday ), sprintf( "%02d", $hour );
-	mkdir $SITAR_OPT_OUTDIR;
-	chdir $SITAR_OPT_OUTDIR;
 	if( $SITAR_OPT_FORMAT eq "all" ) {
 		for $mm ( @SITAR_STRUCTURED ) {
 			$output_format_g = $mm;
