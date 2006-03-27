@@ -24,6 +24,11 @@
 		$SITAR_OPT_FORMAT="all";
 		si_run_structured( );
 		for $SITAR_OPT_FORMAT ( @SITAR_SELFILES ) {
+			if ( $SITAR_OPT_FORMAT eq "yast1" ) {
+				$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME-yast1.sel";
+			} elsif( $SITAR_OPT_FORMAT eq "yast2" ) {
+				$SITAR_OPT_OUTDIR = $SITAR_OPT_OUTFILE;
+			}
 			si_run_selfiles( );
 		}
 	} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
