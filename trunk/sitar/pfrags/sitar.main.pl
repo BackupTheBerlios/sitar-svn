@@ -23,7 +23,9 @@
 	     && ( !$SITAR_OPT_VERSION ) ) {
 		$SITAR_OPT_FORMAT="all";
 		si_run_structured( );
-		si_run_selfiles( );
+		for $SITAR_OPT_FORMAT ( @SITAR_SELFILES ) {
+			si_run_selfiles( );
+		}
 	} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
 		if ( ( -d $SITAR_OPT_OUTFILE ) && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_VERSION ) ) {
 			$SITAR_OPT_OUTDIR = $SITAR_OPT_OUTFILE;
