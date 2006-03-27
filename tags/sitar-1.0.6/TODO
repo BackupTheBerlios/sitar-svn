@@ -1,0 +1,8 @@
+SITAR:
+- add "ip ..." in addition to ifconfig
+- better 'HAL'  support
+- implement '/etc/lsb-release'
+- mark .sel-output obsolete/deprecated -> YaST2
+
+CFG2SCM
+

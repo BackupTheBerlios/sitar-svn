@@ -1,0 +1,87 @@
+## Path:        System/Monitoring/cfg2scm
+## Description: cfg2scm - Check configuration changes into SCM
+#
+# "cfg2scm" is used for checking configuration changes
+# into SCM (like SVN, CVS, ... or tar file)
+#
+# see 'man cfg2scm' for more information
+#
+
+## Type:	string
+## Default:	"/tmp/cfg2scm.co"
+#
+# cfg2scm needs a temporary directory as "cache",
+# which may/should remain between cfg2scm-runs.
+#
+CFG2SCM_OPT_TMP="/tmp/cfg2scm.co"
+
+## Type:	list("svn","cvs","tar","tar.gz","tar.bz2")
+## Default:	"tar.bz2"
+#
+# Define, which storage-format you want:
+# - either a local file (tar, tar.gz, tar.bz2)
+# - or a versioning system: this requires vc-tools installed,
+#   e.g. "svn" or "cvs"
+#
+CFG2SCM_OPT_STORAGE="tar.bz2"
+
+## Type:	string
+## Default:	""
+#
+# main path to subversion repositories (mandatory with svn and cvs)
+#
+CFG2SCM_OPT_BASE_URL= ""
+
+## Type:	string
+## Default:	""
+#
+# name of the one repository to be used (mandatory with svn and cvs)
+#
+CFG2SCM_OPT_REPOS=""
+
+## Type:	string
+## Default:	""
+#
+# username for access to SVN
+#
+CFG2SCM_OPT_USER=""
+
+## Type:	string
+## Default:	""
+#
+# password for access to SVN
+#
+CFG2SCM_OPT_PASS=""
+
+## Type:	yesno
+## Default:	No
+#
+# Include the many small config files below /etc/opt/gnome?
+#
+CFG2SCM_OPT_GCONF=No
+
+## Type:	yesno
+## Default:	No
+#
+# Include /etc/lvm/archive/*?
+#
+CFG2SCM_OPT_LVMARCHIVE=No
+
+## Type:	string
+## Default:	"autocommit by cfg2scm"
+#
+# The log-message for the versioning-system (if used)
+#
+CFG2SCM_OPT_MESSAGE="autocommit by cfg2scm"
+
+## Type:	integer(0:)
+## Default:	500000
+#
+# file size limit (byte) for files to recognize; 0=no limits.
+#
+CFG2SCM_OPT_LIMIT=500000
+
+#
+# EOF
+#
+
