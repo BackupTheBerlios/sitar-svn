@@ -27,5 +27,5 @@
 #		Stephan Martin		Holger Dopp
 #		Seth Arnold		Manfred Hollstein
 #		Stefan Werden		Robert Heinzmann
-#		Martin Spill
+#		Martin Spill		Adam Spiers
 #

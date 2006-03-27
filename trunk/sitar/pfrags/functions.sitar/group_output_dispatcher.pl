@@ -12,9 +12,7 @@ my %output_buffer_g      = ();
 my $output_format_g	 = "";
 
 sub mysprint {
-	# SLOW #
-	$output_buffer_g{ $output_format_g } = join "", $output_buffer_g{ $output_format_g }, @_;
-
+	$output_buffer_g{ $output_format_g } .= join "", @_;
 }
 
 sub addtoc($$$) {

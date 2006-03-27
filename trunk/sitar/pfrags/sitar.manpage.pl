@@ -207,7 +207,7 @@ wrote the IPTables/Netfilter code and Andreas Rother submitted a patch for
 running sitar on RedHat Linux. So finally these Linux Systems are supported:
 SuSE Linux, Debian, RedHat.
 
-With testing, bug-reporting, enhancements and code-contributions also helped: Uwe Hering, Jan Jensen, Falko Trojahn, Stephan Martin, Holger Dopp, Seth Arnold, Manfred Hollstein, Stefan Werden and others.
+With testing, bug-reporting, enhancements and code-contributions also helped: Uwe Hering, Jan Jensen, Falko Trojahn, Stephan Martin, Holger Dopp, Seth Arnold, Manfred Hollstein, Stefan Werden, Adam Spiers and others.
 
 For more information on SITAR, see: http://sitar.berlios.de/
 
