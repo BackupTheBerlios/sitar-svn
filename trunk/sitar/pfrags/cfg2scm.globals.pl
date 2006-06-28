@@ -26,7 +26,6 @@ chomp( my $CMD_SORT     = `which sort` );
 chomp( my $CMD_SVN      = `which svn` );
 chomp( my $CMD_TAR      = `which tar` );
 chomp( my $CMD_UNAME    = `which uname` );
-chomp( my $CMD_UNIQ     = `which uniq` );
 if ( !$CFG2SCM_OPT_DEBUG ) {
 	open( STDERR, ">&SAVEERR" );
 }

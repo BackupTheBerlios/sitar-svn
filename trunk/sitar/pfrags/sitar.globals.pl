@@ -61,9 +61,9 @@ chomp( my $CMD_MULTIPATH = `which multipath` );
 chomp( my $CMD_POSTCONF  = `which postconf` );
 chomp( my $CMD_ROUTE     = `which route` );
 chomp( my $CMD_SORT      = `which sort` );
+chomp( my $CMD_SORTUNIQ  = "$CMD_SORT -u" );
 chomp( my $CMD_TUNE2FS   = `which tune2fs` );
 chomp( my $CMD_UNAME     = `which uname` );
-chomp( my $CMD_UNIQ      = `which uniq` );
 open( STDERR, ">&SAVEERR" );
 $ENV{ PATH } = '';
 #

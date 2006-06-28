@@ -65,7 +65,7 @@ sub si_installed_sles() {
 	}
 	my $total = 0;
 	my $num   = 0;
-	my @packagers = `$CMD_RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $CMD_SORT | $CMD_UNIQ`;
+	my @packagers = `$CMD_RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $CMD_SORTUNIQ`;
 	my @rpms      = `$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::a\n'`;
 	for $pack ( sort @packagers ) {
 		chomp $pack;
