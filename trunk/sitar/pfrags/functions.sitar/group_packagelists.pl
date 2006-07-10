@@ -66,7 +66,7 @@ sub si_installed_sles() {
 	my $total = 0;
 	my $num   = 0;
 	my @packagers = `$CMD_RPM -qa --queryformat '%{DISTRIBUTION}::%{PACKAGER}\n' | $CMD_SORTUNIQ`;
-	my @rpms      = `$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::a\n'`;
+	my @rpms      = `$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}-%{RELEASE}::%{SIZE}::%{SUMMARY}::%{DISTRIBUTION}::%{PACKAGER}::%{ARCH}::a\n'`;
 	for $pack ( sort @packagers ) {
 		chomp $pack;
 		my ( $mydist, $mypack ) = split /::/, $pack;
@@ -92,12 +92,13 @@ sub si_installed_sles() {
 		siprtt( "tabhead", "Name" );
 		siprtt( "tabhead", "Version" );
 		siprtt( "tabhead", "Size" );
+		siprtt( "tabhead", "Arch" );
 		siprtt( "tabhead", "Short Description" );
 		siprt( "endrow" );
 		my $packtotal = 0;
 		my $packnum   = 0;
 		for $rpm ( sort @rpms ) {
-			my ( $name, $ver, $size, $summary, $distrib, $packager, $aa ) = split /::/, $rpm;
+			my ( $name, $ver, $size, $summary, $distrib, $packager, $arch, $aa ) = split /::/, $rpm;
 			#	print STDERR "|$rpm|\n\t\t"."|$pack|"."\n\t\t\t".$distrib."::".$packager."\n";
 			if ( ( $pack ) eq ( $distrib . "::" . $packager ) ) {
 				$total += $size;
@@ -108,6 +109,7 @@ sub si_installed_sles() {
 				siprtt( "cell",     $name );
 				siprtt( "cell",     $ver );
 				siprtt( "cell",     $size );
+				siprtt( "cell",     $arch );
 				siprtt( "cellwrap", $summary );
 				siprt( "endrow" );
 			}
@@ -144,17 +146,18 @@ sub si_installed_rpm() {
 	my $total = 0;
 	my $num   = 0;
 	my @rpms;
-	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}::%{SIZE}::%{SUMMARY}\n' |" );
+	open( RPMS, "$CMD_RPM -qa --queryformat '%{NAME}::%{VERSION}::%{SIZE}::%{SUMMARY}:%{ARCH}\n' |" );
 	while ( <RPMS> ) { push @rpms, $_; }
 	close( RPMS );
 	for $rpm ( sort @rpms ) {
-		my ( $name, $ver, $size, $summary ) = split /::/, $rpm;
+		my ( $name, $ver, $size, $summary, $arch ) = split /::/, $rpm;
 		$total += $size;
 		$num++;
 		siprt( "tabrow" );
 		siprtt( "cell",     $name );
 		siprtt( "cell",     $ver );
 		siprtt( "cell",     $size );
+		siprtt( "cell",     $arch );
 		siprtt( "cellwrap", $summary );
 		siprt( "endrow" );
 	}

@@ -30,7 +30,7 @@ BuildArch: 	noarch
 
 #Requires:	coreutils util-linux gzip grep rpm net-tools
 Distribution:	SuSE SLES-9 (noarch) Addon
-Packager:	Matthias G. Eckermann <mge@suse.de>
+Packager:	Matthias G. Eckermann <mge@arcor.de>
 
 %description 
 Sitar prepares system information using perl and binary tools, and by
