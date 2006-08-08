@@ -17,14 +17,14 @@
 		si_check_consistency( $SITAR_CONFIG_DIR, $SITAR_CONSIST_FN, 1 );
 	}
 	( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime( time );
-	$SITAR_OPT_OUTDIR = join "", "/tmp/sitar-", $HOSTNAME, "-", $year + 1900, sprintf( "%02d", $mon + 1 ), sprintf( "%02d", $mday ), sprintf( "%02d", $hour );
-	mkdir $SITAR_OPT_OUTDIR;
-	chdir $SITAR_OPT_OUTDIR;
 	if ( ( ( $myname[ -1 ] eq "sitar.pl" ) || ( $myname[ -1 ] eq "sitar" ) ) 
 	     && ( !$SITAR_OPT_HELP ) 
 	     && ( !$SITAR_OPT_FORMAT ) 
 	     && ( !$SITAR_OPT_OUTFILE ) 
 	     && ( !$SITAR_OPT_VERSION ) ) {
+		$SITAR_OPT_OUTDIR = join "", "/tmp/sitar-", $HOSTNAME, "-", $year + 1900, sprintf( "%02d", $mon + 1 ), sprintf( "%02d", $mday ), sprintf( "%02d", $hour );
+		mkdir $SITAR_OPT_OUTDIR;
+		chdir $SITAR_OPT_OUTDIR;
 		$SITAR_OPT_FORMAT="all";
 		si_run_structured( );
 		for $ff ( @SITAR_SELFILES ) {
