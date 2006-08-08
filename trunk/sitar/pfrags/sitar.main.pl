@@ -41,12 +41,12 @@
 			si_print_help();
 		}
 	} elsif ( $SITAR_OPT_FORMAT && $SITAR_OPT_OUTFILE && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_VERSION ) ) {
-		for $ff ( @SITAR_ALL_STRUCTURED ) {
+		for $ff ( @SITAR_STRUCTURED ) {
 			if( $SITAR_OPT_FORMAT eq $ff ){
 				si_run_structured( );
 			}
 		}
-		for $ff ( @SITAR_ALL_SELFILES ) {
+		for $ff ( @SITAR_SELFILES ) {
 			if( $SITAR_OPT_FORMAT eq $ff ){
 				si_run_selfiles( $ff);
 			}
@@ -55,6 +55,7 @@
 		si_print_version();
 	} elsif ( ( $SITAR_OPT_FORMAT && ( !$SITAR_OPT_OUTFILE ) ) || ( ( !$SITAR_OPT_FORMAT ) && $SITAR_OPT_OUTFILE ) || $SITAR_OPT_HELP ) {
 		si_print_help();
+	} else {
 	}
 }
 #
