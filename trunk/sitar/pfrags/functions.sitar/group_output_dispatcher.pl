@@ -260,12 +260,14 @@ sub siprttt($$$) { my ( $t1, $t2, $t3 ) = @_; siprint( $t1, $t2, $t3, 0 ); }
 sub siprtttt($$$$) { my ( $t1, $t2, $t3, $t4 ) = @_; siprint( $t1, $t2, $t3, $t4 ); }
 
 sub si_shipout_single( ) {
-	if ( $output_format_g eq "latex" ) {
-		$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.tex";
-	} elsif ( $output_format_g eq "sdocbook" ) {
-		$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.sdocbook.xml";
-	} else {
-		$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.$output_format_g";
+	if ( $SITAR_OPT_OUTFILE eq "" ) {
+		if ( $output_format_g eq "latex" ) {
+			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.tex";
+		} elsif ( $output_format_g eq "sdocbook" ) {
+			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.sdocbook.xml";
+		} else {
+			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.$output_format_g";
+		}
 	}
 	open( SAVEOUT, ">&STDOUT" );
 	print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
