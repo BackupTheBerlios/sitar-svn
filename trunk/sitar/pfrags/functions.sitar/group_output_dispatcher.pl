@@ -107,7 +107,7 @@ sub siprint_single( $$$$ ) {
 		}
 		if ( $m eq "body" )   { print $output_buffer_g{ $output_format_g }; }
 		if ( $m eq "footer" ) { print $html_footer; }
-	} elsif ( $output_format_g eq "tex" || $output_format_g eq "latex" ) {
+	} elsif ( $output_format_g eq "tex" ) {
 		if ( $output_is_verbatim_g{ $output_format_g } == 0 ) {
 			$value =~ s/\_/\\_/g;
 			$value =~ s/\#/\\\#/g;
@@ -261,7 +261,7 @@ sub siprtttt($$$$) { my ( $t1, $t2, $t3, $t4 ) = @_; siprint( $t1, $t2, $t3, $t4
 
 sub si_shipout_single( ) {
 	if ( $SITAR_OPT_OUTFILE eq "" ) {
-		if ( $output_format_g eq "latex" ) {
+		if ( $output_format_g eq "tex" ) {
 			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.tex";
 		} elsif ( $output_format_g eq "sdocbook" ) {
 			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.sdocbook.xml";

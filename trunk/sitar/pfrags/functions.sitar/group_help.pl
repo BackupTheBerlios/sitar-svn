@@ -8,11 +8,11 @@ sub si_print_version () {
 sub si_print_help () {
 	print "Options available:
 \t--format=<format>\tFormats: html, tex, sdocbook, yast1, yast2
-\t--outfile=<file|dir>\toutput filename (without: stdout)
+\t--outfile=<file|dir>\toutput filename
 \t\t\t\tfor format 'yast2' outfile must be a directory
 \t--all (--check-consistency --find-unpacked)
 \t--check-consistency
 \t--find-unpacked
 \t--help\t\t\tthis page
-\t--version\t\tprintout SITAR version";
+\t--version\t\tprintout SITAR version\n";
 }

@@ -14,9 +14,9 @@ Available I<format>s: html, tex, sdocbook, yast1, yast2
 
 =head1 DESCRIPTION
 
-Prepare system information using perl, reading the /proc filesystem. Output is in HTML, LaTeX, simplified docbook-xml (planned: SQL) and can be converted to PostScript and PDF. Sitar is an ancient Indian instrument as well (see  L<"HISTORY"> below).
+Prepare system information using perl, reading the /proc filesystem. Output is in HTML, (La)TeX, simplified docbook-xml (planned: SQL) and can be converted to PostScript and PDF. Sitar is an ancient Indian instrument as well (see  L<"HISTORY"> below).
 
-There are three files/links available:
+There are two files/links available:
 
 =over
 
@@ -27,10 +27,6 @@ There are three files/links available:
 If called without B<--outfile> and/or without B<--format>, all available output formats are produced below /tmp/sitar-$hostname-$date. 
 
 If called with B<--format> and B<--outfile> exactly this is produced.  Please note, that the format B<yast2> needs a directory given with the parameter B<--outfile>!
-
-=item support_all.pl
-
-must always be called with both options: B<--format> B<--outfile>, but does nothing, if called without any options.
 
 =back
 
@@ -73,8 +69,6 @@ Tell SITAR, which output format to use. At the moment four formats are supported
 
 =item tex 
 
-as an alias, also B<latex> can be used.
-
 =item html
 
 =item sdocbook
@@ -93,7 +87,7 @@ As it is possible, to generate a AutoYAST-file with YaST itself, this option is 
 
 =item B<--outfile>=I<file|dir> 
 
-All formatted output will be stored in the file given here.  Please don't forget to give the right extension here: C<.html> for HTML, C<.tex> for TeX or LaTeX, C<.sdocbook.xml> for simplified docbook-xml, C<.sel> for YaST-Selection-files.
+All formatted output will be stored in the file given here.  Please don't forget to give the right extension here: C<.html> for HTML, C<.tex> for (La)TeX, C<.sdocbook.xml> for simplified docbook-xml, C<.sel> for YaST-Selection-files.
 
 Please note, that the format B<yast2> needs a directory given with this parameter!
 
@@ -207,7 +201,7 @@ wrote the IPTables/Netfilter code and Andreas Rother submitted a patch for
 running sitar on RedHat Linux. So finally these Linux Systems are supported:
 SuSE Linux, Debian, RedHat.
 
-With testing, bug-reporting, enhancements and code-contributions also helped: Uwe Hering, Jan Jensen, Falko Trojahn, Stephan Martin, Holger Dopp, Seth Arnold, Manfred Hollstein, Stefan Werden, Adam Spiers and others.
+With testing, bug-reporting, enhancements and code-contributions also helped: Uwe Hering, Jan Jensen, Falko Trojahn, Stephan Martin, Holger Dopp, Seth Arnold, Manfred Hollstein, Stefan Werden, Adam Spiers, Tony Ernst and others.
 
 For more information on SITAR, see: http://sitar.berlios.de/
 
