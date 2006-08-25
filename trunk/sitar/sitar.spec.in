@@ -88,6 +88,68 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Fri Aug 25 2006 - Matthias G. Eckermann <mge@suse.de>
+- fixes Novell Bugs #197788 and #200396:
+  * Specifying the --format and --outfile options causes it
+    to produce no output at all.
+  * Sitar always creates a /tmp/sitar-$hostname-$date directory,
+    even if the directory won't be used (i.e. --format and --outfile are specified).
+  * The man page mentions support_all.pl, but support_all.pl has been removed 
+    from the sitar package.
+  * The usage message is missing a terminating newline.
+  * remove output-format-alias "latex" - only "tex" remains
+  * remove ability to send output to stdout
+* Mon Mar 27 2006 - Matthias G. Eckermann <mge@suse.de>
+- Release 1.0.6-260
+- Fixes Novell Bug #159692 - replace 'cat'-calls with perl-open-close
+- Changes on user-interface:
+- introduce "--all" for "--check-consistency --find-unpacked"
+- add si_debug and add status comments for sitar-output
+- General factor 8 speedup:
+- improve speed of si_check_consistency by factor 8
+  improve speed of si_find_unpacked by factor 6
+  thanks to Manfred Hollstein for more effective rpm-queries
+- improve speed of sitar-output-routine by factor 10
+  thanks to Adam Spiers for pointing out the bottleneck
+* Mon Mar 13 2006 - Matthias G. Eckermann <mge@suse.de>
+- revision 235: sitar-1.0.4
+- consolidate diffs
+- minor doc/manpage changes
+* Tue Mar 07 2006 - Matthias G. Eckermann <mge@suse.de>
+- fixes Novell Bug #155424: 
+  "sitar should collect /etc/X11/xorg.conf
+  (resp. /etc/X11/XF86Config on older releases)"
+- fixes Novell Bug #155308: 
+  "adopt sitar for: /subdomain -> /sys/kernel/security/apparmor"
+- (cfg2scm.pl) enhance adding new files in svn-mode
+- (sitar.pl) change priority of lspci and lshal
+- sitar-1.0.3 revision 231
+* Thu Feb 16 2006 - Matthias G. Eckermann <mge@suse.de>
+- Version 1.0.3
+- adopted suse/opensuse packaging names for new releases,
+  enhance distribution matching, fixes Novell Bug #148363
+- correct defattr in spec-file
+- enhance manpages and add documentation to *.sysconfig
+- now also tested on Mandrake 2005 and FC4
+- enhance apparmor_config_path and apparmor_profiles_path to fit
+  for different AppArmor releases
+- source code reorganization
+* Mon Feb 06 2006 - Matthias G. Eckermann <mge@suse.de>
+- Version 1.0.2
+- nice, beautiful Makefile by Manfred Hollstein <mh@novell.com> - Thanks!
+- split *.pl.in to several files: one per function or
+  function-group into the subdirectory sfrags
+- fix permissions in spec-file
+- remove support.pl and related man-pages
+- opotions in cfg2scm.sysconfig, sitar.sysconfig:
+  rename    $SITAR_OPT_GNOME to $SITAR_OPT_GCONF
+  introduce $SITAR_OPT_LVMARCHIVE
+  introduce $CFG2SCM_OPT_LVMARCHIVE
+  Introduce new variables, to avoid redundant information:
+  SITAR_OPT_ALLCONFIGFILES
+  SITAR_OPT_ALLSUBDOMAIN
+  SITAR_OPT_ALLSYSCONFIG
+- add yast metadata to cfg2scm.sysconfig, sitar.sysconfig
 * Fri Feb 03 2006 - Matthias G. Eckermann <mge@suse.de> [1.0.2-204]
 - rename "snippets" to "pfrags"
 * Fri Feb 03 2006 - Matthias G. Eckermann <mge@suse.de> [1.0.2-202]
