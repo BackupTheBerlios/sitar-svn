@@ -259,19 +259,22 @@ sub siprtt($$) { my ( $t1, $t2 ) = @_; siprint( $t1, $t2, "", 0 ); }
 sub siprttt($$$) { my ( $t1, $t2, $t3 ) = @_; siprint( $t1, $t2, $t3, 0 ); }
 sub siprtttt($$$$) { my ( $t1, $t2, $t3, $t4 ) = @_; siprint( $t1, $t2, $t3, $t4 ); }
 
-sub si_shipout_single( ) {
+sub si_shipout_single() {
+	my( $outfile_l ) = "";
 	if ( $SITAR_OPT_OUTFILE eq "" ) {
 		if ( $output_format_g eq "tex" ) {
-			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.tex";
+			$outfile_l = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.tex";
 		} elsif ( $output_format_g eq "sdocbook" ) {
-			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.sdocbook.xml";
+			$outfile_l = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.sdocbook.xml";
 		} else {
-			$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.$output_format_g";
+			$outfile_l = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME.$output_format_g";
 		}
+	} else {
+		$outfile_l = $SITAR_OPT_OUTFILE;
 	}
 	open( SAVEOUT, ">&STDOUT" );
-	print( STDERR "Generating $SITAR_OPT_OUTFILE...\n" );
-	open( STDOUT, ">$SITAR_OPT_OUTFILE" );
+	print( STDERR "Generating $outfile_l ...\n" );
+	open( STDOUT, ">$outfile_l" );
 	siprint_single( "header", "", "", 0 );
 	siprint_single( "toc", "", "", 0 );
 	siprint_single( "body", "", "", 0 );
@@ -283,7 +286,7 @@ sub si_shipout() {
 	if( $SITAR_OPT_FORMAT eq "all" ) {
 		for $mm ( @SITAR_STRUCTURED ) {
 			$output_format_g = $mm;
-			si_shipout_single();
+			si_shipout_single( );
 		}
 	} else {
 		$output_format_g = $SITAR_OPT_FORMAT;
