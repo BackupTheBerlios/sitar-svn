@@ -88,6 +88,8 @@ if [ -n "$RPM_BUILD_ROOT" ] ; then
 fi
 
 %changelog
+* Fri Nov  3 2006 - Matthias G. Eckermann <mge@suse.de>
+- better fix for output- and format-configuration
 * Fri Aug 25 2006 - Matthias G. Eckermann <mge@suse.de>
 - fixes Novell Bugs #197788 and #200396:
   * Specifying the --format and --outfile options causes it

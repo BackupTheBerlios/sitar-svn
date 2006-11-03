@@ -22,25 +22,33 @@
 	     && ( !$SITAR_OPT_FORMAT ) 
 	     && ( !$SITAR_OPT_OUTFILE ) 
 	     && ( !$SITAR_OPT_VERSION ) ) {
-		$SITAR_OPT_OUTDIR = join "", "/tmp/sitar-", $HOSTNAME, "-", $year + 1900, sprintf( "%02d", $mon + 1 ), sprintf( "%02d", $mday ), sprintf( "%02d", $hour );
-		mkdir $SITAR_OPT_OUTDIR;
+		#
+		# all modes ("sitar" without any output- or format information)
+		# 
+		if( $SITAR_OPT_OUTDIR eq "" ){
+			$SITAR_OPT_OUTDIR = join "", "/tmp/sitar-", $HOSTNAME, "-", 
+				$year + 1900, sprintf( "%02d", $mon + 1 ), sprintf( "%02d", $mday ), sprintf( "%02d", $hour );
+			mkdir $SITAR_OPT_OUTDIR;
+		}
 		chdir $SITAR_OPT_OUTDIR;
 		$SITAR_OPT_FORMAT="all";
 		si_run_structured( );
 		for $ff ( @SITAR_SELFILES ) {
-			if ( $ff eq "yast1" ) {
-				$SITAR_OPT_OUTFILE = join "", $SITAR_OPT_OUTDIR, "/sitar-$HOSTNAME-yast1.sel";
-			}
 			si_run_selfiles( $ff );
 		}
-	} elsif ( $SITAR_OPT_FORMAT eq "yast2" ) {
-		if ( ( -d $SITAR_OPT_OUTFILE ) && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_VERSION ) ) {
-			$SITAR_OPT_OUTDIR = $SITAR_OPT_OUTFILE;
+	} elsif ( ( $SITAR_OPT_FORMAT eq "yast2" ) && ( -d $SITAR_OPT_OUTDIR ) ) {
+		#
+		# only "yast2" mode
+		#
+		if ( ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_VERSION ) ) {
 			si_run_selfiles( $SITAR_OPT_FORMAT );
 		} else {
 			si_print_help();
 		}
 	} elsif ( $SITAR_OPT_FORMAT && $SITAR_OPT_OUTFILE && ( !$SITAR_OPT_HELP ) && ( !$SITAR_OPT_VERSION ) ) {
+		#
+		# one single mode (not "yast2")
+		#
 		for $ff ( @SITAR_STRUCTURED ) {
 			if( $SITAR_OPT_FORMAT eq $ff ){
 				si_run_structured( );

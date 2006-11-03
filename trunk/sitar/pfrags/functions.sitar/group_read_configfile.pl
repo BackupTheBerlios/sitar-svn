@@ -40,13 +40,20 @@ sub si_prepare_config() {
 	# read configuration file
 	si_parse_conf_file( $SITAR_CONFIG_FILE );
 	# parse command line options
+	my $SITAR_OPT_OUTFILE_CMDLINE;
 	GetOptions(
 		'a|all'               => \$SITAR_OPT_ALL,
 		'c|check-consistency' => \$SITAR_OPT_CONSISTENCY,
 		'x|find-unpacked'     => \$SITAR_OPT_FINDUNPACKED,
 		'f|format=s'          => \$SITAR_OPT_FORMAT,
-		'o|outfile=s'         => \$SITAR_OPT_OUTFILE,
+		'o|outfile=s'         => \$SITAR_OPT_OUTFILE_CMDLINE,
 		'h|help'              => \$SITAR_OPT_HELP,
 		'v|version'           => \$SITAR_OPT_VERSION
 	);
+	if( ( $SITAR_OPT_FORMAT eq "yast2" ) && ( $SITAR_OPT_OUTFILE_CMDLINE ne "" ) ) {
+		$SITAR_OPT_OUTDIR  = $SITAR_OPT_OUTFILE_CMDLINE;
+		$SITAR_OPT_OUTFILE = "";
+	} else {
+		$SITAR_OPT_OUTFILE = $SITAR_OPT_OUTFILE_CMDLINE;
+	}
 }
