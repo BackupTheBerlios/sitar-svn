@@ -79,6 +79,9 @@ SITAR_PFRAGS	= pfrags/sitar.header.pl 				\
 		  pfrags/functions.common/si_find_unpacked.pl		\
 		  pfrags/functions.sitar/group_help.pl			\
 		  pfrags/functions.sitar/group_run_sitar.pl		\
+		  pfrags/functions.sitar/si_cciss.pl			\
+		  pfrags/functions.sitar/si_dmi.pl			\
+		  pfrags/functions.sitar/si_areca.pl			\
 		  pfrags/sitar.main.pl
 
 #-----------------------------------------------------------------------
