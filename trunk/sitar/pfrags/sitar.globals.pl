@@ -64,6 +64,11 @@ chomp( my $CMD_SORT      = `which sort` );
 chomp( my $CMD_SORTUNIQ  = "$CMD_SORT -u" );
 chomp( my $CMD_TUNE2FS   = `which tune2fs` );
 chomp( my $CMD_UNAME     = `which uname` );
+# should also search for cpqacucli
+chomp( my $CMD_ACUCLI    = `which hpacucli` );
+chomp( my $CMD_DMIDECODE = `which dmidecode` );
+# should also serach for cli32
+chomp( my $CMD_ARECACLI  = "/usr/lib/snmp/cli64" );
 open( STDERR, ">&SAVEERR" );
 $ENV{ PATH } = '';
 #

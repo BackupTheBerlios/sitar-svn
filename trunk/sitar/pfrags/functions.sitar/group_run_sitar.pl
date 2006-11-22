@@ -19,6 +19,8 @@ sub si_run_structured( ) {
 	si_gdth();
 	si_ips();
 	si_compaq_smart();
+	si_cciss();
+	si_areca();
 	si_dac960();
 	si_ifconfig();
 	si_route();
@@ -26,6 +28,7 @@ sub si_run_structured( ) {
 	# if ( $mm eq "tex" ) { print "\n\\par\\endgroup\\par\n"; }
 	si_immunix_apparmor();
 	si_proc();
+	si_dmi();
 	if ( $DIST_DISTRIBUTION eq "unitedlinux" ) {
 		si_chkconfig();
 		si_etc();
