@@ -111,8 +111,8 @@ sitar-$(RELEASE).tar.bz2:	clean sitar.spec sitar.pl cfg2scm.pl
 	rm -f $@ ; rm -rf $(TMPDIR)/sitar-$$$$;				\
 	umask 0022; mkdir $(TMPDIR)/sitar-$$$$;				\
 	mkdir $(TMPDIR)/sitar-$$$$/sitar-$(RELEASE); 			\
-	tar -C $(srcdir) -cSf - . --exclude=.svn --exclude=$@		\
-	| tar -C $(TMPDIR)/sitar-$$$$/sitar-$(RELEASE) -xBSpf - ;	\
+	tar -C $(srcdir) --exclude=.svn --exclude=$@ -cSf - .	|	\
+	tar -C $(TMPDIR)/sitar-$$$$/sitar-$(RELEASE) -xBSpf - ;		\
 	tar -C $(TMPDIR)/sitar-$$$$ -cspjf $${cwd}/$@ sitar-$(RELEASE);	\
 	rm -rf $(TMPDIR)/sitar-$$$$
 
